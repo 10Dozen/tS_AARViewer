@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="us">
+	<head>
+		<meta charset="utf-8">
+		<title>After Action Report Viewer</title>
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	  
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+		<script src="http://timmywil.github.io/jquery.panzoom/dist/jquery.panzoom.js"></script>
+		<script src="http://timmywil.github.io/jquery.panzoom/test/libs/jquery.mousewheel.js"></script>
+		
+		<style>
+			body {				
+				margin: 0px;
+				padding: 0px;
+				font-family: sans-serif;
+			}
+			
+			/* Landing page */
+			#uploader {
+				position: absolute;
+				height: 200px;
+				width: 200px;
+				margin: -100px 0 0 -200px;
+				top: 50%;
+				left: 50%;
+				
+				background-color: #cceeff;
+				border: 1px solid #cceeff;
+				border-radius: 100px;
+			}
+			
+			#uploader input {
+				position: absolute;
+				top: 45%;
+				left: 30%;
+			}
+			
+			#error-label {
+				padding-top: 0px;
+				padding-left: 20px;
+				font-size: 24px;
+				font-weight: bold;
+				background-color: #b30000;
+				color: white;
+			}
+			
+			#details-wrapper {
+				padding-top: 0px;				
+			}
+			
+			#details-wrapper h1 {
+				padding-left: 20px;
+				background-color: #3366CC;
+				color: white;
+			}
+			
+			#details-wrapper li {
+				list-style-type: none;
+			}
+			
+			/* Player */
+			#player-line {
+				position: absolute;
+				display: inline;
+				width: 100%;
+				top: -100px;
+				z-index: 0;
+			}
+			
+			#player-header {				
+				position: absolute;
+				width: 100%;
+				top: -12px;
+				padding: 0px 0px 25px 20px;			
+				background-color: #3366CC;
+				
+				font-size: 18px;
+				font-weight: bold;
+				color: white;
+				z-index: -4;
+			}
+			
+			#player-step {
+				display: inline;
+				margin: 10px;
+				width: 5%;
+			}
+			
+			#player-indicator {
+				display: inline-block;
+				padding-left: 20px;
+				font-size: 10px;
+				color: white;
+				z-index: 151;
+			}
+			
+			#slider {
+				display: inline-block;
+				left: 10px;
+				width: 300px;
+			}
+			
+			#player-step-backward, #player-step-play, #player-step-forward {
+				height: 24px;
+				width: 24px;
+			}
+			
+			#player-speed-button {
+				top: 8px;
+			}
+			
+			.ui-widget {
+				font-size: 10px;
+			}
+			
+			#player-info {
+				right: 10px;
+				top: 10px;
+				float: right;
+			}
+			
+			/* Units */
+			.unit-marker {
+				display: inline;
+				position:absolute;
+				
+				text-align: center;
+			}
+			
+			.unit-marker span {
+				display: block;
+			}
+			
+			.unit-marker .icn {
+				width: 32px;
+				height: 32px;				
+			}
+		</style>
+		
+		
+		<script>
+			var aarData = {};
+			var aarCurrentTime = 0;
+			var aarPlaying = false;
+			var aarAutoStepper;
+			
+			// Open file
+			var openFile = function(event) { 
+				$( "#details-wrapper" ).remove();
+				$( "#error-label" ).remove();
+				var input = event.target; 
+
+				var reader = new FileReader(); 
+				reader.onload = function(){ 
+					var text = reader.result;
+					try {
+						aarData = JSON.parse(text);
+						console.log("Parsed!");
+						// Detail screen
+						var timelabel = getTimeLabel(aarData.metadata.time);				
+						$( "body" ).append("<div id='details-wrapper'><h1>" + aarData.metadata.name + "</h1><ul><li>Location: <b>" + aarData.metadata.island + "</b></li><li>Date: " + aarData.metadata.date + "</li><li>Duration: " + timelabel + "</li><li><br /></li><li><button onClick='initAAR()'>Play</button></li></ul></div>")
+					} catch (e) {
+						$( "body" ).append("<div id='error-label'>" + "File is not AAR file!" + "</div>");
+						console.log("File is not AAR file!");
+					}
+				};				
+				reader.readAsText(input.files[0]);
+			};
+			
+			// Time label
+			function getTimeLabel(t) {
+				var time = t;
+				var timeHours = time / 60 /60 | 0;
+				var timeMinutes = (time - timeHours*60*60) /60 | 0;
+				var timeSeconds = time - timeHours*60*60 - timeMinutes*60;
+				var output = "";
+				function formatTimeNum(t,l) {
+					var output = t + " " + l + " ";					
+					if (t > 0) { 
+						if (t < 10) {output = "0" + output;} 
+					} else { 
+						if (l == "s") {
+							output = "00 s"
+						} else {
+							output = ""
+						}
+					}
+					return output
+				}				
+				return formatTimeNum(timeHours,"h") + formatTimeNum(timeMinutes,"m") + formatTimeNum(timeSeconds,"s")
+			}
+			
+			function createObject(data,type) {
+				// 0: Unit Array
+				// 1: "unit" or "veh"
+				var id = data[0];
+				var name = data[1];
+				
+				var icon = "img/icons/" + data[2] + "-" + type + ".svg";					
+				icon = "img/icons/unit.svg";
+				
+				$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
+			}
+			
+			// Init AAR
+			function initAAR() {				
+				$( "#details-wrapper" ).remove();
+				$( "#uploader" ).remove();
+				$( "#player-step" ).html( "<span>0 s</span> / " + getTimeLabel(aarData.metadata.time) );
+				$( "#slider").slider( "option", "max", aarData.metadata.time );
+				$( "#player-line" ).css( "top", "12px" );
+				
+				var bgImg = "";
+				switch (aarData.metadata.island) {
+					case "Stratis": bgImg = "img/map_stratis_8192.png"; break;
+					default: bgImg = "img/map_stratis_8192.png";
+				}				
+				$( ".panzoom > img" ).attr( "src", bgImg );				
+				panzoomInit();
+				
+				// Spawn			
+				// Spawn Units
+				var units = aarData.metadata.objects.units;
+				for (var i = 0; i < units.length; i++) {
+					createObject( units[i], "unit" );
+				}
+				
+				// Spawn Vehicles
+				var vehs = aarData.metadata.objects.vehs;
+				for (var i = 0; i < vehs.length; i++) {
+					createObject( vehs[i], "veh" );
+				}
+				
+				document.map.onload = function() {
+					$( ".panzoom" ).panzoom('resetDimensions');
+					playReportStep( 0 );
+				};
+				
+				$( "#player-header" ).html(aarData.metadata.name + " (" + aarData.metadata.date + ")");
+				$( "#player-line > button" ).removeAttr( "disabled" );
+			};			
+			// Panzoom Init
+			var panzoomInit = function() {
+				var $panzoom = $('.panzoom').panzoom();
+				$('.panzoom').panzoom("option", {
+					minScale: 0.1,
+					maxScale: 4					
+				});
+				
+				$panzoom.parent().on('mousewheel.focal', function( e ) {
+					e.preventDefault();
+					var delta = e.delta || e.originalEvent.wheelDelta;
+					var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+					$panzoom.panzoom('zoom', zoomOut, {
+						increment: 0.1,
+						animate: true,
+						easing: "ease-in-out",
+						focal: e						
+					});
+				});
+			};
+			// Rotate Image
+			jQuery.fn.rotate = function(degrees) {
+				$(this).css({'-webkit-transform' : 'rotate('+ degrees +'deg)',
+							 '-moz-transform' : 'rotate('+ degrees +'deg)',
+							 '-ms-transform' : 'rotate('+ degrees +'deg)',
+							 'transform' : 'rotate('+ degrees +'deg)'});
+				return $(this);
+			};			
+			
+			// Process unit - animate
+			function processUnit(data,type) {
+				// 0: unit/vehicle data
+				// 1: "unit" or "veh"
+				var id = data[0];
+				var unit = "#mrk-unit-" + id;
+				
+				var posx = data[1];
+				var posy = data[2];
+				var dir = data[3];
+				var alive = data[4];
+				
+				var inCargo, owner, cargo
+				if (type == "unit") {
+					inCargo = data[5];				
+					if (inCargo == -1) {
+						$( unit ).css({ "left": posx, "top": posy });
+						$( unit + " > img" ).rotate( dir );
+					} else {
+						$( unit ).css({ "left": "-20px","top": "-20px" });
+					}
+				} else {
+					owner = data[5];
+					cargo = data[6];
+					$( unit ).css({ "left": posx, "top": posy });
+					$( unit + " > img" ).rotate( dir );
+				}
+			};
+			
+			// Play AAR frame (1 second)
+			function playReportStep (step) {
+				var units = aarData.timeline[step][0];
+				var vehs = aarData.timeline[step][1];
+				var attacks = aarData.timeline[step][2];
+				
+				for (var i = 0; i < units.length; i++) {					
+					processUnit( units[i], "unit" );
+				};
+				for (var i = 0; i < vehs.length; i++) {
+					processUnit( vehs[i], "veh" );
+				};			
+			};
+			
+			// Play AAR in auto mode
+			function playReportAuto () {
+				if (!aarPlaying) {
+					console.log( "Player: Playing" );
+					var aarPlaySpeed = $( "#player-speed" ).val()
+					aarAutoStepper = setInterval(
+						function () {
+							if (aarCurrentTime != aarData.metadata.time) {							
+								reportNextStep()
+							} else {
+								clearInterval( aarAutoStepper );
+								stopReport()
+							}
+						}
+						, 2000/aarPlaySpeed
+					);
+				} else {
+					console.log( "Player: Stop" );
+					stopReport();
+				}			
+			};
+			
+			function stopReport() {
+				aarPlaying = false;
+				setPauseButtonIcon();
+				console.log( "Player: Stopped" );
+				clearInterval( aarAutoStepper );
+			};
+			
+			function reportNextStep () {
+				if ( aarCurrentTime + 1 <= aarData.metadata.time ) {
+					console.log( "Player: Next step -- " + (aarCurrentTime + 1) + " second" );
+					aarCurrentTime = aarCurrentTime + 1;
+					$( "#slider" ).slider({ value: aarCurrentTime });
+					$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
+					playReportStep ( aarCurrentTime );
+				}
+			};
+			
+			function reportPrevStep () {
+				if ( aarCurrentTime - 1 >= 0 ) {
+					console.log( "Player: Prev step -- " + (aarCurrentTime - 1) + " second" );
+					aarCurrentTime = aarCurrentTime - 1;
+					$( "#slider" ).slider({ value: aarCurrentTime });
+					$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
+					playReportStep ( aarCurrentTime );
+				}			
+			};
+		
+			function setPauseButtonIcon() {
+				$( "#player-step-play" ).button( "option", {label: "play",icons: {primary: "ui-icon-play"} });
+			}
+		</script>
+		
+		<script>
+			$( document ).ready(function () {
+				$( "#slider" ).slider({
+					range: "min",
+					min: 0,
+					max: 100,
+					slide: function( event, ui ) {
+						$( "#player-step > span" ).html( getTimeLabel(ui.value) );
+						playReportStep ( ui.value ); 
+						aarCurrentTime = ui.value;
+						console.log( "Player: Rewind to " + (aarCurrentTime) + " second" );
+					},
+					change: function( event, ui ) {
+						if (ui.value == aarData.metadata.time) { stopReport(); }
+					}
+				});
+				$( "#player-step > span" ).html( "0 s" );
+				
+				$( "#player-speed" ).selectmenu();
+				$( "#player-step-backward" ).button({text: false,icons: { primary: "ui-icon-seek-prev" }})
+					.click(function() { setPauseButtonIcon(); });
+				$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}})
+					.click(function() { setPauseButtonIcon(); });
+				$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}})
+					.click(function() {
+						var options;
+						if ( $( this ).text() === "play" ) {
+							options = {label: "pause",icons: {primary: "ui-icon-pause"}};
+						} else {
+							options = {label: "play",icons: {primary: "ui-icon-play"}};
+						}
+						$( this ).button( "option", options );
+					});
+				$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-info" }});
+				
+				$( "#player-line > button" ).attr( "disabled", "true" );
+			});
+		</script>
+		
+		
+	</head>
+	<body>
+		<div class="panzoom"><img name="map" src="" /></div>
+		
+		<div id="player-line">			
+			<button id="player-step-backward" onClick="reportPrevStep()">Prev second</button>
+			<button id="player-step-play" onClick="playReportAuto()">Play report</button>
+			<button id="player-step-forward" onClick="reportNextStep()">Next second</button>
+			<select name="player-speed" id="player-speed">
+				<optgroup label="Play speed">
+					<option value="1">x1</option>
+					<option value="2">x2</option>
+					<option value="5">x5</option>
+					<option value="10">x10</option>
+					<option value="50">x50</option>
+				</optgroup>
+			</select>
+			<div id="slider"></div>
+			<div id="player-indicator">
+				<label id="player-step"><span>0 sec</span> / 10 sec</label>					
+			</div>
+			<button id="player-info">Info</button>
+			<div id="player-header"> Loading... </div>
+		</div>
+		
+		<div id="uploader">
+			<input type='file' accept='text/plain' onchange='openFile(event)'>			
+		</div>
+	</body>
+</html>
