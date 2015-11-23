@@ -94,8 +94,8 @@ class FSM
        "/*" \n
        "	Set timers" \n
        "*/" \n
-       "_shortTimer = time + 1;" \n
-       "_longTimer = time + dzn_brv_nonPlayerInterval;"/*%FSM</STATEINIT""">*/;
+       "_shortTimer = time + dzn_brv_playerLogInterval;" \n
+       "_longTimer = time + dzn_brv_nonPlayerLogInterval;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
