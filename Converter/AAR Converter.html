@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="us">
+	<head>
+		<meta charset="utf-8">
+		<title>AAR Converter</title>
+		<link rel="stylesheet" href="src/css/jquery-ui.css">
+	  
+		<script src="src/js/jquery.min.js"></script>
+		<script src="src/js/jquery-ui.min.js"></script>
+		<script src="src/js/jquery.panzoom.js"></script>
+		<script src="src/js/jquery.mousewheel.js"></script>
+		
+		<style>
+			body {				
+				margin: 0px;
+				padding: 0px;
+				font-family: sans-serif;
+			}
+			
+			/* Landing page */
+			#header {
+				background-color: #3366CC;
+				color: white;
+			}
+			
+			#header-title {
+				font-size: 24px;
+				font-weight: bold;
+				padding-left: 40px;
+			}
+			
+			#header-status {
+				font-size: 18px;
+				background-color: #6798D2;
+				padding: 6px 0px 3px 40px;
+				
+			}
+			
+			#uploader {
+				display: inline;
+				padding: 12px 0px 12px 90px;
+			}
+			
+			/* Form */
+			#result-form {
+				position: absolute;
+				top: -1000px;
+			}
+			.dl-1 {
+				display: inline-block;
+				width: 150px;
+				
+				font-size: 15px;
+			}
+			
+			.dl-2 {
+				display: inline-block;
+				width: 350px;
+			}
+			
+			.dl-2 input {
+				width: 350px;
+				height: 20px;
+				padding: 3px 6px;				
+			}
+			
+			#mission-time, h4 {				
+				display: inline-block;
+				padding: 1px 5px;
+				
+				border: 1px solid #6798D2;
+				background-color: #6798D2;
+				border-radius: 15px;
+				font-size: 14px;
+				color: white;
+			}
+			
+			.dl-3 {
+				display: block;
+				width: 500px;
+			
+			}
+			.dl-3 textarea {
+				width: 500px;
+				padding: 3px 6px;
+				font-family: sans-serif;
+				
+			}
+			
+			#result-form ul li {
+				padding: 3px 0px;
+				list-style-type: none;
+			}
+			
+			#player-list {
+				font-family: sans-serif;
+				font-size: 14px;
+			}
+			
+			#output-generate {
+				display: inline-block;
+				position: absolute;
+				margin-left: 40px;
+				width: 100px;
+			}
+			
+			#output-footer textarea {
+				display: inline-block;
+				margin: 30px 40px;
+				position: absolute;				
+				width: 510px;			
+			}
+		</style>
+		
+		<script>
+			var rptData = "";
+			// Open file
+			var openFile = function(event) { 
+				$( "#details-wrapper" ).remove();
+				$( "#error-label" ).remove();
+				
+				var input = event.target; 
+				var reader = new FileReader(); 
+				reader.onload = function(){ 
+					var text = reader.result;
+					rptData = text;
+					if (text.length > 0) {
+						console.log( "Read!");
+						$( "#header-status > label" ).html( "Ready!" );
+						$( "#header-status" ).css( "background-color", "#9BC34E");
+						$( "#uploader-convert" ).removeAttr( "disabled" );
+					} else {
+						console.log( "Empty!" );
+						$( "#header-status > label" ).html( "File is empty/Failed to read!" );
+						$( "#header-status" ).css( "background-color", "#AF4E4E");
+						$( "#uploader-convert" ).attr( "disabled", "true" );
+					}
+				};				
+				reader.readAsText(input.files[0]);
+			};
+			
+			function convertToAAR() {
+				$( "#result-form" ).css( "top", "60px" );
+			};
+			
+			// Time label
+			function getTimeLabel(t) {
+				var time = t;
+				var timeHours = time / 60 /60 | 0;
+				var timeMinutes = (time - timeHours*60*60) /60 | 0;
+				var timeSeconds = time - timeHours*60*60 - timeMinutes*60;
+				var output = "";
+				function formatTimeNum(t,l) {
+					var output = t + " " + l + " ";					
+					if (t > 0) { 
+						if (t < 10) {output = "0" + output;} 
+					} else { 
+						if (l == "s") {
+							output = "00 s"
+						} else {
+							output = ""
+						}
+					}
+					return output
+				}				
+				return formatTimeNum(timeHours,"h") + formatTimeNum(timeMinutes,"m") + formatTimeNum(timeSeconds,"s")
+			}
+			
+			
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			<div id="header-title">
+				AAR Converter
+			</div>
+			<div id="header-status">
+				<button id="uploader-convert" onClick="convertToAAR()" disabled="true">Convert</button>
+				<label>Select RPT file to convert...</label>
+				<div id="uploader">
+					<input type='file' accept='text/plain' onchange='openFile(event)'>
+					
+				</div>
+			</div>
+		</div>
+		
+		<div id="result-form">
+			<ul>
+				<li>
+					<div class="dl-1">
+						Mission name
+					</div>
+					<div class="dl-2">
+						<input name="mission-name"></input>
+					</div>
+				</li>
+				<li>
+					<div class="dl-1">
+						Island
+					</div>
+					<div class="dl-2">
+						<input name="mission-island"></input>
+					</div>
+				</li>
+				<li>
+					<div class="dl-1">
+						Date
+					</div>
+					<div class="dl-2">
+						<input name="mission-date" type="date"></input>
+					</div>
+				</li>
+				<li>
+					<div class="dl-1">
+						Duration
+					</div>
+					<div class="dl-2">
+						<div id="mission-time">02h 23m 15s</div>
+					</div>
+				</li>
+				<li>
+					<div class="dl-1">
+						Description:
+					</div>
+					<div class="dl-3">
+						<textarea name="mission-desc" cols="40" rows="5"></textarea>
+					</div>
+				</li>				
+				<li>
+					<div class="dl-1">
+						<h4>Players</h4>
+					</div>
+					<ul id="player-list">
+						<li>Name 1</li>
+						<li>Name2</li>
+					</ul>
+				</li>
+			</ul>
+			<div id="output-footer">
+				<hr />
+				<button id="output-generate">Generate</button>		
+				<textarea name="output" cols="40" rows="5"></textarea>				
+			</div>
+		</div>
+	</body>
+</html>
