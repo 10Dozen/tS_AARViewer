@@ -135,6 +135,8 @@ dzn_brv_getVehiceCargoAndOwnerId = {
 
 dzn_brv_collectUnitsData = {
 	// @IsPlayerOnly spawn dzn_brv_collectUnitsData
+	// MAY BE USEFUL TO CALL THIS STUFF... BUT IT MAY BE HEAVY IMPACT ON PERFORMANCE
+	
 	params["_isPlayerOnly"];
 	private["_units"];
 	
@@ -145,6 +147,6 @@ dzn_brv_collectUnitsData = {
 	};
 	
 	{
-		_x spawn dzn_brv_collectData;
+		_x call dzn_brv_collectData;
 	} forEach _units;
 };
