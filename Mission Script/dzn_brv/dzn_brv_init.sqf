@@ -1,6 +1,7 @@
 
 // ************ SETTINGS ***************
-dzn_brv_nonPlayerInterval = 3; // seconds
+dzn_brv_playerLogInterval = 1; // seconds
+dzn_brv_nonPlayerLogInterval = 3; // seconds
 
 // ************** INIT *****************
 dzn_brv_timeLabel = 0;
