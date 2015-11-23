@@ -12,16 +12,9 @@ dzn_brv_getCoreMetadata = {
 dzn_brv_collectMetadata = {	
 	private["_units","_vehs","_name"];
 	
-	_units = [allUnits, {!(_x in dzn_brv_unitList)}] call BIS_fnc_conditionalSelect;
-
-	/*
-		Alternative is 
-		_units = [allUnits, {isNil {_x getVariabel "dzn_brv_id"}}] call BIS_fnc_conditionalSelect;
-	*/
-	// NEED TO CHECK THIS STATEMENT - maybe array is updated wrongly
-	dzn_brv_unitList pushBack _units;
-	
+	_units = [allUnits, {!(_x in dzn_brv_unitList)}] call BIS_fnc_conditionalSelect;	
 	{
+		
 		diag_log format [
 			'<AAR><meta><unit>[%1,"%2","%3",%4]</unit></meta></AAR>'
 			, dzn_brv_unitIdMax
@@ -37,13 +30,13 @@ dzn_brv_collectMetadata = {
 		];
 		
 		_x setVariable ["dzn_brv_id", dzn_brv_unitIdMax];
-		_x setVariable ["dzn_brv_type", "unit"];		
-		dzn_brv_unitIdMax = dzn_brv_unitIdMax + 1;		
+		_x setVariable ["dzn_brv_type", "unit"];
+		
+		dzn_brv_unitIdMax = dzn_brv_unitIdMax + 1;
+		dzn_brv_unitList pushBack _x;
 	} forEach _units;
 	
-	_vehs = [vehicles, {!(_x in dzn_brv_vehList)}] call BIS_fnc_conditionalSelect;	
-	dzn_brv_vehList pushBack _vehs;
-	
+	_vehs = [vehicles, {!(_x in dzn_brv_vehList)}] call BIS_fnc_conditionalSelect;
 	{
 		_name = format [
 			"%1%2"			
@@ -63,7 +56,9 @@ dzn_brv_collectMetadata = {
 	
 		_x setVariable ["dzn_brv_id", dzn_brv_vehIdMax];
 		_x setVariable ["dzn_brv_type", "veh"];
+		
 		dzn_brv_vehIdMax = dzn_brv_vehIdMax + 1;
+		dzn_brv_vehList pushBack _x;
 	} forEach _vehs;
 };
 

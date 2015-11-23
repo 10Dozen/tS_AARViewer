@@ -5,13 +5,13 @@ item0[] = {"Start",0,250,-50.000000,-1175.000000,50.000000,-1125.000000,0.000000
 item1[] = {"true",4,218,-50.000000,-1075.000000,50.000000,-1025.000000,0.000000,"true"};
 item2[] = {"Collect_Metedata",2,250,-50.000000,-1000.000000,50.000000,-950.000000,0.000000,"Collect Metedata"};
 item3[] = {"Player_Timer",4,218,-50.000000,-925.000000,50.000000,-875.000000,0.000000,"Player Timer"};
-item4[] = {"All_Units_Timer",4,218,100.000000,-925.000000,200.000000,-875.000000,1.000000,"All Units Timer"};
-item5[] = {"Collect__Player",2,4346,-50.000000,-850.000000,50.000000,-800.000000,0.000000,"Collect " \n "Player Data"};
+item4[] = {"All_Units_Timer",4,218,100.000000,-925.000000,200.000000,-875.000000,6.000000,"All Units Timer"};
+item5[] = {"Collect__Player",2,250,-50.000000,-850.000000,50.000000,-800.000000,0.000000,"Collect " \n "Player Data"};
 item6[] = {"Collect_Units_Da",2,250,100.000000,-850.000000,200.000000,-800.000000,0.000000,"Collect" \n "Units Data"};
-item7[] = {"",7,210,146.000000,-766.500000,154.000000,-758.500000,0.000000,""};
-item8[] = {"",7,210,-116.500031,-766.500000,-108.499969,-758.500000,0.000000,""};
-item9[] = {"",7,210,-4.000000,-766.500000,4.000000,-758.500000,0.000000,""};
-item10[] = {"",7,210,-116.500000,-1054.000000,-108.500000,-1046.000000,0.000000,""};
+item7[] = {"",7,210,146.000000,-754.000000,154.000000,-746.000000,0.000000,""};
+item8[] = {"",7,210,-129.000000,-754.000000,-121.000000,-746.000000,0.000000,""};
+item9[] = {"",7,210,-4.000000,-754.000000,4.000000,-746.000000,0.000000,""};
+item10[] = {"",7,210,-129.000000,-1054.000000,-121.000008,-1046.000000,0.000000,""};
 link0[] = {0,1};
 link1[] = {1,2};
 link2[] = {2,3};
@@ -24,8 +24,8 @@ link8[] = {7,9};
 link9[] = {8,10};
 link10[] = {9,8};
 link11[] = {10,1};
-globals[] = {25.000000,1,0,0,16777215,640,480,1,269,6316128,1,-358.651367,417.961365,-659.981812,-1288.203613,717,580,1};
-window[] = {0,-1,-1,-32000,-32000,775,50,1164,50,1,735};
+globals[] = {25.000000,1,0,0,16777215,640,480,1,269,6316128,1,-287.163940,489.448792,-579.829468,-1208.051392,717,580,1};
+window[] = {0,-1,-1,-1,-1,829,439,1553,104,1,735};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -89,20 +89,14 @@ class FSM
        "/*" \n
        "	Update Timelabel to next second" \n
        "*/" \n
-       "call dzn_brv_updateTimeLabel;" \n
-       "" \n
-       "/*" \n
-       "	Set timers" \n
-       "*/" \n
-       "_shortTimer = time + dzn_brv_playerLogInterval;" \n
-       "_longTimer = time + dzn_brv_nonPlayerLogInterval;"/*%FSM</STATEINIT""">*/;
+       "call dzn_brv_updateTimeLabel;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
         /*%FSM<LINK "All_Units_Timer">*/
         class All_Units_Timer
         {
-          priority = 1.000000;
+          priority = 6.000000;
           to="Collect_Units_Da";
           precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
           condition=/*%FSM<CONDITION""">*/"time > _longTimer"/*%FSM</CONDITION""">*/;
@@ -128,7 +122,14 @@ class FSM
       name = "Collect__Player";
       init = /*%FSM<STATEINIT""">*/"if (_debug) then { player sideChat ""BRV: Dump Player Data""; };" \n
        "" \n
-       "[true] call dzn_brv_collectUnitsData;"/*%FSM</STATEINIT""">*/;
+       "[true] call dzn_brv_collectUnitsData;" \n
+       "" \n
+       "" \n
+       "" \n
+       "/*" \n
+       "	Set timers" \n
+       "*/" \n
+       "_shortTimer = time + dzn_brv_playerLogInterval;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
@@ -151,7 +152,14 @@ class FSM
       name = "Collect_Units_Da";
       init = /*%FSM<STATEINIT""">*/"if (_debug) then { player sideChat ""BRV: Dump Units Data""; };" \n
        "" \n
-       "[false] call dzn_brv_collectUnitsData;"/*%FSM</STATEINIT""">*/;
+       "[false] call dzn_brv_collectUnitsData;" \n
+       "" \n
+       "" \n
+       "" \n
+       "/*" \n
+       "	Set timers" \n
+       "*/" \n
+       "_longTimer = time + dzn_brv_nonPlayerLogInterval;"/*%FSM</STATEINIT""">*/;
       precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
       class Links
       {
