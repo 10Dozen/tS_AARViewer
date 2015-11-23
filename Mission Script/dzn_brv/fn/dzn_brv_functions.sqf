@@ -13,6 +13,12 @@ dzn_brv_collectMetadata = {
 	private["_units","_vehs","_name"];
 	
 	_units = [allUnits, {!(_x in dzn_brv_unitList)}] call BIS_fnc_conditionalSelect;
+
+	/*
+		Alternative is 
+		_units = [allUnits, {isNil {_x getVariabel "dzn_brv_id"}}] call BIS_fnc_conditionalSelect;
+	*/
+	// NEED TO CHECK THIS STATEMENT - maybe array is updated wrongly
 	dzn_brv_unitList pushBack _units;
 	
 	{
