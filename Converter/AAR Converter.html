@@ -154,6 +154,7 @@
 						"time": 0,
 						"date": "",
 						"desc": "",
+						"players": [],
 						"objects": {
 							"units": [],
 							"vehs": []					
@@ -170,21 +171,27 @@
 				aarData.metadata.name = metadataCore.name;
 				console.log( "Metadata: Core [ OK ]" );
 				
-				console.log( "Metadata: Units [ Processing ]" );
+				console.log( "Metadata: Units [ Processing ]" );				
 				var metadataObjectsRaw = rptData.match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/ig);
 				for (var i = 0; i < metadataObjectsRaw.length; i++) {
 					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i)[2] );
 					(aarData.metadata.objects.units).push(u.unitMeta);
+					if (u.unitMeta[3] > 0) {
+						(aarData.metadata.players).push( [u.unitMeta[1],u.unitMeta[2]] );
+					}
 				}
 				console.log( "Metadata: Units [ OK ]" );
 				
-				console.log( "Metadata: VEhicles [ Processing ]" );
+				console.log( "Metadata: Vehicles [ Processing ]" );
 				metadataObjectsRaw = rptData.match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/ig);
 				for (var i = 0; i < metadataObjectsRaw.length; i++) {
 					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i)[2] );
 					(aarData.metadata.objects.vehs).push(u.vehMeta);
 				}
-				console.log( "Metadata: Vehicles [ OK ]" );
+				console.log( "Metadata: Vehicles [ OK ]" );				
+				
+				console.log( "Timeline [ Processing ]" );
+				
 				
 				console.log(aarData);
 				
