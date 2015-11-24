@@ -192,6 +192,42 @@
 				
 				console.log( "Timeline [ Processing ]" );
 				
+				// Timeline item:	(<\d>)(.*)(<\/\d>)
+				var timelinesRaw = rptData.match( /(<\d+>)(.*)(<\/\d+>)/ig );
+				for (var i = 0; i < timelinesRaw.length; i++) {					
+					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
+					var timelabel = t[1].match( /(<)(\d+)(>)/i)[2];
+					var unittype = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[1];
+					var unitdata = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[2];
+					
+					switch (unittype) {
+						case "<unit>": 
+							
+							
+							
+							break;
+						case "<veh>":
+							break;
+					}
+					
+					
+					
+					//try { a[1].push("123") } catch (e) { a[1] = []; a[1].push("123") }					
+					try {
+						(aarData.timeline[timelabel])[0].push( unitdata )
+					} catch (e) {
+						aarData.timeline[timelabel] = [ [], [], [] ];
+						aarData.timeline[timelabel].push( unitdata )
+					}
+					
+					(aarData.timeline[timelabel])
+					console.log(timelabel);
+					console.log(unittype);
+					console.log(unitdata);
+					console.log(i);
+				};
+				
+				
 				
 				console.log(aarData);
 				
