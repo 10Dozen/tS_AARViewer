@@ -113,8 +113,6 @@
 		
 		<script>
 			var rptData = "";
-			
-			
 			// Open file
 			var openFile = function(event) { 
 				$( "#details-wrapper" ).remove();
@@ -128,7 +126,7 @@
 					if (text.length > 0) {
 						console.log( "Read!");
 						if (rptData.search(/<AAR>.*<\/AAR>/) > -1) {
-							$( "#header-status > label" ).html( "Ready!" );
+							$( "#header-status > label" ).html( "Ready for convertion!" );
 							$( "#header-status" ).css( "background-color", "#9BC34E");
 							$( "#uploader-convert" ).removeAttr( "disabled" );
 						} else {
@@ -147,11 +145,43 @@
 				reader.readAsText(input.files[0]);
 			};
 			
+			
 			function convertToAAR() {
-				$( "#result-form" ).css( "top", "60px" );
+				var aarData = {
+					"metadata": {
+						"island": "",
+						"name": "",
+						"time": 0,
+						"date": "",
+						"desc": "",
+						"objects": {
+							"units": [],
+							"vehs": []					
+						}
+					},
+					"timeline": []
+				};
 				
 				var rptItems = rptData.match(/<AAR>.*<\/AAR>/ig );
+				var metadataCore = JSON.parse( ( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2] ); 
+				
+				aarData.metadata.island = metadataCore.island;
+				aarData.metadata.name = metadataCore.name;
+				
+				
+				
+				console.log(aarData);
+				
+				
+				
+				//aarData.metadata.island = rptItems[0]
+				
+				
+				
+				
+				
 				console.log("Parsed!");
+				$( "#result-form" ).css( "top", "60px" );
 				
 			};
 			
