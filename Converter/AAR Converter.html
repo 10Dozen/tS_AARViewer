@@ -113,6 +113,8 @@
 		
 		<script>
 			var rptData = "";
+			
+			
 			// Open file
 			var openFile = function(event) { 
 				$( "#details-wrapper" ).remove();
@@ -125,9 +127,16 @@
 					rptData = text;
 					if (text.length > 0) {
 						console.log( "Read!");
-						$( "#header-status > label" ).html( "Ready!" );
-						$( "#header-status" ).css( "background-color", "#9BC34E");
-						$( "#uploader-convert" ).removeAttr( "disabled" );
+						if (rptData.search(/<AAR>.*<\/AAR>/) > -1) {
+							$( "#header-status > label" ).html( "Ready!" );
+							$( "#header-status" ).css( "background-color", "#9BC34E");
+							$( "#uploader-convert" ).removeAttr( "disabled" );
+						} else {
+							console.log( "Not an AAR!" );
+							$( "#header-status > label" ).html( "File does not contain AAR data!" );
+							$( "#header-status" ).css( "background-color", "#AF4E4E");
+							$( "#uploader-convert" ).attr( "disabled", "true" );
+						}
 					} else {
 						console.log( "Empty!" );
 						$( "#header-status > label" ).html( "File is empty/Failed to read!" );
@@ -140,6 +149,10 @@
 			
 			function convertToAAR() {
 				$( "#result-form" ).css( "top", "60px" );
+				
+				var rptItems = rptData.match(/<AAR>.*<\/AAR>/ig );
+				console.log("Parsed!");
+				
 			};
 			
 			// Time label
