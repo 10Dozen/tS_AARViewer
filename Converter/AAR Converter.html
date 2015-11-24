@@ -145,7 +145,7 @@
 				reader.readAsText(input.files[0]);
 			};
 			
-			
+			var a;
 			function convertToAAR() {
 				var aarData = {
 					"metadata": {
@@ -165,10 +165,26 @@
 				var rptItems = rptData.match(/<AAR>.*<\/AAR>/ig );
 				var metadataCore = JSON.parse( ( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2] ); 
 				
+				console.log( "Metadata: Core [ Processing ]" );
 				aarData.metadata.island = metadataCore.island;
 				aarData.metadata.name = metadataCore.name;
+				console.log( "Metadata: Core [ OK ]" );
 				
+				console.log( "Metadata: Units [ Processing ]" );
+				var metadataObjectsRaw = rptData.match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/ig);
+				for (var i = 0; i < metadataObjectsRaw.length; i++) {
+					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i)[2] );
+					(aarData.metadata.objects.units).push(u.unitMeta);
+				}
+				console.log( "Metadata: Units [ OK ]" );
 				
+				console.log( "Metadata: VEhicles [ Processing ]" );
+				metadataObjectsRaw = rptData.match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/ig);
+				for (var i = 0; i < metadataObjectsRaw.length; i++) {
+					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i)[2] );
+					(aarData.metadata.objects.vehs).push(u.vehMeta);
+				}
+				console.log( "Metadata: Vehicles [ OK ]" );
 				
 				console.log(aarData);
 				
