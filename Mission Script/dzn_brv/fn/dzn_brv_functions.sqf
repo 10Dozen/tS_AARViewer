@@ -3,7 +3,7 @@
 dzn_brv_getCoreMetadata = {
 	// Return basic misison Metadata
 	diag_log format [
-		'<AAR><meta><core>"island": "%1", "name": "%2"</core></meta></AAR>'
+		'<AAR><meta><core>{ "island": "%1", "name": "%2" }</core></meta></AAR>'
 		,worldName
 		,briefingName	
 	];
@@ -16,7 +16,7 @@ dzn_brv_collectMetadata = {
 	{
 		
 		diag_log format [
-			'<AAR><meta><unit>[%1,"%2","%3",%4]</unit></meta></AAR>'
+			'<AAR><meta><unit>{ "unitMeta": [%1,"%2","%3",%4] }</unit></meta></AAR>'
 			, dzn_brv_unitIdMax
 			, if (isPlayer _x) then { name _x } else { "" }
 			, switch (side _x) do {
@@ -49,7 +49,7 @@ dzn_brv_collectMetadata = {
 		];
 		
 		diag_log format [
-			'<AAR><meta><veh>[%1,"%2"]</veh></meta></AAR>'
+			'<AAR><meta><veh>{ "vehMeta": [%1,"%2"] }</veh></meta></AAR>'
 			, dzn_brv_vehIdMax
 			, _name		
 		];
@@ -88,7 +88,7 @@ dzn_brv_collectData = {
 		};
 	
 		diag_log format [
-			'<AAR><%1>[%2,%3,%4,%5,%6,%7]</%1></AAR>'
+			'<AAR><%1><unit>[%2,%3,%4,%5,%6,%7]</unit></%1></AAR>'
 			,_timelabel
 			,_id
 			,_posx
@@ -100,7 +100,7 @@ dzn_brv_collectData = {
 	} else {
 		_crewData = _unit call dzn_brv_getVehiceCargoAndOwnerId;
 		diag_log format [
-			'<AAR><%1>[%2,%3,%4,%5,%6,%7,%8,%9]</%1></AAR>'
+			'<AAR><%1><veh>[%2,%3,%4,%5,%6,%7,%8,%9]</veh></%1></AAR>'
 			,_timelabel
 			,_id
 			,_posx
