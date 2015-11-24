@@ -68,7 +68,7 @@ dzn_brv_updateTimeLabel = {
 };
 
 dzn_brv_collectData = {
-	params["_unit"];
+	params["_unit","_timelabel"];
 	private["_id","_pos","_posx","_posy","_dir","_alive","_vehID"];
 	
 	_id = _unit getVariable "dzn_brv_id";
@@ -89,7 +89,7 @@ dzn_brv_collectData = {
 	
 		diag_log format [
 			'<AAR><%1>[%2,%3,%4,%5,%6,%7]</%1></AAR>'
-			,dzn_brv_timeLabel
+			,_timelabel
 			,_id
 			,_posx
 			,_posy
@@ -101,7 +101,7 @@ dzn_brv_collectData = {
 		_crewData = _unit call dzn_brv_getVehiceCargoAndOwnerId;
 		diag_log format [
 			'<AAR><%1>[%2,%3,%4,%5,%6,%7,%8,%9]</%1></AAR>'
-			,dzn_brv_timeLabel
+			,_timelabel
 			,_id
 			,_posx
 			,_posy
