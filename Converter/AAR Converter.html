@@ -189,10 +189,10 @@
 					(aarData.metadata.objects.vehs).push(u.vehMeta);
 				}
 				console.log( "Metadata: Vehicles [ OK ]" );				
+							
 				
-				console.log( "Timeline [ Processing ]" );
-				
-				// Timeline item:	(<\d>)(.*)(<\/\d>)
+				// Timeline item:	(<\d>)(.*)(<\/\d>)				
+				console.log( "Timeline: Basic [ Processing ]" );
 				var timelinesRaw = rptData.match( /(<\d+>)(.*)(<\/\d+>)/ig );
 				for (var i = 0; i < timelinesRaw.length; i++) {					
 					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
@@ -200,43 +200,38 @@
 					var unittype = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[1];
 					var unitdata = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[2];
 					
+					
+					if (typeof (aarData.timeline[timelabel]) == "undefined") {
+						aarData.timeline[timelabel] = [ [], [], [] ];
+					}
+					
 					switch (unittype) {
 						case "<unit>": 
-							
-							
-							
+							(aarData.timeline[timelabel])[0].push(unitdata);
 							break;
 						case "<veh>":
+							(aarData.timeline[timelabel])[1].push(unitdata);
+							break;
+						case "<atck>":
+							(aarData.timeline[timelabel])[2].push(unitdata);
 							break;
 					}
-					
-					
-					
-					//try { a[1].push("123") } catch (e) { a[1] = []; a[1].push("123") }					
-					try {
-						(aarData.timeline[timelabel])[0].push( unitdata )
-					} catch (e) {
-						aarData.timeline[timelabel] = [ [], [], [] ];
-						aarData.timeline[timelabel].push( unitdata )
-					}
-					
-					(aarData.timeline[timelabel])
-					console.log(timelabel);
-					console.log(unittype);
-					console.log(unitdata);
-					console.log(i);
 				};
+				console.log( "Timeline: Basic [ OK ]" );
+				
+				console.log( "Timeline: Interpolating Transitions [ Processing ]" );
+				var unitsToCheck = aarData.metadata.objects.units;
+				var vehsToCheck = aarData.metadata.objects.vehs;
+				for (var i = 0; i < aarData.timeline.length; i++ ) {
+					
+				}
 				
 				
+				
+				
+				//console.log( "Timeline: Interpolating Transitions [ OK ]" );
 				
 				console.log(aarData);
-				
-				
-				
-				//aarData.metadata.island = rptItems[0]
-				
-				
-				
 				
 				
 				console.log("Parsed!");
