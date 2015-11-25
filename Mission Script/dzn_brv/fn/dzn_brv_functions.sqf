@@ -100,7 +100,7 @@ dzn_brv_collectData = {
 	} else {
 		_crewData = _unit call dzn_brv_getVehiceCargoAndOwnerId;
 		diag_log format [
-			'<AAR><%1><veh>[%2,%3,%4,%5,%6,%7,%8,%9]</veh></%1></AAR>'
+			'<AAR><%1><veh>[%2,%3,%4,%5,%6,%7,%8]</veh></%1></AAR>'
 			,_timelabel
 			,_id
 			,_posx
