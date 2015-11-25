@@ -145,9 +145,9 @@
 				reader.readAsText(input.files[0]);
 			};
 			
-			var a;
+			var aarData, a;
 			function convertToAAR() {
-				var aarData = {
+				 aarData = {
 					"metadata": {
 						"island": "",
 						"name": "",
@@ -163,15 +163,20 @@
 					"timeline": []
 				};
 				
+				var consoleMsgEnabled = false;
+				function logMsg(t) {
+					if (consoleMsgEnabled) { console.log( t ) }				
+				}
+				
 				var rptItems = rptData.match(/<AAR>.*<\/AAR>/ig );
 				var metadataCore = JSON.parse( ( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2] ); 
 				
-				console.log( "Metadata: Core [ Processing ]" );
+				logMsg( "Metadata: Core [ Processing ]" );
 				aarData.metadata.island = metadataCore.island;
 				aarData.metadata.name = metadataCore.name;
-				console.log( "Metadata: Core [ OK ]" );
+				logMsg( "Metadata: Core [ OK ]" );
 				
-				console.log( "Metadata: Units [ Processing ]" );				
+				logMsg( "Metadata: Units [ Processing ]" );				
 				var metadataObjectsRaw = rptData.match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/ig);
 				for (var i = 0; i < metadataObjectsRaw.length; i++) {
 					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i)[2] );
@@ -180,21 +185,22 @@
 						(aarData.metadata.players).push( [u.unitMeta[1],u.unitMeta[2]] );
 					}
 				}
-				console.log( "Metadata: Units [ OK ]" );
+				logMsg( "Metadata: Units [ OK ]" );
 				
-				console.log( "Metadata: Vehicles [ Processing ]" );
+				logMsg( "Metadata: Vehicles [ Processing ]" );
 				metadataObjectsRaw = rptData.match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/ig);
 				for (var i = 0; i < metadataObjectsRaw.length; i++) {
 					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i)[2] );
 					(aarData.metadata.objects.vehs).push(u.vehMeta);
 				}
-				console.log( "Metadata: Vehicles [ OK ]" );				
+				logMsg( "Metadata: Vehicles [ OK ]" );				
 							
 				
 				// Timeline item:	(<\d>)(.*)(<\/\d>)				
-				console.log( "Timeline: Basic [ Processing ]" );
+				logMsg( "Timeline: Basic [ Processing ]" );
 				var timelinesRaw = rptData.match( /(<\d+>)(.*)(<\/\d+>)/ig );
-				for (var i = 0; i < timelinesRaw.length; i++) {					
+				for (var i = 0; i < timelinesRaw.length; i++) {
+					console.log( timelinesRaw[i] );
 					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
 					var timelabel = t[1].match( /(<)(\d+)(>)/i)[2];
 					var unittype = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[1];
@@ -207,26 +213,68 @@
 					
 					switch (unittype) {
 						case "<unit>": 
-							(aarData.timeline[timelabel])[0].push(unitdata);
+							(aarData.timeline[timelabel])[0].push( JSON.parse(unitdata) );
 							break;
 						case "<veh>":
-							(aarData.timeline[timelabel])[1].push(unitdata);
+							(aarData.timeline[timelabel])[1].push( JSON.parse(unitdata) );
 							break;
 						case "<atck>":
-							(aarData.timeline[timelabel])[2].push(unitdata);
+							(aarData.timeline[timelabel])[2].push( JSON.parse(unitdata) );
 							break;
 					}
 				};
-				console.log( "Timeline: Basic [ OK ]" );
+				logMsg( "Timeline: Basic [ OK ]" );
 				
-				console.log( "Timeline: Interpolating Transitions [ Processing ]" );
-				var unitsToCheck = aarData.metadata.objects.units;
-				var vehsToCheck = aarData.metadata.objects.vehs;
-				for (var i = 0; i < aarData.timeline.length; i++ ) {
+				logMsg( "Timeline: Interpolating Transitions [ Processing ]" );
+		
+		/*
+				for (var i = 0; i < aarData.metadata.objects.units.length; i++ ) {
+					var unitId = aarData.metadata.objects.units[i][0];
 					
-				}
+					var lastKnown = [];
+					var actualKnown = [];
+					var stepsToInterpolate = [];
+					
+					for (var j = 0; j < aarData.timeline.length; j++) {
+						// List of UnitData
+						var lastSeenDataFound = false;
+						var actualDataFound = false;
+						
+						console.log("INTERPOLATION FOR UNIT " + unitId);
+						
+						for (var k = 0; k < aarData.timeline[j][0].length; k++) {
+							console.log("Time " + k);
+							// Find data for current Unit ID							
+							if (aarData.timeline[j][0][k][0] == unitId) {
+								if (lastKnown.length == 0) {
+									lastKnown = aarData.timeline[j][0][k];
+									lastSeenDataFound = true;
+									console.log("Last seen found");
+								} else {
+									actualKnown = aarData.timeline[j][0][k];
+									actualDataFound = true;		
+									console.log("Actual seen found");
+								}
+							};
+						};
+						
+						if (lastSeenDataFound) {
+							if (actualDataFound) {
+								console.log("INTERPOLATION FOR UNIT " + unitId + " FOR STEPS" + stepsToInterpolate);
+							
+							} else {
+								stepsToInterpolate.push(j);
+							};
+						};
+						
+						
+						
+					};				
+				};
 				
+				*/
 				
+			
 				
 				
 				//console.log( "Timeline: Interpolating Transitions [ OK ]" );
@@ -234,7 +282,7 @@
 				console.log(aarData);
 				
 				
-				console.log("Parsed!");
+				logMsg("Done!");
 				$( "#result-form" ).css( "top", "60px" );
 				
 			};
