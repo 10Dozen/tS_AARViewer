@@ -248,9 +248,19 @@
 						var actualDataFound = false;
 						
 						for (var k = 0; k < aarData.timeline[j][0].length; k++) {;
-							// Find data for current Unit ID							
+							// Find data for current Unit ID
 							if (aarData.timeline[j][0][k][0] == unitId) {
 								console.log("Time " + j + " unit data is here! " + aarData.timeline[j][0][k]);
+								
+								if (lastKnown.length == 0) {
+									console.log("Start of Interpol Range");
+									lastKnown = aarData.timeline[j][0][k];
+								} else {
+									if (actualKnown.length == 0) {
+										console.log ("End of Interpol Range");
+										actualKnown = aarData.timeline[j][0][k];										
+									}
+								}
 								
 								/*
 							
@@ -266,6 +276,12 @@
 								*/
 							};
 						};
+						
+						if (lastKnown.length > 0 && actualKnown.length == 0) {
+							console.log("Adding time to empty");							
+						};
+						
+						
 						
 						if (lastSeenDataFound) {
 							if (actualDataFound) {
