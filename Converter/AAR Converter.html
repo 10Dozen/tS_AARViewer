@@ -200,7 +200,6 @@
 				logMsg( "Timeline: Basic [ Processing ]" );
 				var timelinesRaw = rptData.match( /(<\d+>)(.*)(<\/\d+>)/ig );
 				for (var i = 0; i < timelinesRaw.length; i++) {
-					console.log( timelinesRaw[i] );
 					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
 					var timelabel = t[1].match( /(<)(\d+)(>)/i)[2];
 					var unittype = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[1];
@@ -227,9 +226,17 @@
 				
 				logMsg( "Timeline: Interpolating Transitions [ Processing ]" );
 		
-		/*
+				/*
+					For each UNIT check all timelines.
+						If there are no data for timeline 
+						- select last time when data exists then find time when data exists next (or end of time)
+						- then for each time between last known and latest time - calculate/interpolate values of position
+						- add this data to timeline
+						- check for another range				
+				*/
 				for (var i = 0; i < aarData.metadata.objects.units.length; i++ ) {
 					var unitId = aarData.metadata.objects.units[i][0];
+					console.log("INTERPOLATION FOR UNIT " + unitId);	
 					
 					var lastKnown = [];
 					var actualKnown = [];
@@ -240,12 +247,13 @@
 						var lastSeenDataFound = false;
 						var actualDataFound = false;
 						
-						console.log("INTERPOLATION FOR UNIT " + unitId);
-						
-						for (var k = 0; k < aarData.timeline[j][0].length; k++) {
-							console.log("Time " + k);
+						for (var k = 0; k < aarData.timeline[j][0].length; k++) {;
 							// Find data for current Unit ID							
 							if (aarData.timeline[j][0][k][0] == unitId) {
+								console.log("Time " + j + " unit data is here! " + aarData.timeline[j][0][k]);
+								
+								/*
+							
 								if (lastKnown.length == 0) {
 									lastKnown = aarData.timeline[j][0][k];
 									lastSeenDataFound = true;
@@ -255,6 +263,7 @@
 									actualDataFound = true;		
 									console.log("Actual seen found");
 								}
+								*/
 							};
 						};
 						
@@ -266,13 +275,8 @@
 								stepsToInterpolate.push(j);
 							};
 						};
-						
-						
-						
 					};				
 				};
-				
-				*/
 				
 			
 				
