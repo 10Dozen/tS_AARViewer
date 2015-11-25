@@ -168,6 +168,8 @@
 					if (consoleMsgEnabled) { console.log( t ) }				
 				}
 				
+				$( "#header-status > label" ).html( "In progress..." );
+				
 				var rptItems = rptData.match(/<AAR>.*<\/AAR>/ig );
 				var metadataCore = JSON.parse( ( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2] ); 
 				
@@ -224,7 +226,7 @@
 				};
 				logMsg( "Timeline: Basic [ OK ]" );
 				
-				logMsg( "Timeline: Interpolating Transitions [ Processing ]" );
+				logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );
 		
 				/*
 					For each UNIT check all timelines.
@@ -243,11 +245,8 @@
 					var stepsToInterpolate = [];
 					
 					for (var j = 0; j < aarData.timeline.length; j++) {
-						// List of UnitData
-						var lastSeenDataFound = false;
-						var actualDataFound = false;
-						
-						for (var k = 0; k < aarData.timeline[j][0].length; k++) {;
+						// List of UnitData	
+						for (var k = 0; k < aarData.timeline[j][0].length; k++) {
 							// Find data for current Unit ID
 							if (aarData.timeline[j][0][k][0] == unitId) {
 								console.log("Time " + j + " unit data is here! " + aarData.timeline[j][0][k]);
@@ -261,39 +260,37 @@
 										actualKnown = aarData.timeline[j][0][k];										
 									}
 								}
-								
-								/*
-							
-								if (lastKnown.length == 0) {
-									lastKnown = aarData.timeline[j][0][k];
-									lastSeenDataFound = true;
-									console.log("Last seen found");
-								} else {
-									actualKnown = aarData.timeline[j][0][k];
-									actualDataFound = true;		
-									console.log("Actual seen found");
-								}
-								*/
-							};
-						};
-						
-						if (lastKnown.length > 0 && actualKnown.length == 0) {
-							console.log("Adding time to empty");							
-						};
-						
-						
-						
-						if (lastSeenDataFound) {
-							if (actualDataFound) {
-								console.log("INTERPOLATION FOR UNIT " + unitId + " FOR STEPS" + stepsToInterpolate);
-							
-							} else {
-								stepsToInterpolate.push(j);
-							};
-						};
-					};				
-				};
+							}
+						}
 				
+						if (lastKnown.length > 0 && actualKnown.length == 0) {
+							console.log("Adding time to empty");
+							stepsToInterpolate.push(j);
+						} else {
+							if (lastKnown.length > 0 && actualKnown.length > 0) {
+								console.log("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
+							
+								var posxSteps = interpolateValues( lastKnown[1], actualKnown[1], stepsToInterpolate.length );
+								var posySteps = interpolateValues( lastKnown[2], actualKnown[2], stepsToInterpolate.length );
+								var dirSteps = interpolateValues( lastKnown[3], actualKnown[3], stepsToInterpolate.length );
+								
+								console.log("Interpolation... | X: " + posxSteps + " || Y: " + posySteps + " || DIR: " + dirSteps);								
+								// Start with 1, because 0 is equal to lastKnown value and we may not update it
+								for (var l = 1; l < stepsToInterpolate.length; l++ ) {
+									console.log( "Time (" + stepsToInterpolate[l] + ")" + [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5] ] );
+								
+									( aarData.timeline[stepsToInterpolate[l]][0] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5]]  );
+								}
+								
+								lastKnown = [];
+								actualKnown = [];
+								stepsToInterpolate = [];
+								
+							}
+						}
+					}
+				}
+				logMsg( "Timeline: Interpolating Transitions of Units [ OK ]" );
 			
 				
 				
@@ -302,10 +299,31 @@
 				console.log(aarData);
 				
 				
-				logMsg("Done!");
+				logMsg("Done!");				
 				$( "#result-form" ).css( "top", "60px" );
-				
+				$( "#header-status > label" ).html( "Converted!" );
+				$( ".dl-2 > input, textarea, button" ).removeAttr( "disabled" );
 			};
+			
+			
+			// Interpolate values
+			function interpolateValues(min,max,steps) {
+				var output = [];
+				var delta = (max - min)/steps;
+				for (var i = 0; i < steps; i++) {
+					output.push( Math.round( min + i*delta ) );
+				}
+				
+				return output			
+			}
+			
+			function testInterpolation() {
+				console.log( "10...20, 5" + " :: " + interpolateValues(10,20,5));
+				console.log( "10...20, 4" + " :: " + interpolateValues(10,20,4));
+				console.log( "10...20, 3" + " :: " + interpolateValues(10,20,3));
+				console.log( "10...20, 2" + " :: " + interpolateValues(10,20,2));
+				console.log( "10...20, 1" + " :: " + interpolateValues(10,20,1));
+			}
 			
 			// Time label
 			function getTimeLabel(t) {
@@ -331,6 +349,11 @@
 			}
 			
 			
+			
+			$( document ).ready(function() {
+				$( ".dl-2 > input, textarea, button" ).attr( "disabled", "true" );				
+			});
+
 		</script>
 	</head>
 	<body>
