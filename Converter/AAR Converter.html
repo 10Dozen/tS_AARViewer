@@ -197,7 +197,7 @@
 				}
 				logMsg( "Metadata: Vehicles [ OK ]" );				
 							
-				
+				// VEHICLE NOT SUPPORTED!!!
 				// Timeline item:	(<\d>)(.*)(<\/\d>)				
 				logMsg( "Timeline: Basic [ Processing ]" );
 				var timelinesRaw = rptData.match( /(<\d+>)(.*)(<\/\d+>)/ig );
@@ -235,58 +235,71 @@
 						- then for each time between last known and latest time - calculate/interpolate values of position
 						- add this data to timeline
 						- check for another range				
-				*/
-				for (var i = 0; i < aarData.metadata.objects.units.length; i++ ) {
-					var unitId = aarData.metadata.objects.units[i][0];
-					console.log("INTERPOLATION FOR UNIT " + unitId);	
+				*/				
+				for (var m = 0; m < 2; m++) {
+					var unitList, unitTypeId;
+
+					if (m == 0) {
+						unitList = aarData.metadata.objects.units;
+						unitTypeId = 0;
+					} else {
+						unitList = aarData.metadata.objects.vehs;
+						unitTypeId = 1;
+					}
 					
-					var lastKnown = [];
-					var actualKnown = [];
-					var stepsToInterpolate = [];
-					
-					for (var j = 0; j < aarData.timeline.length; j++) {
-						// List of UnitData	
-						for (var k = 0; k < aarData.timeline[j][0].length; k++) {
-							// Find data for current Unit ID or if J is last
-							if (aarData.timeline[j][0][k][0] == unitId || j == (aarData.timeline.length - 1)) {
-								console.log("Time " + j + " unit data is here! " + aarData.timeline[j][0][k]);
-								
-								if (lastKnown.length == 0) {
-									console.log("Start of Interpol Range");
-									lastKnown = aarData.timeline[j][0][k];
-								} else {
-									if (actualKnown.length == 0) {
-										console.log ("End of Interpol Range");
-										actualKnown = aarData.timeline[j][0][k];										
+					for (var i = 0; i < unitList.length; i++ ) {
+						var unitId = unitList[i][0];
+						console.log("INTERPOLATION FOR UNIT " + unitId);
+						
+						var lastKnown = [];
+						var actualKnown = [];
+						var stepsToInterpolate = [];
+						for (var j = 0; j < aarData.timeline.length; j++) {
+							for (var k = 0; k < aarData.timeline[j][unitTypeId].length; k++) {
+								if (aarData.timeline[j][unitTypeId][k][0] == unitId || j == (aarData.timeline.length - 1)) {
+									console.log("Time " + j + " unit data is here! " + aarData.timeline[j][unitTypeId][k]);
+									
+									if (lastKnown.length == 0) {
+										console.log("Start of Interpol Range");
+										lastKnown = aarData.timeline[j][unitTypeId][k];
+									} else {
+										if (actualKnown.length == 0) {
+											console.log ("End of Interpol Range");
+											actualKnown = aarData.timeline[j][unitTypeId][k];										
+										}
 									}
 								}
 							}
-						}
-				
-						if (lastKnown.length > 0 && actualKnown.length == 0) {
-							console.log("Adding time to empty");
-							stepsToInterpolate.push(j);
-						} else {
-							if (lastKnown.length > 0 && actualKnown.length > 0) {
-								console.log("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
 							
-								var posxSteps = interpolateValues( lastKnown[1], actualKnown[1], stepsToInterpolate.length );
-								var posySteps = interpolateValues( lastKnown[2], actualKnown[2], stepsToInterpolate.length );
-								var dirSteps = interpolateValues( lastKnown[3], actualKnown[3], stepsToInterpolate.length );
+							if (lastKnown.length > 0 && actualKnown.length == 0) {
+								console.log("Adding time to empty");
+								stepsToInterpolate.push(j);
+							} else {
+								if (lastKnown.length > 0 && actualKnown.length > 0) {
+									console.log("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
+							
+									var posxSteps = interpolateValues( lastKnown[1], actualKnown[1], stepsToInterpolate.length );
+									var posySteps = interpolateValues( lastKnown[2], actualKnown[2], stepsToInterpolate.length );
+									var dirSteps = interpolateValues( lastKnown[3], actualKnown[3], stepsToInterpolate.length );
 								
-								console.log("Interpolation... | X: " + posxSteps + " || Y: " + posySteps + " || DIR: " + dirSteps);								
-								// Start with 1, because 0 is equal to lastKnown value and we may not update it
-								for (var l = 1; l < stepsToInterpolate.length; l++ ) {
-									console.log( "Time (" + stepsToInterpolate[l] + ")" + [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5] ] );
+									console.log("Interpolation... | X: " + posxSteps + " || Y: " + posySteps + " || DIR: " + dirSteps);								
+									// Start with 1, because 0 is equal to lastKnown value and we may not update it
+									for (var l = 1; l < stepsToInterpolate.length; l++ ) {
+										console.log( "Time (" + stepsToInterpolate[l] + ")" + [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5] ] );
+									
+										if (m == 0) {
+											( aarData.timeline[stepsToInterpolate[l]][unitTypeId] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5]]  );
+										} else {
+											( aarData.timeline[stepsToInterpolate[l]][unitTypeId] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5], lastKnown[6]]  );
+										}
+									}
 								
-									( aarData.timeline[stepsToInterpolate[l]][0] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5]]  );
+									lastKnown = [];
+									actualKnown = [];
+									stepsToInterpolate = [];								
+									// Step back to get new start interpolation range
+									j = j - 1;
 								}
-								
-								lastKnown = [];
-								actualKnown = [];
-								stepsToInterpolate = [];								
-								// Step back to get new start interpolation range
-								j = j - 1;
 							}
 						}
 					}
