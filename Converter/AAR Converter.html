@@ -96,16 +96,15 @@
 				font-size: 14px;
 			}
 			
-			#output-generate {
-				display: inline-block;
-				position: absolute;
+			#output-footer button {
+				display: inline;
 				margin-left: 40px;
 				width: 100px;
 			}
 			
 			#output-footer textarea {
-				display: inline-block;
-				margin: 30px 40px;
+				display: block;
+				margin: 10px 40px;
 				position: absolute;				
 				width: 510px;			
 			}
@@ -310,10 +309,11 @@
 					}
 				}
 				
-				aarData.metadata.time = (aarData.timeline).length - 1;
+				aarData.metadata.time = (aarData.timeline).length - 2;
 				logMsg( "Timeline: Interpolating Transitions of Units [ OK ]" );
 			
 				logMsg( "Creating form" );
+				$( "#player-list" ).html( "" );
 				$( "#mission-name" ).val( aarData.metadata.name );
 				$( "#mission-island" ).val( aarData.metadata.island );
 				$( "#mission-time" ).html( getTimeLabel(aarData.metadata.time) );
@@ -326,16 +326,13 @@
 						case "civ": color = "RGB(102,0,127)"; break;
 					};
 					$( "#player-list" ).append( "<li class='player-side-icon' style='padding: 2px 4px; background-color: " + color + "'>" + aarData.metadata.players[i][0] + "</li>" );				
-				}				
-				
-				console.log(aarData);				
+				}
 				
 				logMsg("Done!");				
 				$( "#result-form" ).css( "top", "60px" );
 				$( "#header-status > label" ).html( "Converted!" );
 				$( ".dl-2 > input, textarea, button" ).removeAttr( "disabled" );
 			};
-			
 			
 			// Interpolate values
 			function interpolateValues(min,max,steps) {
@@ -344,14 +341,6 @@
 				for (var i = 0; i < steps; i++) { output.push( Math.round( min + i*delta ) ); }
 				
 				return output			
-			}
-			
-			function testInterpolation() {
-				console.log( "10...20, 5" + " :: " + interpolateValues(10,20,5));
-				console.log( "10...20, 4" + " :: " + interpolateValues(10,20,4));
-				console.log( "10...20, 3" + " :: " + interpolateValues(10,20,3));
-				console.log( "10...20, 2" + " :: " + interpolateValues(10,20,2));
-				console.log( "10...20, 1" + " :: " + interpolateValues(10,20,1));
 			}
 			
 			// Time label
@@ -377,7 +366,25 @@
 				return formatTimeNum(timeHours,"h") + formatTimeNum(timeMinutes,"m") + formatTimeNum(timeSeconds,"s")
 			}
 			
+			// Generate
+			function generateAAR() {			
+				aarData.metadata.date = $( "#mission-date" ).val();
+				aarData.metadata.desc = $( "#mission-desc" ).val();
+				aarData.metadata.island = $( "#mission-island" ).val();
+				aarData.metadata.name = $( "#mission-name" ).val();
+				
+				$( "#output" ).val( JSON.stringify( aarData ) );
+				
+				console.log( "AAR text generated.")
+			}
 			
+			// File Save
+			function saveAAR() {
+				var a = document.createElement('a');
+				a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent( JSON.stringify( aarData ) ));
+				a.setAttribute('download', "[AAR][" + aarData.metadata.island + "] " + aarData.metadata.name );
+				a.click();
+			}
 			
 			$( document ).ready(function() {
 				$( ".dl-2 > input, textarea, button" ).attr( "disabled", "true" );				
@@ -449,9 +456,10 @@
 					<ul id="player-list"></ul>
 				</li>
 			</ul>
+			<hr />
 			<div id="output-footer">
-				<hr />
-				<button id="output-generate">Generate</button>		
+				<button id="output-generate" onClick="generateAAR()">Generate</button>
+				<button id="output-save" onClick="saveAAR()">Save File</button>	
 				<textarea id="output" cols="40" rows="5"></textarea>				
 			</div>
 		</div>
