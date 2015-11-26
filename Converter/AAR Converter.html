@@ -109,6 +109,13 @@
 				position: absolute;				
 				width: 510px;			
 			}
+			
+			.player-side-icon {
+				display: inline-block;
+				color: white;
+				margin: 2px 1px;
+				border-radius: 6px;
+			}
 		</style>
 		
 		<script>
@@ -313,12 +320,12 @@
 				for (var i = 0; i < aarData.metadata.players.length; i++) {
 					var color;
 					switch (aarData.metadata.players[i][1]) {
-						case "blufor": color = "blue"; break;
-						case "opfor": color = "red"; break;
-						case "indep": color = "green"; break;
-						case "civ": color = "purple"; break;
+						case "blufor": color = "RGB(0,77,152)"; break;
+						case "opfor": color = "RGB(127,0,0)"; break;
+						case "indep": color = "RGB(0,127,0)"; break;
+						case "civ": color = "RGB(102,0,127)"; break;
 					};
-					$( "#player-list" ).append( "<li style='color:" + color + "'>" + aarData.metadata.players[i][0] + "</li>" );				
+					$( "#player-list" ).append( "<li class='player-side-icon' style='padding: 2px 4px; background-color: " + color + "'>" + aarData.metadata.players[i][0] + "</li>" );				
 				}				
 				
 				console.log(aarData);				
