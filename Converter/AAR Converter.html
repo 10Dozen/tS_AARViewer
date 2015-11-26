@@ -163,10 +163,10 @@
 					"timeline": []
 				};
 				
-				var consoleMsgEnabled = false;
-				function logMsg(t) {
-					if (consoleMsgEnabled) { console.log( t ) }				
-				}
+				var consoleMsgEnabled = true;
+				var consoleDebugEnabled = false;
+				function logMsg(t) { if (consoleMsgEnabled) { console.log( t ) }};
+				function logDebug(t) { if (consoleDebugEnabled) { console.log( t ) }};
 				
 				$( "#header-status > label" ).html( "In progress..." );
 				
@@ -195,18 +195,16 @@
 					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i)[2] );
 					(aarData.metadata.objects.vehs).push(u.vehMeta);
 				}
-				logMsg( "Metadata: Vehicles [ OK ]" );				
-							
-				// VEHICLE NOT SUPPORTED!!!
+				logMsg( "Metadata: Vehicles [ OK ]" );
+				
 				// Timeline item:	(<\d>)(.*)(<\/\d>)				
 				logMsg( "Timeline: Basic [ Processing ]" );
 				var timelinesRaw = rptData.match( /(<\d+>)(.*)(<\/\d+>)/ig );
 				for (var i = 0; i < timelinesRaw.length; i++) {
 					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
 					var timelabel = t[1].match( /(<)(\d+)(>)/i)[2];
-					var unittype = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[1];
-					var unitdata = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[2];
-					
+					var unittype = t[2].match( /(<unit>|<veh>)(.*)(<\/unit>|<\/veh>)/i )[1];
+					var unitdata = t[2].match( /(<unit>|<veh>)(.*)(<\/unit>|<\/veh>)/i )[2];
 					
 					if (typeof (aarData.timeline[timelabel]) == "undefined") {
 						aarData.timeline[timelabel] = [ [], [], [] ];
@@ -249,7 +247,7 @@
 					
 					for (var i = 0; i < unitList.length; i++ ) {
 						var unitId = unitList[i][0];
-						console.log("INTERPOLATION FOR UNIT " + unitId);
+						logDebug("INTERPOLATION FOR UNIT " + unitId);
 						
 						var lastKnown = [];
 						var actualKnown = [];
@@ -257,14 +255,14 @@
 						for (var j = 0; j < aarData.timeline.length; j++) {
 							for (var k = 0; k < aarData.timeline[j][unitTypeId].length; k++) {
 								if (aarData.timeline[j][unitTypeId][k][0] == unitId || j == (aarData.timeline.length - 1)) {
-									console.log("Time " + j + " unit data is here! " + aarData.timeline[j][unitTypeId][k]);
+									logDebug("Time " + j + " unit data is here! " + aarData.timeline[j][unitTypeId][k]);
 									
 									if (lastKnown.length == 0) {
-										console.log("Start of Interpol Range");
+										logDebug("Start of Interpol Range");
 										lastKnown = aarData.timeline[j][unitTypeId][k];
 									} else {
 										if (actualKnown.length == 0) {
-											console.log ("End of Interpol Range");
+											logDebug("End of Interpol Range");
 											actualKnown = aarData.timeline[j][unitTypeId][k];										
 										}
 									}
@@ -272,20 +270,20 @@
 							}
 							
 							if (lastKnown.length > 0 && actualKnown.length == 0) {
-								console.log("Adding time to empty");
+								logDebug("Adding time to empty");
 								stepsToInterpolate.push(j);
 							} else {
 								if (lastKnown.length > 0 && actualKnown.length > 0) {
-									console.log("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
+									logDebug("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
 							
 									var posxSteps = interpolateValues( lastKnown[1], actualKnown[1], stepsToInterpolate.length );
 									var posySteps = interpolateValues( lastKnown[2], actualKnown[2], stepsToInterpolate.length );
 									var dirSteps = interpolateValues( lastKnown[3], actualKnown[3], stepsToInterpolate.length );
 								
-									console.log("Interpolation... | X: " + posxSteps + " || Y: " + posySteps + " || DIR: " + dirSteps);								
+									logDebug("Interpolation... | X: " + posxSteps + " || Y: " + posySteps + " || DIR: " + dirSteps);								
 									// Start with 1, because 0 is equal to lastKnown value and we may not update it
 									for (var l = 1; l < stepsToInterpolate.length; l++ ) {
-										console.log( "Time (" + stepsToInterpolate[l] + ")" + [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5] ] );
+										logDebug( "Time (" + stepsToInterpolate[l] + ")" + [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5] ] );
 									
 										if (m == 0) {
 											( aarData.timeline[stepsToInterpolate[l]][unitTypeId] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5]]  );
@@ -304,14 +302,26 @@
 						}
 					}
 				}
+				
+				aarData.metadata.time = (aarData.timeline).length - 1;
 				logMsg( "Timeline: Interpolating Transitions of Units [ OK ]" );
 			
+				logMsg( "Creating form" );
+				$( "#mission-name" ).val( aarData.metadata.name );
+				$( "#mission-island" ).val( aarData.metadata.island );
+				$( "#mission-time" ).html( getTimeLabel(aarData.metadata.time) );
+				for (var i = 0; i < aarData.metadata.players.length; i++) {
+					var color;
+					switch (aarData.metadata.players[i][1]) {
+						case "blufor": color = "blue"; break;
+						case "opfor": color = "red"; break;
+						case "indep": color = "green"; break;
+						case "civ": color = "purple"; break;
+					};
+					$( "#player-list" ).append( "<li style='color:" + color + "'>" + aarData.metadata.players[i][0] + "</li>" );				
+				}				
 				
-				
-				//console.log( "Timeline: Interpolating Transitions [ OK ]" );
-				
-				console.log(aarData);
-				
+				console.log(aarData);				
 				
 				logMsg("Done!");				
 				$( "#result-form" ).css( "top", "60px" );
@@ -324,9 +334,7 @@
 			function interpolateValues(min,max,steps) {
 				var output = [];
 				var delta = (max - min)/steps;
-				for (var i = 0; i < steps; i++) {
-					output.push( Math.round( min + i*delta ) );
-				}
+				for (var i = 0; i < steps; i++) { output.push( Math.round( min + i*delta ) ); }
 				
 				return output			
 			}
@@ -392,7 +400,7 @@
 						Mission name
 					</div>
 					<div class="dl-2">
-						<input name="mission-name"></input>
+						<input id="mission-name"></input>
 					</div>
 				</li>
 				<li>
@@ -400,7 +408,7 @@
 						Island
 					</div>
 					<div class="dl-2">
-						<input name="mission-island"></input>
+						<input id="mission-island"></input>
 					</div>
 				</li>
 				<li>
@@ -408,7 +416,7 @@
 						Date
 					</div>
 					<div class="dl-2">
-						<input name="mission-date" type="date"></input>
+						<input id="mission-date" type="date"></input>
 					</div>
 				</li>
 				<li>
@@ -416,7 +424,7 @@
 						Duration
 					</div>
 					<div class="dl-2">
-						<div id="mission-time">02h 23m 15s</div>
+						<div id="mission-time"></div>
 					</div>
 				</li>
 				<li>
@@ -424,23 +432,20 @@
 						Description:
 					</div>
 					<div class="dl-3">
-						<textarea name="mission-desc" cols="40" rows="5"></textarea>
+						<textarea id="mission-desc" cols="40" rows="5"></textarea>
 					</div>
 				</li>				
 				<li>
 					<div class="dl-1">
 						<h4>Players</h4>
 					</div>
-					<ul id="player-list">
-						<li>Name 1</li>
-						<li>Name2</li>
-					</ul>
+					<ul id="player-list"></ul>
 				</li>
 			</ul>
 			<div id="output-footer">
 				<hr />
 				<button id="output-generate">Generate</button>		
-				<textarea name="output" cols="40" rows="5"></textarea>				
+				<textarea id="output" cols="40" rows="5"></textarea>				
 			</div>
 		</div>
 	</body>
