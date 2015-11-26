@@ -247,8 +247,8 @@
 					for (var j = 0; j < aarData.timeline.length; j++) {
 						// List of UnitData	
 						for (var k = 0; k < aarData.timeline[j][0].length; k++) {
-							// Find data for current Unit ID
-							if (aarData.timeline[j][0][k][0] == unitId) {
+							// Find data for current Unit ID or if J is last
+							if (aarData.timeline[j][0][k][0] == unitId || j == (aarData.timeline.length - 1)) {
 								console.log("Time " + j + " unit data is here! " + aarData.timeline[j][0][k]);
 								
 								if (lastKnown.length == 0) {
@@ -284,8 +284,9 @@
 								
 								lastKnown = [];
 								actualKnown = [];
-								stepsToInterpolate = [];
-								
+								stepsToInterpolate = [];								
+								// Step back to get new start interpolation range
+								j = j - 1;
 							}
 						}
 					}
