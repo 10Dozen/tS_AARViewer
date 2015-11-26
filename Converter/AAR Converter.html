@@ -96,18 +96,24 @@
 				font-size: 14px;
 			}
 			
-			#output-generate {
-				display: inline-block;
-				position: absolute;
+			#output-footer button {
+				display: inline;
 				margin-left: 40px;
 				width: 100px;
 			}
 			
 			#output-footer textarea {
-				display: inline-block;
-				margin: 30px 40px;
+				display: block;
+				margin: 10px 40px;
 				position: absolute;				
 				width: 510px;			
+			}
+			
+			.player-side-icon {
+				display: inline-block;
+				color: white;
+				margin: 2px 1px;
+				border-radius: 6px;
 			}
 		</style>
 		
@@ -163,10 +169,10 @@
 					"timeline": []
 				};
 				
-				var consoleMsgEnabled = false;
-				function logMsg(t) {
-					if (consoleMsgEnabled) { console.log( t ) }				
-				}
+				var consoleMsgEnabled = true;
+				var consoleDebugEnabled = false;
+				function logMsg(t) { if (consoleMsgEnabled) { console.log( t ) }};
+				function logDebug(t) { if (consoleDebugEnabled) { console.log( t ) }};
 				
 				$( "#header-status > label" ).html( "In progress..." );
 				
@@ -195,8 +201,7 @@
 					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i)[2] );
 					(aarData.metadata.objects.vehs).push(u.vehMeta);
 				}
-				logMsg( "Metadata: Vehicles [ OK ]" );				
-							
+				logMsg( "Metadata: Vehicles [ OK ]" );
 				
 				// Timeline item:	(<\d>)(.*)(<\/\d>)				
 				logMsg( "Timeline: Basic [ Processing ]" );
@@ -204,9 +209,8 @@
 				for (var i = 0; i < timelinesRaw.length; i++) {
 					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
 					var timelabel = t[1].match( /(<)(\d+)(>)/i)[2];
-					var unittype = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[1];
-					var unitdata = t[2].match( /(<unit>)(.*)(<\/unit>)/i )[2];
-					
+					var unittype = t[2].match( /(<unit>|<veh>)(.*)(<\/unit>|<\/veh>)/i )[1];
+					var unitdata = t[2].match( /(<unit>|<veh>)(.*)(<\/unit>|<\/veh>)/i )[2];
 					
 					if (typeof (aarData.timeline[timelabel]) == "undefined") {
 						aarData.timeline[timelabel] = [ [], [], [] ];
@@ -235,70 +239,94 @@
 						- then for each time between last known and latest time - calculate/interpolate values of position
 						- add this data to timeline
 						- check for another range				
-				*/
-				for (var i = 0; i < aarData.metadata.objects.units.length; i++ ) {
-					var unitId = aarData.metadata.objects.units[i][0];
-					console.log("INTERPOLATION FOR UNIT " + unitId);	
+				*/				
+				for (var m = 0; m < 2; m++) {
+					var unitList, unitTypeId;
+
+					if (m == 0) {
+						unitList = aarData.metadata.objects.units;
+						unitTypeId = 0;
+					} else {
+						unitList = aarData.metadata.objects.vehs;
+						unitTypeId = 1;
+					}
 					
-					var lastKnown = [];
-					var actualKnown = [];
-					var stepsToInterpolate = [];
-					
-					for (var j = 0; j < aarData.timeline.length; j++) {
-						// List of UnitData	
-						for (var k = 0; k < aarData.timeline[j][0].length; k++) {
-							// Find data for current Unit ID or if J is last
-							if (aarData.timeline[j][0][k][0] == unitId || j == (aarData.timeline.length - 1)) {
-								console.log("Time " + j + " unit data is here! " + aarData.timeline[j][0][k]);
-								
-								if (lastKnown.length == 0) {
-									console.log("Start of Interpol Range");
-									lastKnown = aarData.timeline[j][0][k];
-								} else {
-									if (actualKnown.length == 0) {
-										console.log ("End of Interpol Range");
-										actualKnown = aarData.timeline[j][0][k];										
+					for (var i = 0; i < unitList.length; i++ ) {
+						var unitId = unitList[i][0];
+						logDebug("INTERPOLATION FOR UNIT " + unitId);
+						
+						var lastKnown = [];
+						var actualKnown = [];
+						var stepsToInterpolate = [];
+						for (var j = 0; j < aarData.timeline.length; j++) {
+							for (var k = 0; k < aarData.timeline[j][unitTypeId].length; k++) {
+								if (aarData.timeline[j][unitTypeId][k][0] == unitId || j == (aarData.timeline.length - 1)) {
+									logDebug("Time " + j + " unit data is here! " + aarData.timeline[j][unitTypeId][k]);
+									
+									if (lastKnown.length == 0) {
+										logDebug("Start of Interpol Range");
+										lastKnown = aarData.timeline[j][unitTypeId][k];
+									} else {
+										if (actualKnown.length == 0) {
+											logDebug("End of Interpol Range");
+											actualKnown = aarData.timeline[j][unitTypeId][k];										
+										}
 									}
 								}
 							}
-						}
-				
-						if (lastKnown.length > 0 && actualKnown.length == 0) {
-							console.log("Adding time to empty");
-							stepsToInterpolate.push(j);
-						} else {
-							if (lastKnown.length > 0 && actualKnown.length > 0) {
-								console.log("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
 							
-								var posxSteps = interpolateValues( lastKnown[1], actualKnown[1], stepsToInterpolate.length );
-								var posySteps = interpolateValues( lastKnown[2], actualKnown[2], stepsToInterpolate.length );
-								var dirSteps = interpolateValues( lastKnown[3], actualKnown[3], stepsToInterpolate.length );
+							if (lastKnown.length > 0 && actualKnown.length == 0) {
+								logDebug("Adding time to empty");
+								stepsToInterpolate.push(j);
+							} else {
+								if (lastKnown.length > 0 && actualKnown.length > 0) {
+									logDebug("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
+							
+									var posxSteps = interpolateValues( lastKnown[1], actualKnown[1], stepsToInterpolate.length );
+									var posySteps = interpolateValues( lastKnown[2], actualKnown[2], stepsToInterpolate.length );
+									var dirSteps = interpolateValues( lastKnown[3], actualKnown[3], stepsToInterpolate.length );
 								
-								console.log("Interpolation... | X: " + posxSteps + " || Y: " + posySteps + " || DIR: " + dirSteps);								
-								// Start with 1, because 0 is equal to lastKnown value and we may not update it
-								for (var l = 1; l < stepsToInterpolate.length; l++ ) {
-									console.log( "Time (" + stepsToInterpolate[l] + ")" + [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5] ] );
+									logDebug("Interpolation... | X: " + posxSteps + " || Y: " + posySteps + " || DIR: " + dirSteps);								
+									// Start with 1, because 0 is equal to lastKnown value and we may not update it
+									for (var l = 1; l < stepsToInterpolate.length; l++ ) {
+										logDebug( "Time (" + stepsToInterpolate[l] + ")" + [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5] ] );
+									
+										if (m == 0) {
+											( aarData.timeline[stepsToInterpolate[l]][unitTypeId] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5]]  );
+										} else {
+											( aarData.timeline[stepsToInterpolate[l]][unitTypeId] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5], lastKnown[6]]  );
+										}
+									}
 								
-									( aarData.timeline[stepsToInterpolate[l]][0] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps[l], lastKnown[4], lastKnown[5]]  );
+									lastKnown = [];
+									actualKnown = [];
+									stepsToInterpolate = [];								
+									// Step back to get new start interpolation range
+									j = j - 1;
 								}
-								
-								lastKnown = [];
-								actualKnown = [];
-								stepsToInterpolate = [];								
-								// Step back to get new start interpolation range
-								j = j - 1;
 							}
 						}
 					}
 				}
+				
+				aarData.metadata.time = (aarData.timeline).length - 2;
 				logMsg( "Timeline: Interpolating Transitions of Units [ OK ]" );
 			
-				
-				
-				//console.log( "Timeline: Interpolating Transitions [ OK ]" );
-				
-				console.log(aarData);
-				
+				logMsg( "Creating form" );
+				$( "#player-list" ).html( "" );
+				$( "#mission-name" ).val( aarData.metadata.name );
+				$( "#mission-island" ).val( aarData.metadata.island );
+				$( "#mission-time" ).html( getTimeLabel(aarData.metadata.time) );
+				for (var i = 0; i < aarData.metadata.players.length; i++) {
+					var color;
+					switch (aarData.metadata.players[i][1]) {
+						case "blufor": color = "RGB(0,77,152)"; break;
+						case "opfor": color = "RGB(127,0,0)"; break;
+						case "indep": color = "RGB(0,127,0)"; break;
+						case "civ": color = "RGB(102,0,127)"; break;
+					};
+					$( "#player-list" ).append( "<li class='player-side-icon' style='padding: 2px 4px; background-color: " + color + "'>" + aarData.metadata.players[i][0] + "</li>" );				
+				}
 				
 				logMsg("Done!");				
 				$( "#result-form" ).css( "top", "60px" );
@@ -306,24 +334,13 @@
 				$( ".dl-2 > input, textarea, button" ).removeAttr( "disabled" );
 			};
 			
-			
 			// Interpolate values
 			function interpolateValues(min,max,steps) {
 				var output = [];
 				var delta = (max - min)/steps;
-				for (var i = 0; i < steps; i++) {
-					output.push( Math.round( min + i*delta ) );
-				}
+				for (var i = 0; i < steps; i++) { output.push( Math.round( min + i*delta ) ); }
 				
 				return output			
-			}
-			
-			function testInterpolation() {
-				console.log( "10...20, 5" + " :: " + interpolateValues(10,20,5));
-				console.log( "10...20, 4" + " :: " + interpolateValues(10,20,4));
-				console.log( "10...20, 3" + " :: " + interpolateValues(10,20,3));
-				console.log( "10...20, 2" + " :: " + interpolateValues(10,20,2));
-				console.log( "10...20, 1" + " :: " + interpolateValues(10,20,1));
 			}
 			
 			// Time label
@@ -349,7 +366,25 @@
 				return formatTimeNum(timeHours,"h") + formatTimeNum(timeMinutes,"m") + formatTimeNum(timeSeconds,"s")
 			}
 			
+			// Generate
+			function generateAAR() {			
+				aarData.metadata.date = $( "#mission-date" ).val();
+				aarData.metadata.desc = $( "#mission-desc" ).val();
+				aarData.metadata.island = $( "#mission-island" ).val();
+				aarData.metadata.name = $( "#mission-name" ).val();
+				
+				$( "#output" ).val( JSON.stringify( aarData ) );
+				
+				console.log( "AAR text generated.")
+			}
 			
+			// File Save
+			function saveAAR() {
+				var a = document.createElement('a');
+				a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent( JSON.stringify( aarData ) ));
+				a.setAttribute('download', "[AAR][" + aarData.metadata.island + "] " + aarData.metadata.name );
+				a.click();
+			}
 			
 			$( document ).ready(function() {
 				$( ".dl-2 > input, textarea, button" ).attr( "disabled", "true" );				
@@ -379,7 +414,7 @@
 						Mission name
 					</div>
 					<div class="dl-2">
-						<input name="mission-name"></input>
+						<input id="mission-name"></input>
 					</div>
 				</li>
 				<li>
@@ -387,7 +422,7 @@
 						Island
 					</div>
 					<div class="dl-2">
-						<input name="mission-island"></input>
+						<input id="mission-island"></input>
 					</div>
 				</li>
 				<li>
@@ -395,7 +430,7 @@
 						Date
 					</div>
 					<div class="dl-2">
-						<input name="mission-date" type="date"></input>
+						<input id="mission-date" type="date"></input>
 					</div>
 				</li>
 				<li>
@@ -403,7 +438,7 @@
 						Duration
 					</div>
 					<div class="dl-2">
-						<div id="mission-time">02h 23m 15s</div>
+						<div id="mission-time"></div>
 					</div>
 				</li>
 				<li>
@@ -411,23 +446,21 @@
 						Description:
 					</div>
 					<div class="dl-3">
-						<textarea name="mission-desc" cols="40" rows="5"></textarea>
+						<textarea id="mission-desc" cols="40" rows="5"></textarea>
 					</div>
 				</li>				
 				<li>
 					<div class="dl-1">
 						<h4>Players</h4>
 					</div>
-					<ul id="player-list">
-						<li>Name 1</li>
-						<li>Name2</li>
-					</ul>
+					<ul id="player-list"></ul>
 				</li>
 			</ul>
+			<hr />
 			<div id="output-footer">
-				<hr />
-				<button id="output-generate">Generate</button>		
-				<textarea name="output" cols="40" rows="5"></textarea>				
+				<button id="output-generate" onClick="generateAAR()">Generate</button>
+				<button id="output-save" onClick="saveAAR()">Save File</button>	
+				<textarea id="output" cols="40" rows="5"></textarea>				
 			</div>
 		</div>
 	</body>
