@@ -160,8 +160,7 @@
 			var aarCurrentTime = 0;
 			var aarPlaying = false;
 			var aarAutoStepper;
-			
-			
+			var aarMapSize = [];
 			
 			// Open file
 			var openFile = function(event) { 
@@ -251,7 +250,7 @@
 				
 				var bgImg = "";
 				switch (aarData.metadata.island.toLowerCase()) {
-					case "stratis": bgImg = "src/maps/map_stratis_8192.png"; break;
+					case "stratis": bgImg = "src/maps/map_stratis_8192.png"; aarMapSize = [8132, 8132]; break;
 					//default: bgImg = "src/img/map_stratis_8192.png";
 				}				
 				$( ".panzoom > img" ).attr( "src", bgImg );				
@@ -314,8 +313,8 @@
 				var id = data[0];
 				var unit = "#mrk-unit-" + id;
 				
-				var posx = data[1];
-				var posy = data[2];
+				var posx = data[1] - ( $( unit ).outerWidth() /2 );
+				var posy = aarMapSize[1] - data[2] - ( $( unit ).outerHeight() - $( unit ).outerHeight() )/2;
 				var dir = data[3];
 				var alive = data[4];
 				
