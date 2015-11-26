@@ -2,13 +2,14 @@
 <html lang="us">
 	<head>
 		<meta charset="utf-8">
-		<title>After Action Report Viewer</title>
-		<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-	  
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-		<script src="http://timmywil.github.io/jquery.panzoom/dist/jquery.panzoom.js"></script>
-		<script src="http://timmywil.github.io/jquery.panzoom/test/libs/jquery.mousewheel.js"></script>
+		<title>AAR Viewer</title>
+		
+		<link rel="stylesheet" href="src/css/jquery-ui.css">
+
+		<script src="src/js/jquery.min.js"></script>
+		<script src="src/js/jquery-ui.min.js"></script>
+		<script src="src/js/jquery.panzoom.js"></script>
+		<script src="src/js/jquery.mousewheel.js"></script>
 		
 		<style>
 			body {				
@@ -20,21 +21,21 @@
 			/* Landing page */
 			#uploader {
 				position: absolute;
-				height: 200px;
-				width: 200px;
+				height: 100px;
+				width: 300px;
 				margin: -100px 0 0 -200px;
 				top: 50%;
 				left: 50%;
 				
 				background-color: #cceeff;
 				border: 1px solid #cceeff;
-				border-radius: 100px;
+				border-radius: 25px;
 			}
 			
 			#uploader input {
-				position: absolute;
-				top: 45%;
-				left: 30%;
+				position: relative;
+				top: 40%;
+				left: 25%;
 			}
 			
 			#error-label {
@@ -137,6 +138,20 @@
 				width: 32px;
 				height: 32px;				
 			}
+			
+			.player-side-icon {
+				display: inline-block;
+				color: white;
+				margin: 2px 1px;
+				border-radius: 6px;
+			}
+			
+			.details-desc {
+				border-radius: 6px;
+				background-color: #D8D8D8;
+				padding: 3px;
+				font-size: 12px;
+			}
 		</style>
 		
 		
@@ -145,6 +160,8 @@
 			var aarCurrentTime = 0;
 			var aarPlaying = false;
 			var aarAutoStepper;
+			
+			
 			
 			// Open file
 			var openFile = function(event) { 
@@ -159,8 +176,30 @@
 						aarData = JSON.parse(text);
 						console.log("Parsed!");
 						// Detail screen
+						var players = (function (){
+								var output = "<ul>";
+								for (var i = 0; i < aarData.metadata.players.length; i++) {
+									var color;
+									switch (aarData.metadata.players[i][1]) {
+										case "blufor": color = "RGB(0,77,152)"; break;
+										case "opfor": color = "RGB(127,0,0)"; break;
+										case "indep": color = "RGB(0,127,0)"; break;
+										case "civ": color = "RGB(102,0,127)"; break;
+									};
+									output = output + "<li class='player-side-icon' style='padding: 2px 4px; background-color: " + color + "'>" + aarData.metadata.players[i][0] + "</li>";				
+								}
+								return (output + "</ul>")
+						})();
+						
 						var timelabel = getTimeLabel(aarData.metadata.time);				
-						$( "body" ).append("<div id='details-wrapper'><h1>" + aarData.metadata.name + "</h1><ul><li>Location: <b>" + aarData.metadata.island + "</b></li><li>Date: " + aarData.metadata.date + "</li><li>Duration: " + timelabel + "</li><li><br /></li><li><button onClick='initAAR()'>Play</button></li></ul></div>")
+						$( "body" ).append("<div id='details-wrapper'>"
+							+ "<h1>" + aarData.metadata.name + "</h1>" +
+							"<ul><li>Location: <b>" + aarData.metadata.island + "</b></li>"
+							+ "<li>Duration: " + timelabel+ "</li>"
+							+ "<li>Date: " + aarData.metadata.date + "</li>"
+							+ "<li>Description:<br /><span class='details-desc'>" + aarData.metadata.desc + "</span><hr></li>"
+							+ "<li>Players: " + players + "</li>"
+							+ "<li><br /></li><li><button onClick='initAAR()'>Play</button></li></ul></div>")
 					} catch (e) {
 						$( "body" ).append("<div id='error-label'>" + "File is not AAR file!" + "</div>");
 						console.log("File is not AAR file!");
@@ -197,10 +236,8 @@
 				// 1: "unit" or "veh"
 				var id = data[0];
 				var name = data[1];
-				
-				var icon = "img/icons/" + data[2] + "-" + type + ".svg";					
-				icon = "img/icons/unit.svg";
-				
+				var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
+				var icon = "src/icons/" + side + "_" + type + ".svg";
 				$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
 			}
 			
@@ -213,9 +250,9 @@
 				$( "#player-line" ).css( "top", "12px" );
 				
 				var bgImg = "";
-				switch (aarData.metadata.island) {
-					case "Stratis": bgImg = "img/map_stratis_8192.png"; break;
-					default: bgImg = "img/map_stratis_8192.png";
+				switch (aarData.metadata.island.toLowerCase()) {
+					case "stratis": bgImg = "src/maps/map_stratis_8192.png"; break;
+					//default: bgImg = "src/img/map_stratis_8192.png";
 				}				
 				$( ".panzoom > img" ).attr( "src", bgImg );				
 				panzoomInit();
