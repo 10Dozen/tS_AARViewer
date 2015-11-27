@@ -310,13 +310,22 @@
 			function processUnit(data,type) {
 				// 0: unit/vehicle data
 				// 1: "unit" or "veh"
-				var id = data[0];
+				var id = data[0];				
 				var unit = "#mrk-unit-" + id;
 				
-				var posx = data[1] - ( $( unit ).outerWidth() /2 );
-				var posy = aarMapSize[1] - data[2] - ( $( unit ).outerHeight() - $( unit ).outerHeight() )/2;
+				console.log( data );
+				console.log( $( unit ) );
+				
+				var posx = data[1] - ( $( unit ).outerWidth() /2 );				
+				var posy = aarMapSize[1] 
+					- data[2] 
+					+ $( "#mrk-unit-" + id + " > span" ).outerHeight()
+					+ 0.5 * ( $( unit ).outerHeight() - $( "#mrk-unit-" + id + " > span" ).outerHeight() );
 				var dir = data[3];
 				var alive = data[4];
+				
+				console.log ( posx + " | " + posy  );
+				
 				
 				var inCargo, owner, cargo
 				if (type == "unit") {
