@@ -1,0 +1,107 @@
+body {	
+	margin: 0px;
+	padding: 0px;
+	font-family: sans-serif;
+}
+
+/* ****************
+	Landing page 
+**************** */
+#header {
+	background-color: #3366CC;
+	color: white;
+}
+
+#header-title {
+	font-size: 24px;
+	font-weight: bold;
+	padding-left: 40px;
+}
+
+#header-status {
+	font-size: 18px;
+	background-color: #6798D2;
+	padding: 6px 0px 3px 40px;
+	
+}
+
+#uploader {
+	display: inline;
+	padding: 12px 0px 12px 90px;
+}
+
+/* ****************
+	Form 
+**************** */
+#result-form {
+	position: absolute;
+	top: -1000px;
+}
+.dl-1 {
+	display: inline-block;
+	width: 150px;	
+	font-size: 15px;
+}
+
+.dl-2 {
+	display: inline-block;
+	width: 350px;
+}
+
+.dl-2 input {
+	width: 350px;
+	height: 20px;
+	padding: 3px 6px;	
+}
+
+#mission-time, h4 {	
+	display: inline-block;
+	padding: 1px 5px;
+	
+	border: 1px solid #6798D2;
+	background-color: #6798D2;
+	border-radius: 15px;
+	font-size: 14px;
+	color: white;
+}
+
+.dl-3 {
+	display: block;
+	width: 500px;
+
+}
+.dl-3 textarea {
+	width: 500px;
+	padding: 3px 6px;
+	font-family: sans-serif;	
+}
+
+#result-form ul li {
+	padding: 3px 0px;
+	list-style-type: none;
+}
+
+#player-list {
+	font-family: sans-serif;
+	font-size: 14px;
+}
+
+#output-footer button {
+	display: inline;
+	margin-left: 40px;
+	width: 100px;
+}
+
+#output-footer textarea {
+	display: block;
+	margin: 10px 40px;
+	position: absolute;	
+	width: 510px;
+}
+
+.player-side-icon {
+	display: inline-block;
+	color: white;
+	margin: 2px 1px;
+	border-radius: 6px;
+}

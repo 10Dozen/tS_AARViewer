@@ -132,7 +132,7 @@ dzn_brv_collectUnitsData = {
 	// @IsPlayerOnly spawn dzn_brv_collectUnitsData
 	// MAY BE USEFUL TO CALL THIS STUFF... BUT IT MAY BE HEAVY IMPACT ON PERFORMANCE
 	
-	params["_isPlayerOnly"];
+	params["_isPlayerOnly",["_timelabel",0]];
 	private["_units"];
 	
 	_units = if (_isPlayerOnly) then {
@@ -142,6 +142,6 @@ dzn_brv_collectUnitsData = {
 	};
 	
 	{
-		_x call dzn_brv_collectData;
+		[_x,_timelabel] call dzn_brv_collectData;
 	} forEach _units;
 };
