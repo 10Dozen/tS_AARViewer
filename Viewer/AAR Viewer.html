@@ -11,7 +11,8 @@
 		<script src="src/js/jquery-ui.min.js"></script>
 		<script src="src/js/jquery.panzoom.js"></script>
 		<script src="src/js/jquery.mousewheel.js"></script>
-		<script src="src/js/baarv_scripts.js"></script>
+		<script src="src/js/baarv_viewer.js"></script>
+		
 		<script>
 			$( document ).ready(function () {
 				$( "#slider" ).slider({
@@ -82,52 +83,47 @@
 				AAR Viewer
 			</div>
 			<div id="header-status">
-				<button id="uploader-play" onClick="initAAR()" disabled="true">Play</button>
-				<label>Select AAR file to play...</label>
+				<button id="uploader-convert" onClick="initAAR()" disabled="true">Play</button>
+				<label>Select AAR file to convert...</label>
 				<div id="uploader">
-					<input type='file' accept='text/plain' onchange='openFile(event)'>					
+					<input type='file' accept='text/plain' onchange='openFile(event)'>
 				</div>
-			</div>			
+			</div>
 		</div>
 		
 		<div id="result-form">
 			<ul>
 				<li>
-					<div id="mission-name">
-						<h1>My Mission Name</h1>
+					<div class="dl-1">
+						Mission name
 					</div>
+					<div class="dl-2" id="mission-name" />
 				</li>
 				<li>
 					<div class="dl-1">
 						Island
 					</div>
-					<div class="dl-2" id="mission-island">
-						Stratis
-					</div>
+					<div class="dl-2" id="mission-island" />
 				</li>
 				<li>
 					<div class="dl-1">
 						Date
 					</div>
-					<div class="dl-2" id="mission-date">
-						25-03-2015
-					</div>
+					<div class="dl-2" id="mission-date" />
 				</li>
 				<li>
 					<div class="dl-1">
 						Duration
 					</div>
 					<div class="dl-2">
-						<div id="mission-time">22m 13s</div>
+						<div id="mission-time" />
 					</div>
 				</li>
 				<li>
 					<div class="dl-1">
 						Description:
 					</div>
-					<div class="dl-3" id="mission-desc" >
-						My desc asd as das dasd asdas das das dsad asds ad sa
-					</div>
+					<div class="dl-3" id="mission-desc" ></div>
 				</li>				
 				<li>
 					<div class="dl-1">
