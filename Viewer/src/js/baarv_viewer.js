@@ -160,6 +160,27 @@
 				return $(this);
 			};			
 			
+			function getUnitMetadata(id) {
+				var output = [];
+				for (var i = 0; i < aarData.metadata.objects.units.length; i++) {
+					if ( aarData.metadata.objects.units[i][0] == id ) {
+						output = aarData.metadata.objects.units[i];
+						i = 100;
+					}					
+				}
+				return output;				
+			}
+			
+			function setGridPos(unit, data) {
+				var posx = data[1] - ( $( unit ).outerWidth() /2 );				
+				var posy = aarMapSize[1] 
+					- data[2] 
+					+ $( unit + " > span" ).outerHeight()
+					+ 0.5 * ( $( unit ).outerHeight() - $( unit + " > span" ).outerHeight() );
+				
+				$( unit ).css({ "left": posx, "top": posy });	
+			}
+			
 			// Process unit - animate
 			function processUnit(data,type) {
 				// 0: unit/vehicle data
@@ -167,34 +188,32 @@
 				var id = data[0];				
 				var unit = "#mrk-unit-" + id;
 				
-				console.log( data );
-				console.log( $( unit ) );
-				
-				var posx = data[1] - ( $( unit ).outerWidth() /2 );				
-				var posy = aarMapSize[1] 
-					- data[2] 
-					+ $( "#mrk-unit-" + id + " > span" ).outerHeight()
-					+ 0.5 * ( $( unit ).outerHeight() - $( "#mrk-unit-" + id + " > span" ).outerHeight() );
 				var dir = data[3];
 				var alive = data[4];
-				
-				console.log ( posx + " | " + posy  );
-				
 				
 				var inCargo, owner, cargo
 				if (type == "unit") {
 					inCargo = data[5];				
 					if (inCargo == -1) {
-						$( unit ).css({ "left": posx, "top": posy });
 						$( unit + " > img" ).rotate( dir );
+						setGridPos(unit, data);											
 					} else {
 						$( unit ).css({ "left": "-20px","top": "-20px" });
 					}
 				} else {
 					owner = data[5];
-					cargo = data[6];
-					$( unit ).css({ "left": posx, "top": posy });
+					cargo = data[6];					
+					if (owner > -1 || cargo > -1) {
+						var unitData = getUnitMetadata(owner);
+						var unitName = unitData[1];						
+						var unitSide = unitData[2];
+						if (cargo > 0) { unitName = unitName + " +" + cargo; }						
+						$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh.svg" )						
+						$( unit + "> span").html( unitName );
+					}
+					
 					$( unit + " > img" ).rotate( dir );
+					setGridPos(unit, data);
 				}
 			};
 			
