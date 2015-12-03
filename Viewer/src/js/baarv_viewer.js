@@ -256,10 +256,10 @@
 					aarAutoStepper = setInterval(
 						function () {
 							if (aarCurrentTime != aarData.metadata.time) {							
-								reportNextStep()
+								reportNextStep();
 							} else {
 								clearInterval( aarAutoStepper );
-								stopReport()
+								stopReport();
 							}
 						}
 						, 2000/aarPlaySpeed
