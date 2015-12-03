@@ -121,7 +121,7 @@ dzn_brv_getVehiceCargoAndOwnerId = {
 	_crew = crew _veh;
 	if ((crew _veh) isEqualTo []) exitWith { [-1, -1] };
 	
-	_ownerID = (_crew select 0) getVariable ["dzn_bvr_id",-1];	
+	_ownerID = (_crew select 0) getVariable ["dzn_brv_id",-1];	
 	_cargo = ({alive _x} count (_crew)) - 1;
 	if (_cargo == 0) then { _cargo = -1 };
 	
