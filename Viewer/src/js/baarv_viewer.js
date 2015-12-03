@@ -198,7 +198,6 @@
 				// 1: "unit" or "veh"
 				var id = data[0];				
 				var unit = "#mrk-unit-" + id;
-				
 				var dir = data[3];
 				var alive = data[4];
 				
@@ -211,6 +210,8 @@
 					} else {
 						$( unit ).css({ "left": "-20px","top": "-20px" });
 					}
+					
+					if (alive < 1) { $( unit + "> img" ).attr( "src", "src/icons/dead_unit.svg" ) }
 				} else {
 					owner = data[5];
 					cargo = data[6];					
@@ -228,6 +229,8 @@
 					
 					$( unit + " > img" ).rotate( dir );
 					setGridPos(unit, data);
+					
+					if (alive < 1) { $( unit + "> img" ).attr( "src", "src/icons/dead_veh.svg" ) }
 				}
 			};
 			
