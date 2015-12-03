@@ -184,11 +184,7 @@
 			
 			function setGridPos(unit, data) {
 				var posx = data[1] - ( $( unit ).outerWidth() /2 );				
-				var posy = aarMapSize[1] 
-					- data[2] 
-					+ $( unit + " > span" ).outerHeight()
-					+ 0.5 * ( $( unit ).outerHeight() - $( unit + " > span" ).outerHeight() );
-				
+				var posy = aarMapSize[1] - data[2] + 42;
 				$( unit ).css({ "left": posx, "top": posy });	
 			}
 			
