@@ -1,4 +1,31 @@
-
+// 6 - bullet,  0 - unit
+dzn_brv_addFireEH = {
+	_this addEventHandler [
+		"Fired"
+		, {
+			
+			[ _this select 0, _this select 6 ] spawn {				
+				_from = getPosASL (_this select 0);
+				_dir = getDir (_this select 1);
+				_to = getPosASL (_this select 1);
+				
+				waitUntil { 
+					if !(isNull (_this select 1)) then { 
+						_to = getPosASL (_this select 1);
+					};
+					isNull (_this select 1)
+				};
+				
+				hint format [
+					"Fired from %1 to %2 -- finished at %3"
+					, _from
+					, _dir
+					, _to
+				];				
+			};
+		}
+	];
+};
 
 dzn_brv_getCoreMetadata = {
 	// Return basic misison Metadata
