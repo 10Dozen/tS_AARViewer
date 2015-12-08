@@ -192,11 +192,16 @@
 				var id = "av-" + timelabel + "-" + data[0] + data[1] + data[2] + data[3];
 				$( ".panzoom" ).append(
 					"<canvas id='" + id 
-					+ "' + width='" + aarMapSize[0] 
+					+ "' width='" + aarMapSize[0] 
 					+ "' height='" + aarMapSize[1] 
 					+ "' timelabel='" + timelabel
 					+ "'></canvas>"
 				);
+				
+				$( "#" + id ).css({
+					"top": "0px",
+					"left": "0px"
+				});
 				
 				var ctx = $( "#" + id )[0].getContext('2d');
 				ctx.beginPath();
