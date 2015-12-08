@@ -261,13 +261,18 @@
 				var units = aarData.timeline[step][0];
 				var vehs = aarData.timeline[step][1];
 				var attacks = aarData.timeline[step][2];
+				clearAttacks(step);
 				
 				for (var i = 0; i < units.length; i++) {					
 					processUnit( units[i], "unit" );
 				};
 				for (var i = 0; i < vehs.length; i++) {
 					processUnit( vehs[i], "veh" );
-				};			
+				};
+				for (var i = 0; i < attacks.length; i++) {
+					drawAttack(attacks[i], step);
+				}
+				$( ".panzoom" ).panzoom('resetDimensions');
 			};
 			
 			// Play AAR in auto mode
