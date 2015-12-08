@@ -24,10 +24,10 @@ dzn_brv_addAttackEH = {
 				diag_log format [
 					"<AAR><%1><av>[%1, %2, %3, %4]</av></%1></AAR>"
 					, _timelabel
-					, _from select 0
-					, _from select 1
-					, _to select 0
-					, _to select 1
+					, round(_from select 0)
+					, round(_from select 1)
+					, round(_to select 0)
+					, round(_to select 1)
 				];
 				hint format [
 					"Fired from %1 to %2"
