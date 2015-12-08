@@ -22,21 +22,16 @@ dzn_brv_addAttackEH = {
 				};
 				
 				diag_log format [
-					"<AAR><%1><av>[%1, %2, %3, %4]</av></%1></AAR>"
+					"<AAR><%1><av>[%2,%3,%4,%5]</av></%1></AAR>"
 					, _timelabel
 					, round(_from select 0)
 					, round(_from select 1)
 					, round(_to select 0)
 					, round(_to select 1)
 				];
-				hint format [
-					"Fired from %1 to %2"
-					, _from
-					, _to
-				];
 				
-				waitUntil { dzn_brv_timeLabel > _timelabel + 2 };
-				_unit setVariable [ format ["dzn_brv_av%1", dzn_brv_timeLabel], nil ];
+				waitUntil { dzn_brv_timeLabel > (_timelabel + 2) };				
+				_unit setVariable [ format ["dzn_brv_av%1", _timelabel], nil ];
 			};
 		}
 	];
