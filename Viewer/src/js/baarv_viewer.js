@@ -204,16 +204,15 @@
 				ctx.lineTo( data[2], data[3] );
 				ctx.stroke();
 			}
-			/*
-			function clearAttacks(timelabel) {
-				var canvases = $( "canvas" );
-				for (var i = 0; i < canvases.length; i++ ) {
-					if ( canvases[i].attr( "timelabel" ) != timelabel) {
-						canvases[i].remove();
-					}
-				}
+			
+			function clearAttacks(timelabel) {				
+				$( "canvas" ).each(function (timelabel) {
+					var canvas = $( this );
+					if (canvas.attr( "timelabel" ) != timelabel) {
+						canvas.remove();
+					};
+				});
 			}
-			*/
 			
 			// Process unit - animate
 			function processUnit(data,type) {
