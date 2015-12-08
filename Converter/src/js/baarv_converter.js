@@ -91,8 +91,8 @@ var rptData = "";
 				for (var i = 0; i < timelinesRaw.length; i++) {
 					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
 					var timelabel = t[1].match( /(<)(\d+)(>)/i)[2];
-					var unittype = t[2].match( /(<unit>|<veh>)(.*)(<\/unit>|<\/veh>)/i )[1];
-					var unitdata = t[2].match( /(<unit>|<veh>)(.*)(<\/unit>|<\/veh>)/i )[2];
+					var unittype = t[2].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[1];
+					var unitdata = t[2].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[2];
 					
 					if (typeof (aarData.timeline[timelabel]) == "undefined") {
 						aarData.timeline[timelabel] = [ [], [], [] ];
@@ -105,7 +105,7 @@ var rptData = "";
 						case "<veh>":
 							(aarData.timeline[timelabel])[1].push( JSON.parse(unitdata) );
 							break;
-						case "<atck>":
+						case "<av>":
 							(aarData.timeline[timelabel])[2].push( JSON.parse(unitdata) );
 							break;
 					}
