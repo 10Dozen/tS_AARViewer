@@ -1,27 +1,42 @@
 // 6 - bullet,  0 - unit
-dzn_brv_addFireEH = {
+dzn_brv_addAttackEH = {
 	_this addEventHandler [
 		"Fired"
 		, {
+			if (!isNil { (_this select 0) getVariable format ["dzn_brv_av%1", dzn_brv_timeLabel] }) exitWith {};
+			(_this select 0) setVariable [ format ["dzn_brv_av%1", dzn_brv_timeLabel], true ];
 			
-			[ _this select 0, _this select 6 ] spawn {				
-				_from = getPosASL (_this select 0);
-				_dir = getDir (_this select 1);
-				_to = getPosASL (_this select 1);
+			[ _this select 0, _this select 6, dzn_brv_timeLabel ] spawn {
+				params["_unit", "_proj", "_timelabel"];
+				private ["_from", "_to", "_dist"];
 				
-				waitUntil { 
-					if !(isNull (_this select 1)) then { 
-						_to = getPosASL (_this select 1);
+				_from = getPosASL _unit;
+				_to = getPosASL _proj;
+				_dist = 0;
+				waitUntil {
+					if !(isNull _proj) then { 
+						_to = getPosASL _proj;
+						_dist = _from distance2d _to;
 					};
-					isNull (_this select 1)
+					isNull _proj || { _dist > dzn_brv_attackVectorMaxDistance }
 				};
 				
+				diag_log format [
+					"<AAR><%1><av>[%1, %2, %3, %4]</av></%1></AAR>"
+					, _timelabel
+					, _from select 0
+					, _from select 1
+					, _to select 0
+					, _to select 1
+				];
 				hint format [
-					"Fired from %1 to %2 -- finished at %3"
+					"Fired from %1 to %2"
 					, _from
-					, _dir
 					, _to
-				];				
+				];
+				
+				waitUntil { dzn_brv_timeLabel > _timelabel + 2 };
+				_unit setVariable [ format ["dzn_brv_av%1", dzn_brv_timeLabel], nil ];
 			};
 		}
 	];
