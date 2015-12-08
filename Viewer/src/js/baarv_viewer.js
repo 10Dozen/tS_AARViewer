@@ -213,10 +213,13 @@
 				ctx.stroke();
 			}
 			
-			function clearAttacks(timelabel) {				
-				$( "canvas" ).each(function (timelabel) {
+			function clearAttacks(timelabel) {
+				$( "canvas" ).each(function () {
 					var canvas = $( this );
-					if (canvas.attr( "timelabel" ) != timelabel) {
+					if ( 
+						( timelabel - canvas.attr( "timelabel" ) ) < 0
+						|| ( timelabel - canvas.attr( "timelabel" ) ) > 3
+					) {
 						canvas.remove();
 					};
 				});
