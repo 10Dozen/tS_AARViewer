@@ -1,4 +1,41 @@
-
+// 6 - bullet,  0 - unit
+dzn_brv_addAttackEH = {
+	_this addEventHandler [
+		"Fired"
+		, {
+			if (!isNil { (_this select 0) getVariable format ["dzn_brv_av%1", dzn_brv_timeLabel] }) exitWith {};
+			(_this select 0) setVariable [ format ["dzn_brv_av%1", dzn_brv_timeLabel], true ];
+			
+			[ _this select 0, _this select 6, dzn_brv_timeLabel ] spawn {
+				params["_unit", "_proj", "_timelabel"];
+				private ["_from", "_to", "_dist"];
+				
+				_from = getPosASL _unit;
+				_to = getPosASL _proj;
+				_dist = 0;
+				waitUntil {
+					if !(isNull _proj) then { 
+						_to = getPosASL _proj;
+						_dist = _from distance2d _to;
+					};
+					isNull _proj || { _dist > dzn_brv_attackVectorMaxDistance }
+				};
+				
+				diag_log format [
+					"<AAR><%1><av>[%2,%3,%4,%5]</av></%1></AAR>"
+					, _timelabel
+					, round(_from select 0)
+					, round(_from select 1)
+					, round(_to select 0)
+					, round(_to select 1)
+				];
+				
+				waitUntil { dzn_brv_timeLabel > (_timelabel + 2) };				
+				_unit setVariable [ format ["dzn_brv_av%1", _timelabel], nil ];
+			};
+		}
+	];
+};
 
 dzn_brv_getCoreMetadata = {
 	// Return basic misison Metadata
@@ -14,7 +51,6 @@ dzn_brv_collectMetadata = {
 	
 	_units = [allUnits, {!(_x in dzn_brv_unitList)}] call BIS_fnc_conditionalSelect;	
 	{
-		
 		diag_log format [
 			'<AAR><meta><unit>{ "unitMeta": [%1,"%2","%3",%4] }</unit></meta></AAR>'
 			, dzn_brv_unitIdMax
@@ -31,6 +67,7 @@ dzn_brv_collectMetadata = {
 		
 		_x setVariable ["dzn_brv_id", dzn_brv_unitIdMax];
 		_x setVariable ["dzn_brv_type", "unit"];
+		_x call dzn_brv_addAttackEH;
 		
 		dzn_brv_unitIdMax = dzn_brv_unitIdMax + 1;
 		dzn_brv_unitList pushBack _x;
@@ -132,7 +169,7 @@ dzn_brv_collectUnitsData = {
 	// @IsPlayerOnly spawn dzn_brv_collectUnitsData
 	// MAY BE USEFUL TO CALL THIS STUFF... BUT IT MAY BE HEAVY IMPACT ON PERFORMANCE
 	
-	params["_isPlayerOnly"];
+	params["_isPlayerOnly",["_timelabel",0]];
 	private["_units"];
 	
 	_units = if (_isPlayerOnly) then {
@@ -142,6 +179,6 @@ dzn_brv_collectUnitsData = {
 	};
 	
 	{
-		_x call dzn_brv_collectData;
+		[_x,_timelabel] call dzn_brv_collectData;
 	} forEach _units;
 };
