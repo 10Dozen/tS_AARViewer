@@ -56,7 +56,6 @@ dzn_brv_collectMetadata = {
 	
 	_units = [allUnits, {!(_x in dzn_brv_unitList)}] call BIS_fnc_conditionalSelect;	
 	{
-		
 		diag_log format [
 			'<AAR><meta><unit>{ "unitMeta": [%1,"%2","%3",%4] }</unit></meta></AAR>'
 			, dzn_brv_unitIdMax
@@ -73,6 +72,7 @@ dzn_brv_collectMetadata = {
 		
 		_x setVariable ["dzn_brv_id", dzn_brv_unitIdMax];
 		_x setVariable ["dzn_brv_type", "unit"];
+		_x call dzn_brv_addAttackEH;
 		
 		dzn_brv_unitIdMax = dzn_brv_unitIdMax + 1;
 		dzn_brv_unitList pushBack _x;
