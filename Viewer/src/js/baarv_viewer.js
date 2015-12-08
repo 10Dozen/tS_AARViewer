@@ -205,8 +205,11 @@
 				
 				var ctx = $( "#" + id )[0].getContext('2d');
 				ctx.beginPath();
-				ctx.moveTo( data[0], data[1] );
-				ctx.lineTo( data[2], data[3] );
+				ctx.moveTo( data[0], aarMapSize[1] - data[1] );
+				ctx.lineTo( data[2], aarMapSize[1] - data[3] );
+				ctx.lineWidth = 3;
+				ctx.strokeStyle = '#FF6000';
+				ctx.lineCap = 'round';
 				ctx.stroke();
 			}
 			
