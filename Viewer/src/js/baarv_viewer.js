@@ -130,7 +130,8 @@
 				
 				$( "#player-header" ).html(aarData.metadata.name + " (" + aarData.metadata.date + ")");
 				$( "#player-line > button" ).removeAttr( "disabled" );
-			};			
+			};
+			
 			// Panzoom Init
 			var panzoomInit = function() {
 				var $panzoom = $('.panzoom').panzoom();
@@ -151,6 +152,7 @@
 					});
 				});
 			};
+			
 			// Rotate Image
 			jQuery.fn.rotate = function(degrees) {
 				$(this).css({'-webkit-transform' : 'rotate('+ degrees +'deg)',
@@ -158,8 +160,9 @@
 							 '-ms-transform' : 'rotate('+ degrees +'deg)',
 							 'transform' : 'rotate('+ degrees +'deg)'});
 				return $(this);
-			};			
+			};
 			
+			// Get Metadata of actors
 			function getUnitMetadata(id) {
 				var output = [];
 				for (var i = 0; i < aarData.metadata.objects.units.length; i++) {
@@ -205,8 +208,8 @@
 				
 				var ctx = $( "#" + id )[0].getContext('2d');
 				ctx.beginPath();
-				ctx.moveTo( data[0], aarMapSize[1] - data[1] );
-				ctx.lineTo( data[2], aarMapSize[1] - data[3] );
+				ctx.moveTo( data[0], aarMapSize[1] - data[1] + 58 );
+				ctx.lineTo( data[2], aarMapSize[1] - data[3] + 58 );
 				ctx.lineWidth = 3;
 				ctx.strokeStyle = '#FF6000';
 				ctx.lineCap = 'round';
