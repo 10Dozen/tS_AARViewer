@@ -194,15 +194,26 @@
 					"<canvas id='" + id 
 					+ "' + width='" + aarMapSize[0] 
 					+ "' height='" + aarMapSize[1] 
-					+ "'></canvas>" 
+					+ "' timelabel='" + timelabel
+					+ "'></canvas>"
 				);
 				
-				var ctx = $( "#" + id ).getContext('2d');
+				var ctx = $( "#" + id )[0].getContext('2d');
 				ctx.beginPath();
 				ctx.moveTo( data[0], data[1] );
 				ctx.lineTo( data[2], data[3] );
 				ctx.stroke();
 			}
+			/*
+			function clearAttacks(timelabel) {
+				var canvases = $( "canvas" );
+				for (var i = 0; i < canvases.length; i++ ) {
+					if ( canvases[i].attr( "timelabel" ) != timelabel) {
+						canvases[i].remove();
+					}
+				}
+			}
+			*/
 			
 			// Process unit - animate
 			function processUnit(data,type) {
