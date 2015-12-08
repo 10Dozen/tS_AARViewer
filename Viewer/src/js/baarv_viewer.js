@@ -153,6 +153,9 @@
 				});
 			};
 			
+			// ***************************
+			// Control Actors
+			// ***************************
 			// Rotate Image
 			jQuery.fn.rotate = function(degrees) {
 				$(this).css({'-webkit-transform' : 'rotate('+ degrees +'deg)',
@@ -270,6 +273,10 @@
 				}
 			};
 			
+			
+			// ***************************
+			// GUI Controls and called functions
+			// ***************************
 			// Play AAR frame (1 second)
 			function playReportStep (step) {
 				var units = aarData.timeline[step][0];
