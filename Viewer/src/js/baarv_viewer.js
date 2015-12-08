@@ -188,6 +188,22 @@
 				$( unit ).css({ "left": posx, "top": posy });	
 			}
 			
+			function drawAttack(data, timelabel) {
+				var id = "av-" + timelabel + "-" + data[0] + data[1] + data[2] + data[3];
+				$( ".panzoom" ).append(
+					"<canvas id='" + id 
+					+ "' + width='" + aarMapSize[0] 
+					+ "' height='" + aarMapSize[1] 
+					+ "'></canvas>" 
+				);
+				
+				var ctx = $( "#" + id ).getContext('2d');
+				ctx.beginPath();
+				ctx.moveTo( data[0], data[1] );
+				ctx.lineTo( data[2], data[3] );
+				ctx.stroke();
+			}
+			
 			// Process unit - animate
 			function processUnit(data,type) {
 				// 0: unit/vehicle data
