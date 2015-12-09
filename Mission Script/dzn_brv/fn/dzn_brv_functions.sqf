@@ -1,5 +1,3 @@
-
-
 dzn_brv_getCoreMetadata = {
 	// Return basic misison Metadata
 	diag_log format [
