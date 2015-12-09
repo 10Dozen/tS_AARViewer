@@ -93,7 +93,8 @@
 				$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
 				$( "#mrk-unit-" + id ).attr({
 					"side": side,
-					"type": type					
+					"type": type,
+					"name": name
 				});
 			}
 			
@@ -261,9 +262,9 @@
 					cargo = data[6];					
 					if (owner > -1 || cargo > -1) {
 						var unitData = getUnitMetadata(owner);
-						var unitName = unitData[1];						
+						var unitName = $( unit ).attr("name") + " (" + unitData[1] + ")";						
 						var unitSide = unitData[2];
-						if (cargo > 0) { unitName = unitName + " +" + cargo; }						
+						if (cargo > 0) { unitName = $( unit ).attr("name") + " (" + unitData[1] + " +" + cargo + ")"; }						
 						$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh.svg" )						
 						$( unit + "> span").html( unitName );
 					} else {
