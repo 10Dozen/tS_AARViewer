@@ -1,41 +1,4 @@
-// 6 - bullet,  0 - unit
-dzn_brv_addAttackEH = {
-	_this addEventHandler [
-		"Fired"
-		, {
-			if (!isNil { (_this select 0) getVariable format ["dzn_brv_av%1", dzn_brv_timeLabel] }) exitWith {};
-			(_this select 0) setVariable [ format ["dzn_brv_av%1", dzn_brv_timeLabel], true ];
-			
-			[ _this select 0, _this select 6, dzn_brv_timeLabel ] spawn {
-				params["_unit", "_proj", "_timelabel"];
-				private ["_from", "_to", "_dist"];
-				
-				_from = getPosASL _unit;
-				_to = getPosASL _proj;
-				_dist = 0;
-				waitUntil {
-					if !(isNull _proj) then { 
-						_to = getPosASL _proj;
-						_dist = _from distance2d _to;
-					};
-					isNull _proj || { _dist > dzn_brv_attackVectorMaxDistance }
-				};
-				
-				diag_log format [
-					"<AAR><%1><av>[%2,%3,%4,%5]</av></%1></AAR>"
-					, _timelabel
-					, round(_from select 0)
-					, round(_from select 1)
-					, round(_to select 0)
-					, round(_to select 1)
-				];
-				
-				waitUntil { dzn_brv_timeLabel > (_timelabel + 2) };				
-				_unit setVariable [ format ["dzn_brv_av%1", _timelabel], nil ];
-			};
-		}
-	];
-};
+
 
 dzn_brv_getCoreMetadata = {
 	// Return basic misison Metadata
@@ -73,7 +36,7 @@ dzn_brv_collectMetadata = {
 		dzn_brv_unitList pushBack _x;
 	} forEach _units;
 	
-	_vehs = [vehicles, {!(_x in dzn_brv_vehList)}] call BIS_fnc_conditionalSelect;
+	_vehs = [vehicles, { !(_x in dzn_brv_vehList) && !(typeOf _x in ["Ground"])}] call BIS_fnc_conditionalSelect;
 	{
 		_name = format [
 			"%1%2"			
@@ -181,4 +144,42 @@ dzn_brv_collectUnitsData = {
 	{
 		[_x,_timelabel] call dzn_brv_collectData;
 	} forEach _units;
+};
+
+dzn_brv_addAttackEH = {
+	_this addEventHandler [
+		"Fired"
+		, {
+			if (!isNil { (_this select 0) getVariable format ["dzn_brv_av%1", dzn_brv_timeLabel] }) exitWith {};
+			(_this select 0) setVariable [ format ["dzn_brv_av%1", dzn_brv_timeLabel], true ];
+			
+			[ _this select 0, _this select 6, dzn_brv_timeLabel ] spawn {
+				params["_unit", "_proj", "_timelabel"];
+				private ["_from", "_to", "_dist"];
+				
+				_from = getPosASL _unit;
+				_to = getPosASL _proj;
+				_dist = 0;
+				waitUntil {
+					if !(isNull _proj) then { 
+						_to = getPosASL _proj;
+						_dist = _from distance2d _to;
+					};
+					isNull _proj || { _dist > dzn_brv_attackVectorMaxDistance }
+				};
+				
+				diag_log format [
+					"<AAR><%1><av>[%2,%3,%4,%5]</av></%1></AAR>"
+					, _timelabel
+					, round(_from select 0)
+					, round(_from select 1)
+					, round(_to select 0)
+					, round(_to select 1)
+				];
+				
+				waitUntil { dzn_brv_timeLabel > (_timelabel + 2) };				
+				_unit setVariable [ format ["dzn_brv_av%1", _timelabel], nil ];
+			};
+		}
+	];
 };
