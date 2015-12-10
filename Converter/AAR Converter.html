@@ -9,26 +9,6 @@
 		<script src="src/js/jquery.min.js"></script>
 		<script src="src/js/jquery-ui.min.js"></script>
 		<script src="src/js/baarv_converter.js"></script>
-	<style>
-			#report-selector {
-				position: absolute;
-				/* top: -1000px; */
-			}
-			
-			#report-selector ul li {
-				margin: 6px 0px;
-				padding: 0px 20px;
-				font-size: 20px;
-				background-color: #6798D2;
-				color: white;
-			}
-			
-			#report-selector ul li:hover {
-				background-color: #9BC34E;
-				color: black;
-				cursor: pointer;
-			}
-		</style>
 	</head>
 	<body>
 		<div id="header">
@@ -39,20 +19,12 @@
 				<button id="uploader-convert" onClick="convertToAAR()" disabled="true">Convert</button>
 				<label>Select RPT file to convert...</label>
 				<div id="uploader">
-					<input type='file' accept='text/plain' onchange='openFile(event)'>
-					
+					<input type='file' accept='.rpt,.txt' onchange='openFile(event)'>					
 				</div>
 			</div>
 		</div>
 		
-		<div id="report-selector">
-			<ul>
-				<li>12:23:50 Stratis DZN Test Mission Name</li>
-				<li>18:23:50 Stratis DZN Test Mission Name 2</li>
-				<li>18:23:50 Stratis DZN Test Mission Name 2</li>
-				<li>18:23:50 Stratis DZN Test Mission Name 2</li>
-			</ul>
-		</div>
+		<div id="report-selector"><ul></ul></div>
 		
 		<div id="result-form">
 			<ul>
