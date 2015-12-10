@@ -34,13 +34,13 @@
 									meta.logTime = parsedMeta[1].slice(0,-2);
 									
 									$( "#report-selector > ul" ).append(
-										"<li onClick='reportGuid = \"" + meta.guid + "\"'>" + meta.logTime + " - (" + meta.island + ") " + meta.name + "</li>"									
+										"<li onClick='chooseReportToConvert(\"" + meta.guid + "\"); '>" + meta.logTime + " - (" + meta.island + ") " + meta.name + "</li>"									
 									);
 								}
 								
 								$( "#header-status > label" ).html( "Select AAR to Convert!" );
 								$( "#header-status" ).css( "background-color", "#9BC34E");
-								$( "#report-selector" ).css( "top", "300px" );
+								$( "#report-selector" ).css( "top", "75px" );
 								
 							}
 						} else {
@@ -57,6 +57,17 @@
 					}
 				};				
 				reader.readAsText(input.files[0]);
+			};
+			
+			function chooseReportToConvert(guid) {
+				reportGuid = guid;
+				
+				$( "#report-selector > ul" ).html("");
+				$( "#report-selector" ).css("top", "-1000px");
+				
+				$( "#header-status > label" ).html( "Ready for convertion!" );
+				$( "#header-status" ).css( "background-color", "#9BC34E");
+				$( "#uploader-convert" ).removeAttr( "disabled" );			
 			};
 			
 			var aarData, a;
