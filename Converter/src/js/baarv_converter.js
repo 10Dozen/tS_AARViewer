@@ -1,10 +1,13 @@
-var rptData = "";
+			var rptData = "";
+			
 			// Open file
 			var openFile = function(event) { 
 				$( "#result-form" ).css( "top", "-1000px" );
 				$( "#mission-desc" ).val("");
 				$( "#mission-date" ).val("");
 				$( "#output" ).val("");
+				$( "#uploader-convert" ).attr( "disabled", "true" );
+				
 				
 				var input = event.target; 
 				var reader = new FileReader(); 
@@ -13,10 +16,27 @@ var rptData = "";
 					rptData = text;
 					if (text.length > 0) {
 						console.log( "Read!");
-						if (rptData.search(/<AAR>.*<\/AAR>/) > -1) {
-							$( "#header-status > label" ).html( "Ready for convertion!" );
-							$( "#header-status" ).css( "background-color", "#9BC34E");
-							$( "#uploader-convert" ).removeAttr( "disabled" );
+						var listOfDirtyMetadata = rptData.match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/ig); 
+						
+						if (listOfDirtyMetadata.length > -1) {
+							if (listOfDirtyMetadata.length == 1) {
+								$( "#header-status > label" ).html( "Ready for convertion!" );
+								$( "#header-status" ).css( "background-color", "#9BC34E");
+								$( "#uploader-convert" ).removeAttr( "disabled" );
+							} else {
+								var listOfMetadata = [];
+								for (var i = 0; i < listOfDirtyMetadata.length; i++) {
+									var parsedMeta = listOfDirtyMetadata[i].match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/i);
+									var meta = JSON.parse( parsedMeta[2] )
+									meta.logTime = parsedMeta[1].slice(0,-2);
+									console.log(meta);
+									listOfMetadata.push( meta );
+								}
+								console.log(listOfMetadata);
+								
+								$( "#header-status > label" ).html( "Select AAR to Convert!" );
+								$( "#header-status" ).css( "background-color", "#9BC34E");								
+							}							
 						} else {
 							console.log( "Not an AAR!" );
 							$( "#header-status > label" ).html( "File does not contain AAR data!" );
