@@ -33,7 +33,7 @@
 									var meta = JSON.parse( parsedMeta[2] )
 									meta.logTime = parsedMeta[1].slice(0,-2);
 									
-									$( "#report-selector" ).append(
+									$( "#report-selector > ul" ).append(
 										"<li onClick='reportGuid = \"" + meta.guid + "\"'>" + meta.logTime + " - (" + meta.island + ") " + meta.name + "</li>"									
 									);
 								}
