@@ -37,11 +37,15 @@ dzn_brv_addAttackEH = {
 };
 
 dzn_brv_getCoreMetadata = {
+	// AAR-Stratis-21424
+	dzn_brv_guid = worldName + round(random(10)) + round(random(10)) + round(random(10)) + round(random(10)) + round(random(10));
+
 	// Return basic misison Metadata
 	diag_log format [
-		'<AAR><meta><core>{ "island": "%1", "name": "%2" }</core></meta></AAR>'
+		'<AAR-%3><meta><core>{ "island": "%1", "name": "%2", "guid": "%3" }</core></meta></AAR-%3>'
 		,worldName
-		,briefingName	
+		,briefingName
+		,dzn_brv_guid
 	];
 };
 
@@ -51,7 +55,7 @@ dzn_brv_collectMetadata = {
 	_units = [allUnits, {!(_x in dzn_brv_unitList)}] call BIS_fnc_conditionalSelect;	
 	{
 		diag_log format [
-			'<AAR><meta><unit>{ "unitMeta": [%1,"%2","%3",%4] }</unit></meta></AAR>'
+			'<AAR-%5><meta><unit>{ "unitMeta": [%1,"%2","%3",%4] }</unit></meta></AAR-%5>'
 			, dzn_brv_unitIdMax
 			, if (isPlayer _x) then { name _x } else { "" }
 			, switch (side _x) do {
@@ -62,6 +66,7 @@ dzn_brv_collectMetadata = {
 				default { "unknown" };
 			}
 			, if (isPlayer _x) then { 1 } else { 0 }
+			,dzn_brv_guid
 		];
 		
 		_x setVariable ["dzn_brv_id", dzn_brv_unitIdMax];
@@ -85,9 +90,10 @@ dzn_brv_collectMetadata = {
 		];
 		
 		diag_log format [
-			'<AAR><meta><veh>{ "vehMeta": [%1,"%2"] }</veh></meta></AAR>'
+			'<AAR-%3><meta><veh>{ "vehMeta": [%1,"%2"] }</veh></meta></AAR-%3>'
 			, dzn_brv_vehIdMax
-			, _name		
+			, _name	
+			,dzn_brv_guid
 		];
 	
 		_x setVariable ["dzn_brv_id", dzn_brv_vehIdMax];
@@ -125,7 +131,7 @@ dzn_brv_collectData = {
 		};
 	
 		diag_log format [
-			'<AAR><%1><unit>[%2,%3,%4,%5,%6,%7]</unit></%1></AAR>'
+			'<AAR-%8><%1><unit>[%2,%3,%4,%5,%6,%7]</unit></%1></AAR-%8>'
 			,_timelabel
 			,_id
 			,_posx
@@ -133,11 +139,12 @@ dzn_brv_collectData = {
 			,_dir
 			,_alive
 			,_vehID
+			,dzn_brv_guid
 		];
 	} else {
 		_crewData = _unit call dzn_brv_getVehiceCargoAndOwnerId;
 		diag_log format [
-			'<AAR><%1><veh>[%2,%3,%4,%5,%6,%7,%8]</veh></%1></AAR>'
+			'<AAR-%9><%1><veh>[%2,%3,%4,%5,%6,%7,%8]</veh></%1></AAR-%9>'
 			,_timelabel
 			,_id
 			,_posx
@@ -146,6 +153,7 @@ dzn_brv_collectData = {
 			,_alive
 			,_crewData select 0
 			,_crewData select 1
+			,dzn_brv_guid
 		];	
 	};
 };
