@@ -79,6 +79,7 @@
 				$( "#header-status > label" ).html( "In progress..." );
 				
 				// Here we should create reg exp: /<AAR-Stratis-44212>.*<\/AAR-Stratis-44212>/ig
+				// var re = new RegExp( "<AAR-Stratis-54321>.*<\/AAR-Stratis-54321>", "g" )
 				var rptItems = rptData.match(/<AAR>.*<\/AAR>/ig );
 				var metadataCore = JSON.parse( ( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2] ); 
 				
