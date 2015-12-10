@@ -1,4 +1,5 @@
 			var rptData = "";
+			var reportGuid = "";
 			
 			// Open file
 			var openFile = function(event) { 
@@ -7,7 +8,7 @@
 				$( "#mission-date" ).val("");
 				$( "#output" ).val("");
 				$( "#uploader-convert" ).attr( "disabled", "true" );
-				
+				reportGuid = "";
 				
 				var input = event.target; 
 				var reader = new FileReader(); 
@@ -20,6 +21,8 @@
 						
 						if (listOfDirtyMetadata.length > -1) {
 							if (listOfDirtyMetadata.length == 1) {
+								reportGuid = JSON.parse( (rptData.match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/i)[2]) ).guid;
+								
 								$( "#header-status > label" ).html( "Ready for convertion!" );
 								$( "#header-status" ).css( "background-color", "#9BC34E");
 								$( "#uploader-convert" ).removeAttr( "disabled" );
@@ -78,9 +81,8 @@
 				
 				$( "#header-status > label" ).html( "In progress..." );
 				
-				// Here we should create reg exp: /<AAR-Stratis-44212>.*<\/AAR-Stratis-44212>/ig
-				// var re = new RegExp( "<AAR-Stratis-54321>.*<\/AAR-Stratis-54321>", "g" )
-				var rptItems = rptData.match(/<AAR>.*<\/AAR>/ig );
+				var re = new RegExp( "<AAR-" + reportGuid + ">.*<\/AAR-" + reportGuid + ">", "g" )
+				var rptItems = rptData.match( re );
 				var metadataCore = JSON.parse( ( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2] ); 
 				
 				logMsg( "Metadata: Core [ Processing ]" );
