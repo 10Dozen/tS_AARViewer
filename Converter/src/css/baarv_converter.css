@@ -30,6 +30,24 @@ body {
 	padding: 12px 0px 12px 90px;
 }
 
+#report-selector {
+	position: absolute;
+	top: -1000px;
+}
+
+#report-selector ul li {
+	margin: 6px 0px;
+	padding: 4px 20px;
+	font-size: 20px;
+	background-color: #6798D2;
+	color: white;
+	cursor: pointer;
+}
+
+#report-selector ul li:hover {
+	background-color: rgb(155, 195, 78);
+}
+
 /* ****************
 	Form 
 **************** */
