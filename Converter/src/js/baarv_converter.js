@@ -1,14 +1,30 @@
 			var rptData = "";
 			var reportGuid = "";
+			var aarData;
 			
-			// Open file
-			var openFile = function(event) { 
+			function resetForm() {
 				$( "#result-form" ).css( "top", "-1000px" );
 				$( "#mission-desc" ).val("");
 				$( "#mission-date" ).val("");
 				$( "#output" ).val("");
+				
+				$( "#report-selector" ).css( "top", "-1000px" );
+				$( "#report-selector > ul" ).html( "" );
+				
 				$( "#uploader-convert" ).attr( "disabled", "true" );
+				$( "#uploader-convert" ).removeAttr( "hidden" );
+				
+				$( "#header-status > label" ).html( "Select RPT file to convert..." );
+				$( "#header-status" ).css( "background-color", "#6798D2" )
+				
+				rptData = "";
 				reportGuid = "";
+				aarData = [];
+			}
+			
+			// Open file
+			var openFile = function(event) { 
+				resetForm();
 				
 				var input = event.target; 
 				var reader = new FileReader(); 
@@ -17,9 +33,9 @@
 					rptData = text;
 					if (text.length > 0) {
 						console.log( "Read!");
-						var listOfDirtyMetadata = rptData.match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/ig); 
 						
-						if (listOfDirtyMetadata.length > -1) {
+						var listOfDirtyMetadata = rptData.match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/ig);						
+						if ( listOfDirtyMetadata ) {
 							if (listOfDirtyMetadata.length == 1) {
 								reportGuid = JSON.parse( (rptData.match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/i)[2]) ).guid;
 								
@@ -31,17 +47,16 @@
 								for (var i = 0; i < listOfDirtyMetadata.length; i++) {
 									var parsedMeta = listOfDirtyMetadata[i].match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/i);
 									var meta = JSON.parse( parsedMeta[2] )
-									meta.logTime = parsedMeta[1].slice(0,-2);
-									
+									meta.logTime = parsedMeta[1].slice(0,-2);									
 									$( "#report-selector > ul" ).append(
 										"<li onClick='chooseReportToConvert(\"" + meta.guid + "\"); '>" + meta.logTime + " - (" + meta.island + ") " + meta.name + "</li>"									
 									);
 								}
 								
+								$( "#uploader-convert" ).attr( "hidden", "true" );
 								$( "#header-status > label" ).html( "Select AAR to Convert!" );
 								$( "#header-status" ).css( "background-color", "#9BC34E");
 								$( "#report-selector" ).css( "top", "75px" );
-								
 							}
 						} else {
 							console.log( "Not an AAR!" );
@@ -64,13 +79,9 @@
 				
 				$( "#report-selector > ul" ).html("");
 				$( "#report-selector" ).css("top", "-1000px");
-				
-				$( "#header-status > label" ).html( "Ready for convertion!" );
-				$( "#header-status" ).css( "background-color", "#9BC34E");
-				$( "#uploader-convert" ).removeAttr( "disabled" );			
+				convertToAAR();
 			};
 			
-			var aarData, a;
 			function convertToAAR() {
 				 aarData = {
 					"metadata": {
