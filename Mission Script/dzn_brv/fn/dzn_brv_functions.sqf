@@ -75,6 +75,10 @@ dzn_brv_collectMetadata = {
 		
 		dzn_brv_unitIdMax = dzn_brv_unitIdMax + 1;
 		dzn_brv_unitList pushBack _x;
+		
+		if (dzn_brv_timeLabel > dzn_brv_nonPlayerLogInterval) then {
+			[_x, "unit"] call dzn_brv_collectZeroUnitData;
+		};
 	} forEach _units;
 	
 	_vehs = [vehicles, { !(_x in dzn_brv_vehList) && !(typeOf _x in dzn_brv_vehicleTypesToExclude)}] call BIS_fnc_conditionalSelect;
@@ -102,6 +106,10 @@ dzn_brv_collectMetadata = {
 		
 		dzn_brv_vehIdMax = dzn_brv_vehIdMax + 1;
 		dzn_brv_vehList pushBack _x;
+		
+		if (dzn_brv_timeLabel > dzn_brv_nonPlayerLogInterval) then {
+			[_x, "veh"] call dzn_brv_collectZeroUnitData;
+		};
 	} forEach _vehs;
 };
 
@@ -189,4 +197,23 @@ dzn_brv_collectUnitsData = {
 	{
 		[_x,_timelabel] call dzn_brv_collectData;
 	} forEach _units;
+};
+
+dzn_brv_collectZeroUnitData = {
+	params ["_unit", "_type"];
+	private["_id"];
+	_id = _unit getVariable "dzn_brv_id";
+	if (_type == "unit") then {
+		diag_log format [
+			'<AAR-%1><0><unit>[%2,0,0,0,1,-1]</unit></0></AAR-%8>'
+			,dzn_brv_guid
+			,_id
+		];
+	} else {
+		diag_log format [
+			'<AAR-%1><0><veh>[%2,0,0,0,1,-1,-1]</veh></0></AAR-%1>'
+			,dzn_brv_guid
+			,_id
+		];	
+	};
 };
