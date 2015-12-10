@@ -32,14 +32,17 @@
 									var parsedMeta = listOfDirtyMetadata[i].match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/i);
 									var meta = JSON.parse( parsedMeta[2] )
 									meta.logTime = parsedMeta[1].slice(0,-2);
-									console.log(meta);
-									listOfMetadata.push( meta );
+									
+									$( "#report-selector" ).append(
+										"<li onClick='reportGuid = \"" + meta.guid + "\"'>" + meta.logTime + " - (" + meta.island + ") " + meta.name + "</li>"									
+									);
 								}
-								console.log(listOfMetadata);
 								
 								$( "#header-status > label" ).html( "Select AAR to Convert!" );
-								$( "#header-status" ).css( "background-color", "#9BC34E");								
-							}							
+								$( "#header-status" ).css( "background-color", "#9BC34E");
+								$( "#report-selector" ).css( "top", "300px" );
+								
+							}
 						} else {
 							console.log( "Not an AAR!" );
 							$( "#header-status > label" ).html( "File does not contain AAR data!" );
