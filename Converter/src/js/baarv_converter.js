@@ -189,6 +189,11 @@
 						var lastKnown = [];
 						var actualKnown = [];
 						var stepsToInterpolate = [];
+						
+						// **************
+						// Looks like if we start to seek for timeframes not from 0 - it will easily avoid interpolation of afterspawned units
+						// But it will cause few second of lag of bots, but who carse
+						// ***********
 						for (var j = 0; j < aarData.timeline.length; j++) {
 							for (var k = 0; k < aarData.timeline[j][unitTypeId].length; k++) {
 								if (aarData.timeline[j][unitTypeId][k][0] == unitId || j == (aarData.timeline.length - 1)) {
