@@ -38,7 +38,8 @@ dzn_brv_addAttackEH = {
 
 dzn_brv_getCoreMetadata = {
 	// AAR-Stratis-21424
-	dzn_brv_guid = worldName + round(random(9)) + round(random(9)) + round(random(9)) + round(random(9)) + round(random(9));
+	#define RNUM	str(round(random 9))
+	dzn_brv_guid = worldName + RNUM + RNUM + RNUM + RNUM + RNUM;
 
 	// Return basic misison Metadata
 	diag_log format [
