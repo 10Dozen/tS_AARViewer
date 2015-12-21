@@ -89,8 +89,13 @@
 				var id = data[0];
 				var name = data[1];
 				var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
-				var icon = "src/icons/" + side + "_" + type + ".svg";
+				var icon = "src/icons/" + side + "_" + type + ".svg";				
 				$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
+				$( "#mrk-unit-" + id ).attr({
+					"side": side,
+					"type": type,
+					"name": name
+				});
 			}
 			
 			// Init AAR
@@ -153,9 +158,6 @@
 				});
 			};
 			
-			// ***************************
-			// Control Actors
-			// ***************************
 			// Rotate Image
 			jQuery.fn.rotate = function(degrees) {
 				$(this).css({'-webkit-transform' : 'rotate('+ degrees +'deg)',
@@ -250,15 +252,19 @@
 						$( unit ).css({ "left": "-20px","top": "-20px" });
 					}
 					
-					if (alive < 1) { $( unit + "> img" ).attr( "src", "src/icons/dead_unit.svg" ) }
+					if (alive < 1) { 
+						$( unit + "> img" ).attr( "src", "src/icons/dead_unit.svg" ) 
+					} else {
+						$( unit + "> img" ).attr( "src", "src/icons/" + $( unit ).attr("side") + "_" + $( unit ).attr("type") + ".svg" );						
+					}
 				} else {
 					owner = data[5];
 					cargo = data[6];					
 					if (owner > -1 || cargo > -1) {
 						var unitData = getUnitMetadata(owner);
-						var unitName = unitData[1];						
+						var unitName = $( unit ).attr("name") + " (" + unitData[1] + ")";						
 						var unitSide = unitData[2];
-						if (cargo > 0) { unitName = unitName + " +" + cargo; }						
+						if (cargo > 0) { unitName = $( unit ).attr("name") + " (" + unitData[1] + " +" + cargo + ")"; }						
 						$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh.svg" )						
 						$( unit + "> span").html( unitName );
 					} else {
@@ -273,10 +279,6 @@
 				}
 			};
 			
-			
-			// ***************************
-			// GUI Controls and called functions
-			// ***************************
 			// Play AAR frame (1 second)
 			function playReportStep (step) {
 				var units = aarData.timeline[step][0];

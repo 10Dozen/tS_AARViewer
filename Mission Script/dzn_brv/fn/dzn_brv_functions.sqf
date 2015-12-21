@@ -1,4 +1,3 @@
-// 6 - bullet,  0 - unit
 dzn_brv_addAttackEH = {
 	_this addEventHandler [
 		"Fired"
@@ -73,7 +72,7 @@ dzn_brv_collectMetadata = {
 		dzn_brv_unitList pushBack _x;
 	} forEach _units;
 	
-	_vehs = [vehicles, {!(_x in dzn_brv_vehList)}] call BIS_fnc_conditionalSelect;
+	_vehs = [vehicles, { !(_x in dzn_brv_vehList) && !(typeOf _x in dzn_brv_vehicleTypesToExclude)}] call BIS_fnc_conditionalSelect;
 	{
 		_name = format [
 			"%1%2"			
@@ -93,6 +92,7 @@ dzn_brv_collectMetadata = {
 	
 		_x setVariable ["dzn_brv_id", dzn_brv_vehIdMax];
 		_x setVariable ["dzn_brv_type", "veh"];
+		_x call dzn_brv_addAttackEH;
 		
 		dzn_brv_vehIdMax = dzn_brv_vehIdMax + 1;
 		dzn_brv_vehList pushBack _x;
