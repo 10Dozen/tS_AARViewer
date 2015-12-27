@@ -2,7 +2,27 @@
 			var aarCurrentTime = 0;
 			var aarPlaying = false;
 			var aarAutoStepper;
-			var aarMapSize = [];
+			var aarMapParam = [];
+			
+			// getMapParams(aarData.metadata.island)
+			function getMapParams(name) {
+				var params;				
+				for (var i = 0; i < maps.length; i++) {
+					if (maps[i][0].toLowerCase() == name.toLowerCase()) {
+						params = maps[i][1];
+					};
+				};				
+				if (!params) { 
+					console.log("Island config not found!"); 
+					params =  { "size": 0, "scale": 1, "img": "" } 
+				};
+				
+				return params;
+			};
+			
+			function getScaledVal(value) {
+				return Math.round(value / aarMapParam.scale)
+			};
 			
 			// Open file
 			var openFile = function(event) {
@@ -96,6 +116,11 @@
 					"type": type,
 					"name": name
 				});
+				$( ".icn" ).css({
+					"width": getScaledVal(32) + "px",
+					"height": getScaledVal(32) + "px",
+					"font-size": getScaledVal(16) + "px"
+				});
 			}
 			
 			// Init AAR
@@ -106,13 +131,10 @@
 				$( "#player-step" ).html( "<span>0 s</span> / " + getTimeLabel(aarData.metadata.time) );
 				$( "#slider").slider( "option", "max", aarData.metadata.time );
 				$( "#player-line" ).css( "top", "12px" );
+			
+				aarMapParam = getMapParams(aarData.metadata.island);
 				
-				var bgImg = "";
-				switch (aarData.metadata.island.toLowerCase()) {
-					case "stratis": bgImg = "src/maps/map_stratis_8192.png"; aarMapSize = [8132, 8132]; break;
-					//default: bgImg = "src/img/map_stratis_8192.png";
-				}				
-				$( ".panzoom > img" ).attr( "src", bgImg );				
+				$( ".panzoom > img" ).attr( "src", aarMapParam.img );				
 				panzoomInit();
 				
 				// Spawn			
@@ -173,7 +195,7 @@
 				for (var i = 0; i < aarData.metadata.objects.units.length; i++) {
 					if ( aarData.metadata.objects.units[i][0] == id ) {
 						output = aarData.metadata.objects.units[i];
-						i = 100;
+						i = aarData.metadata.objects.units.length;
 					}					
 				}
 				return output;				
@@ -184,15 +206,15 @@
 				for (var i = 0; i < aarData.metadata.objects.vehs.length; i++) {
 					if ( aarData.metadata.objects.vehs[i][0] == id ) {
 						output = aarData.metadata.objects.vehs[i];
-						i = 100;
+						i = aarData.metadata.objects.vehs.length;
 					}					
 				}
 				return output			
 			}
 			
 			function setGridPos(unit, data) {
-				var posx = data[1] - ( $( unit ).outerWidth() /2 );				
-				var posy = aarMapSize[1] - data[2] + 42;
+				var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );				
+				var posy = aarMapParam.size - getScaledVal( data[2] ) - getScaledVal( 16 );
 				$( unit ).css({ "left": posx, "top": posy });	
 			}
 			
@@ -200,8 +222,8 @@
 				var id = "av-" + timelabel + "-" + data[0] + data[1] + data[2] + data[3];
 				$( ".panzoom" ).append(
 					"<canvas id='" + id 
-					+ "' width='" + aarMapSize[0] 
-					+ "' height='" + aarMapSize[1] 
+					+ "' width='" + aarMapParam.size
+					+ "' height='" + aarMapParam.size
 					+ "' timelabel='" + timelabel
 					+ "'></canvas>"
 				);
@@ -213,13 +235,14 @@
 				
 				var ctx = $( "#" + id )[0].getContext('2d');
 				ctx.beginPath();
-				ctx.moveTo( data[0], aarMapSize[1] - data[1] + 58 );
-				ctx.lineTo( data[2], aarMapSize[1] - data[3] + 58 );
-				ctx.lineWidth = 3;
+				ctx.moveTo( getScaledVal( data[0] ), aarMapParam.size - getScaledVal( data[1] ) );
+				ctx.lineTo( getScaledVal( data[2] ), aarMapParam.size - getScaledVal( data[3] ) );
+				ctx.lineWidth = getScaledVal( 3 );
 				ctx.strokeStyle = '#FF6000';
 				ctx.lineCap = 'round';
 				ctx.stroke();
 			}
+			
 			
 			function clearAttacks(timelabel) {
 				$( "canvas" ).each(function () {
@@ -349,4 +372,37 @@
 		
 			function setPauseButtonIcon() {
 				$( "#player-step-play" ).button( "option", {label: "play",icons: {primary: "ui-icon-play"} });
+			}
+
+			var whereAreUnitsState = false;
+			function whereAreUnits() {
+				var whereAreUnitsCanvas = "where-are-units-canvas";
+				if (whereAreUnitsState) {
+					whereAreUnitsState = false;
+					$( "#" + whereAreUnitsCanvas ).remove();
+				} else {
+					whereAreUnitsState = true;
+					$( ".panzoom" ).append(
+						"<canvas id='" + whereAreUnitsCanvas + "'"
+						+ "' width='" + aarMapParam.size
+						+ "' height='" + aarMapParam.size
+						+ "'></canvas>"
+					);
+					$( "#" + whereAreUnitsCanvas ).css({
+						"top": "0px",
+						"left": "0px"
+					});
+					
+					for (var i = 0; i < aarData.timeline[aarCurrentTime][0].length; i++) {
+						var icn = aarData.timeline[aarCurrentTime][0][i];
+						var ctx = $( "#" + whereAreUnitsCanvas )[0].getContext('2d');
+						ctx.beginPath();
+						ctx.moveTo( 0, 0 );
+						ctx.lineTo( getScaledVal( icn[1] ), aarMapParam.size - getScaledVal( icn[2] ) );
+						ctx.lineWidth = 3;
+						ctx.strokeStyle = '#8E00FF';
+						ctx.lineCap = 'round';
+						ctx.stroke();
+					};					
+				}				
 			}

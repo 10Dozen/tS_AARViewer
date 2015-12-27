@@ -7,6 +7,7 @@
 		<link rel="stylesheet" href="src/css/jquery-ui.css">
 		<link rel="stylesheet" href="src/css/baarv_viewer.css">
 		
+		<script src="config.ini"></script>
 		<script src="src/js/jquery.min.js"></script>
 		<script src="src/js/jquery-ui.min.js"></script>
 		<script src="src/js/jquery.panzoom.js"></script>
@@ -22,8 +23,7 @@
 					slide: function( event, ui ) {
 						$( "#player-step > span" ).html( getTimeLabel(ui.value) );
 						playReportStep ( ui.value ); 
-						aarCurrentTime = ui.value;
-						console.log( "Player: Rewind to " + (aarCurrentTime) + " second" );
+						aarCurrentTime = ui.value;						
 					},
 					change: function( event, ui ) {
 						if (ui.value == aarData.metadata.time) { stopReport(); }
@@ -74,7 +74,7 @@
 			<div id="player-indicator">
 				<label id="player-step"><span>0 sec</span> / 10 sec</label>					
 			</div>
-			<button id="player-info">Info</button>
+			<button id="player-info" onClick="whereAreUnits()">Info</button>
 			<div id="player-header"> Loading... </div>
 		</div>
 		
