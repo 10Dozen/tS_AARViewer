@@ -118,7 +118,8 @@
 				});
 				$( ".icn" ).css({
 					"width": getScaledVal(32) + "px",
-					"height": getScaledVal(32) + "px"
+					"height": getScaledVal(32) + "px",
+					"font-size": getScaledVal(16) + "px"
 				});
 			}
 			
@@ -241,6 +242,7 @@
 				ctx.lineCap = 'round';
 				ctx.stroke();
 			}
+			
 			
 			function clearAttacks(timelabel) {
 				$( "canvas" ).each(function () {
@@ -370,4 +372,37 @@
 		
 			function setPauseButtonIcon() {
 				$( "#player-step-play" ).button( "option", {label: "play",icons: {primary: "ui-icon-play"} });
+			}
+
+			var whereAreUnitsState = false;
+			function whereAreUnits() {
+				var whereAreUnitsCanvas = "where-are-units-canvas";
+				if (whereAreUnitsState) {
+					whereAreUnitsState = false;
+					$( "#" + whereAreUnitsCanvas ).remove();
+				} else {
+					whereAreUnitsState = true;
+					$( ".panzoom" ).append(
+						"<canvas id='" + whereAreUnitsCanvas + "'"
+						+ "' width='" + aarMapParam.size
+						+ "' height='" + aarMapParam.size
+						+ "'></canvas>"
+					);
+					$( "#" + whereAreUnitsCanvas ).css({
+						"top": "0px",
+						"left": "0px"
+					});
+					
+					for (var i = 0; i < aarData.timeline[aarCurrentTime][0].length; i++) {
+						var icn = aarData.timeline[aarCurrentTime][0][i];
+						var ctx = $( "#" + whereAreUnitsCanvas )[0].getContext('2d');
+						ctx.beginPath();
+						ctx.moveTo( 0, 0 );
+						ctx.lineTo( getScaledVal( icn[1] ), aarMapParam.size - getScaledVal( icn[2] ) );
+						ctx.lineWidth = 3;
+						ctx.strokeStyle = '#8E00FF';
+						ctx.lineCap = 'round';
+						ctx.stroke();
+					};					
+				}				
 			}
