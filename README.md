@@ -1,7 +1,7 @@
 # BAARV
 Version: 0.3
 
-#### Loggine Mission Scripts
+#### Mission Scripts Logger
 SQF scripts to collect units data during the mission to Arma's RPT file (e.g. C:\Users\MyUser\AppData\Local\Arma 3). 
 <br />Can be easily disabled by Mission Parameters.
 
