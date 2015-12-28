@@ -2,7 +2,7 @@
 Version: 0.3
 
 ## What it is?
-This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirement: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
+This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirements: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
 
 #### Mission Scripts Logger
 Server-side SQF scripts to collect units data during the mission to Arma's RPT file (e.g. C:\Users\MyUser\AppData\Local\Arma 3). 
