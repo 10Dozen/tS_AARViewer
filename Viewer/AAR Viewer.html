@@ -22,8 +22,9 @@
 					max: 100,
 					slide: function( event, ui ) {
 						$( "#player-step > span" ).html( getTimeLabel(ui.value) );
-						playReportStep ( ui.value ); 
-						aarCurrentTime = ui.value;						
+						playReportStep ( ui.value );
+						aarCurrentTime = ui.value;
+						stopReport();
 					},
 					change: function( event, ui ) {
 						if (ui.value == aarData.metadata.time) { stopReport(); }
@@ -32,27 +33,13 @@
 				$( "#player-step > span" ).html( "0 s" );
 				
 				$( "#player-speed" ).selectmenu();
-				$( "#player-step-backward" ).button({text: false,icons: { primary: "ui-icon-seek-prev" }})
-					.click(function() { setPauseButtonIcon(); });
-				$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}})
-					.click(function() { setPauseButtonIcon(); });
-				$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}})
-					.click(function() {
-						var options;
-						if ( $( this ).text() === "play" ) {
-							options = {label: "pause",icons: {primary: "ui-icon-pause"}};
-						} else {
-							options = {label: "play",icons: {primary: "ui-icon-play"}};
-						}
-						$( this ).button( "option", options );
-					});
+				$( "#player-step-backward" ).button({text: false,icons: { primary: "ui-icon-seek-prev" }}).click(function() { stopReport(); });
+				$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}}).click(function() { stopReport(); });
+				$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}});
 				$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-info" }});
-				
 				$( "#player-line > button" ).attr( "disabled", "true" );
 			});
 		</script>
-		
-		
 	</head>
 	<body>
 		<div class="panzoom"><img name="map" src="" /></div>

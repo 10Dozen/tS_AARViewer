@@ -21,12 +21,13 @@ dzn_brv_addAttackEH = {
 				};
 				
 				diag_log format [
-					"<AAR><%1><av>[%2,%3,%4,%5]</av></%1></AAR>"
+					"<AAR-%6><%1><av>[%2,%3,%4,%5]</av></%1></AAR-%6>"
 					, _timelabel
 					, round(_from select 0)
 					, round(_from select 1)
 					, round(_to select 0)
 					, round(_to select 1)
+					, dzn_brv_guid
 				];
 				
 				waitUntil { dzn_brv_timeLabel > (_timelabel + 2) };				
@@ -120,7 +121,7 @@ dzn_brv_updateTimeLabel = {
 };
 
 dzn_brv_collectData = {
-	params["_unit","_timelabel"];
+	params["_unit","_timelabel","_isPlayerOnly"];
 	private["_id","_pos","_posx","_posy","_dir","_alive","_vehID"];
 	
 	_id = _unit getVariable "dzn_brv_id";
@@ -132,11 +133,14 @@ dzn_brv_collectData = {
 	
 	if (_unit getVariable "dzn_brv_type" == "unit") then {
 		_vehID = -1;
+		
+		// Unit in vehicls:
 		if (vehicle _unit != _unit && { (vehicle _unit) getVariable ["dzn_brv_id", -1] > -1 }) then {
 			_posx = 0;
 			_posy = 0;
 			_dir = 0;
 			_vehID = (vehicle _unit) getVariable "dzn_brv_id";
+			if (_isPlayerOnly) then { [(vehicle _unit),_timelabel] call dzn_brv_collectData; };
 		};
 	
 		diag_log format [
@@ -183,9 +187,7 @@ dzn_brv_getVehiceCargoAndOwnerId = {
 };
 
 dzn_brv_collectUnitsData = {
-	// @IsPlayerOnly spawn dzn_brv_collectUnitsData
-	// MAY BE USEFUL TO CALL THIS STUFF... BUT IT MAY BE HEAVY IMPACT ON PERFORMANCE
-	
+	// @IsPlayerOnly spawn dzn_brv_collectUnitsData	
 	params["_isPlayerOnly",["_timelabel",0]];
 	private["_units"];
 	
@@ -196,7 +198,7 @@ dzn_brv_collectUnitsData = {
 	};
 	
 	{
-		[_x,_timelabel] call dzn_brv_collectData;
+		[_x,_timelabel,_isPlayerOnly] call dzn_brv_collectData;
 	} forEach _units;
 };
 

@@ -118,9 +118,9 @@
 				});
 				$( ".icn" ).css({
 					"width": getScaledVal(32) + "px",
-					"height": getScaledVal(32) + "px",
-					"font-size": getScaledVal(16) + "px"
+					"height": getScaledVal(32) + "px"					
 				});
+				$( "#mrk-unit-" + id ).css( "font-size", getScaledVal(16) + "px" );
 			}
 			
 			// Init AAR
@@ -324,8 +324,7 @@
 			// Play AAR in auto mode
 			function playReportAuto () {
 				if (!aarPlaying) {
-					console.log( "Player: Playing" );
-					var aarPlaySpeed = $( "#player-speed" ).val()
+					stertReport();
 					aarAutoStepper = setInterval(
 						function () {
 							if (aarCurrentTime != aarData.metadata.time) {							
@@ -335,44 +334,42 @@
 								stopReport();
 							}
 						}
-						, 2000/aarPlaySpeed
+						, 2000/( $( "#player-speed" ).val() )
 					);
 				} else {
-					console.log( "Player: Stop" );
 					stopReport();
 				}			
 			};
 			
+			function stertReport() {
+				aarPlaying = true;
+				$( "#player-step-play" ).button( "option", { label: "pause", icons: {primary: "ui-icon-pause"} });
+				clearInterval( aarAutoStepper );
+			};
+			
 			function stopReport() {
 				aarPlaying = false;
-				setPauseButtonIcon();
-				console.log( "Player: Stopped" );
+				$( "#player-step-play" ).button( "option", {label: "play", icons: {primary: "ui-icon-play"} });
 				clearInterval( aarAutoStepper );
 			};
 			
 			function reportNextStep () {
-				if ( aarCurrentTime + 1 <= aarData.metadata.time ) {
-					console.log( "Player: Next step -- " + (aarCurrentTime + 1) + " second" );
+				if ( aarCurrentTime + 1 <= aarData.metadata.time ) {					
 					aarCurrentTime = aarCurrentTime + 1;
 					$( "#slider" ).slider({ value: aarCurrentTime });
 					$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
-					playReportStep ( aarCurrentTime );
+					playReportStep ( aarCurrentTime );					
 				}
 			};
 			
 			function reportPrevStep () {
 				if ( aarCurrentTime - 1 >= 0 ) {
-					console.log( "Player: Prev step -- " + (aarCurrentTime - 1) + " second" );
 					aarCurrentTime = aarCurrentTime - 1;
 					$( "#slider" ).slider({ value: aarCurrentTime });
 					$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
 					playReportStep ( aarCurrentTime );
 				}			
 			};
-		
-			function setPauseButtonIcon() {
-				$( "#player-step-play" ).button( "option", {label: "play",icons: {primary: "ui-icon-play"} });
-			}
 
 			var whereAreUnitsState = false;
 			function whereAreUnits() {

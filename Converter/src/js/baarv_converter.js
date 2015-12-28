@@ -83,7 +83,8 @@
 			};
 			
 			function convertToAAR() {
-				 aarData = {
+				console.log(reportGuid);
+				aarData = {
 					"metadata": {
 						"island": "",
 						"name": "",
@@ -115,54 +116,52 @@
 				aarData.metadata.name = metadataCore.name;
 				logMsg( "Metadata: Core [ OK ]" );
 				
-				logMsg( "Metadata: Units [ Processing ]" );				
-				var metadataObjectsRaw = rptData.match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/ig);
-				for (var i = 0; i < metadataObjectsRaw.length; i++) {
-					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i)[2] );
-					(aarData.metadata.objects.units).push(u.unitMeta);
-					if (u.unitMeta[3] > 0) {
-						(aarData.metadata.players).push( [u.unitMeta[1],u.unitMeta[2]] );
-					}
-				}
-				logMsg( "Metadata: Units [ OK ]" );
-				
-				logMsg( "Metadata: Vehicles [ Processing ]" );
-				metadataObjectsRaw = rptData.match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/ig);
-				for (var i = 0; i < metadataObjectsRaw.length; i++) {
-					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i)[2] );
-					(aarData.metadata.objects.vehs).push(u.vehMeta);
-				}
-				logMsg( "Metadata: Vehicles [ OK ]" );
-				
-				// Timeline item:	(<\d>)(.*)(<\/\d>)				
-				logMsg( "Timeline: Basic [ Processing ]" );
-				var timelinesRaw = rptData.match( /(<\d+>)(.*)(<\/\d+>)/ig );
-				for (var i = 0; i < timelinesRaw.length; i++) {
-					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
-					var timelabel = t[1].match( /(<)(\d+)(>)/i)[2];
-					var unittype = t[2].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[1];
-					var unitdata = t[2].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[2];
+				logMsg( "Objects [ Processing ]" );
+				for (var i = 0; i < rptItems.length; i++) {					
+					try {
+						var u = JSON.parse( rptItems[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i )[2] );
+						(aarData.metadata.objects.vehs).push(u.vehMeta);
+						continue;
+					} catch(e) {};
 					
-					if (typeof (aarData.timeline[timelabel]) == "undefined") {
-						aarData.timeline[timelabel] = [ [], [], [] ];
-					}
+					try {
+						var u = JSON.parse( rptItems[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i )[2] );
+						(aarData.metadata.objects.units).push(u.unitMeta);
+						if (u.unitMeta[3] > 0) {
+							(aarData.metadata.players).push( [u.unitMeta[1],u.unitMeta[2]] );
+						}
+						continue;
+					} catch(e) {};
 					
-					switch (unittype) {
-						case "<unit>": 
-							(aarData.timeline[timelabel])[0].push( JSON.parse(unitdata) );
-							break;
-						case "<veh>":
-							(aarData.timeline[timelabel])[1].push( JSON.parse(unitdata) );
-							break;
-						case "<av>":
-							(aarData.timeline[timelabel])[2].push( JSON.parse(unitdata) );
-							break;
-					}
+					try {
+						var timelabel = rptItems[i].match( /(<)(\d+)(>)/i)[2];
+						var unittype = rptItems[i].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[1];
+						var unitdata = rptItems[i].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[2];
+						
+						if (typeof (aarData.timeline[timelabel]) == "undefined") {
+							aarData.timeline[timelabel] = [ [], [], [] ];
+						}
+						
+						switch (unittype) {
+							case "<unit>": 
+								(aarData.timeline[timelabel])[0].push( JSON.parse(unitdata) );
+								break;
+							case "<veh>":
+								(aarData.timeline[timelabel])[1].push( JSON.parse(unitdata) );
+								break;
+							case "<av>":
+								(aarData.timeline[timelabel])[2].push( JSON.parse(unitdata) );
+								break;
+						};
+						
+						continue;
+					} catch(e) {};
+					
+					
 				};
-				logMsg( "Timeline: Basic [ OK ]" );
+				logMsg( "Objects [ OK ]" );
 				
-				logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );
-		
+				logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );		
 				/*
 					For each UNIT check all timelines.
 						If there are no data for timeline 
@@ -186,7 +185,9 @@
 						var unitId = unitList[i][0];
 						logDebug("INTERPOLATION FOR UNIT " + unitId);
 						
+						var lastKnownTimestamp = 0;
 						var lastKnown = [];
+						var actualKnownTimestamp = 0;
 						var actualKnown = [];
 						var stepsToInterpolate = [];
 						
@@ -194,7 +195,9 @@
 						// Looks like if we start to seek for timeframes not from 0 - it will easily avoid interpolation of afterspawned units
 						// But it will cause few second of lag of bots, but who carse
 						// ***********
+						// For each Second
 						for (var j = 1; j < aarData.timeline.length; j++) {
+							// For each Unit per Timeline item
 							for (var k = 0; k < aarData.timeline[j][unitTypeId].length; k++) {
 								if (aarData.timeline[j][unitTypeId][k][0] == unitId || j == (aarData.timeline.length - 1)) {
 									logDebug("Time " + j + " unit data is here! " + aarData.timeline[j][unitTypeId][k]);
@@ -202,10 +205,12 @@
 									if (lastKnown.length == 0) {
 										logDebug("Start of Interpol Range");
 										lastKnown = aarData.timeline[j][unitTypeId][k];
+										lastKnownTimestamp = j;
 									} else {
 										if (actualKnown.length == 0) {
 											logDebug("End of Interpol Range");
-											actualKnown = aarData.timeline[j][unitTypeId][k];										
+											actualKnown = aarData.timeline[j][unitTypeId][k];
+											actualKnownTimestamp = j;
 										}
 									}
 								}
@@ -215,7 +220,7 @@
 								logDebug("Adding time to empty");
 								stepsToInterpolate.push(j);
 							} else {
-								if (lastKnown.length > 0 && actualKnown.length > 0) {
+								if (lastKnown.length > 0 && actualKnown.length > 0 && (  lastKnownTimestamp != actualKnownTimestamp ) ) {
 									logDebug("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
 							
 									var posxSteps = interpolateValues( lastKnown[1], actualKnown[1], stepsToInterpolate.length );
