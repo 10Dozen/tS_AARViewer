@@ -1,3 +1,6 @@
+//									// EXIT if...
+if ("dzn_brv_enabled" call BIS_fnc_getParamValue == 0) exitWith {};	// Not enabled at MisPar
+if (isMultiplayer && !isServer) exitWith {};				// Not a Server for MP Game
 
 // ************ SETTINGS ***************
 dzn_brv_playerLogInterval 		= 1; // seconds
