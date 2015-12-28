@@ -10,6 +10,9 @@ SQF scripts to collect units data during the mission to Arma's RPT file (e.g. C:
 
 #### AAR Converter
 Allow to convert RPT file to one or several AAR files.
+<br />Islands available:
+- Altis
+- Stratis
 <br />Screenshots:
 <br />http://puu.sh/mbCGv/649bd4e363.png
 <br />http://puu.sh/mbCBy/f76b6e45b2.png
