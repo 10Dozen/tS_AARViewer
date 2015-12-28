@@ -1,10 +1,30 @@
-var rptData = "";
-			// Open file
-			var openFile = function(event) { 
+			var rptData = "";
+			var reportGuid = "";
+			var aarData;
+			
+			function resetForm() {
 				$( "#result-form" ).css( "top", "-1000px" );
 				$( "#mission-desc" ).val("");
 				$( "#mission-date" ).val("");
 				$( "#output" ).val("");
+				
+				$( "#report-selector" ).css( "top", "-1000px" );
+				$( "#report-selector > ul" ).html( "" );
+				
+				$( "#uploader-convert" ).attr( "disabled", "true" );
+				$( "#uploader-convert" ).removeAttr( "hidden" );
+				
+				$( "#header-status > label" ).html( "Select RPT file to convert..." );
+				$( "#header-status" ).css( "background-color", "#6798D2" )
+				
+				rptData = "";
+				reportGuid = "";
+				aarData = [];
+			}
+			
+			// Open file
+			var openFile = function(event) { 
+				resetForm();
 				
 				var input = event.target; 
 				var reader = new FileReader(); 
@@ -13,10 +33,31 @@ var rptData = "";
 					rptData = text;
 					if (text.length > 0) {
 						console.log( "Read!");
-						if (rptData.search(/<AAR>.*<\/AAR>/) > -1) {
-							$( "#header-status > label" ).html( "Ready for convertion!" );
-							$( "#header-status" ).css( "background-color", "#9BC34E");
-							$( "#uploader-convert" ).removeAttr( "disabled" );
+						
+						var listOfDirtyMetadata = rptData.match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/ig);						
+						if ( listOfDirtyMetadata ) {
+							if (listOfDirtyMetadata.length == 1) {
+								reportGuid = JSON.parse( (rptData.match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/i)[2]) ).guid;
+								
+								$( "#header-status > label" ).html( "Ready for convertion!" );
+								$( "#header-status" ).css( "background-color", "#9BC34E");
+								$( "#uploader-convert" ).removeAttr( "disabled" );
+							} else {
+								var listOfMetadata = [];
+								for (var i = 0; i < listOfDirtyMetadata.length; i++) {
+									var parsedMeta = listOfDirtyMetadata[i].match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/i);
+									var meta = JSON.parse( parsedMeta[2] )
+									meta.logTime = parsedMeta[1].slice(0,-2);									
+									$( "#report-selector > ul" ).append(
+										"<li onClick='chooseReportToConvert(\"" + meta.guid + "\"); '>" + meta.logTime + " - (" + meta.island + ") " + meta.name + "</li>"									
+									);
+								}
+								
+								$( "#uploader-convert" ).attr( "hidden", "true" );
+								$( "#header-status > label" ).html( "Select AAR to Convert!" );
+								$( "#header-status" ).css( "background-color", "#9BC34E");
+								$( "#report-selector" ).css( "top", "75px" );
+							}
 						} else {
 							console.log( "Not an AAR!" );
 							$( "#header-status > label" ).html( "File does not contain AAR data!" );
@@ -33,9 +74,17 @@ var rptData = "";
 				reader.readAsText(input.files[0]);
 			};
 			
-			var aarData, a;
+			function chooseReportToConvert(guid) {
+				reportGuid = guid;
+				
+				$( "#report-selector > ul" ).html("");
+				$( "#report-selector" ).css("top", "-1000px");
+				convertToAAR();
+			};
+			
 			function convertToAAR() {
-				 aarData = {
+				console.log(reportGuid);
+				aarData = {
 					"metadata": {
 						"island": "",
 						"name": "",
@@ -58,7 +107,8 @@ var rptData = "";
 				
 				$( "#header-status > label" ).html( "In progress..." );
 				
-				var rptItems = rptData.match(/<AAR>.*<\/AAR>/ig );
+				var re = new RegExp( "<AAR-" + reportGuid + ">.*<\/AAR-" + reportGuid + ">", "g" )
+				var rptItems = rptData.match( re );
 				var metadataCore = JSON.parse( ( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2] ); 
 				
 				logMsg( "Metadata: Core [ Processing ]" );
@@ -66,54 +116,52 @@ var rptData = "";
 				aarData.metadata.name = metadataCore.name;
 				logMsg( "Metadata: Core [ OK ]" );
 				
-				logMsg( "Metadata: Units [ Processing ]" );				
-				var metadataObjectsRaw = rptData.match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/ig);
-				for (var i = 0; i < metadataObjectsRaw.length; i++) {
-					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i)[2] );
-					(aarData.metadata.objects.units).push(u.unitMeta);
-					if (u.unitMeta[3] > 0) {
-						(aarData.metadata.players).push( [u.unitMeta[1],u.unitMeta[2]] );
-					}
-				}
-				logMsg( "Metadata: Units [ OK ]" );
-				
-				logMsg( "Metadata: Vehicles [ Processing ]" );
-				metadataObjectsRaw = rptData.match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/ig);
-				for (var i = 0; i < metadataObjectsRaw.length; i++) {
-					var u = JSON.parse( metadataObjectsRaw[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i)[2] );
-					(aarData.metadata.objects.vehs).push(u.vehMeta);
-				}
-				logMsg( "Metadata: Vehicles [ OK ]" );
-				
-				// Timeline item:	(<\d>)(.*)(<\/\d>)				
-				logMsg( "Timeline: Basic [ Processing ]" );
-				var timelinesRaw = rptData.match( /(<\d+>)(.*)(<\/\d+>)/ig );
-				for (var i = 0; i < timelinesRaw.length; i++) {
-					var t = timelinesRaw[i].match( /(<\d+>)(.*)(<\/\d+>)/i );
-					var timelabel = t[1].match( /(<)(\d+)(>)/i)[2];
-					var unittype = t[2].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[1];
-					var unitdata = t[2].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[2];
+				logMsg( "Objects [ Processing ]" );
+				for (var i = 0; i < rptItems.length; i++) {					
+					try {
+						var u = JSON.parse( rptItems[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i )[2] );
+						(aarData.metadata.objects.vehs).push(u.vehMeta);
+						continue;
+					} catch(e) {};
 					
-					if (typeof (aarData.timeline[timelabel]) == "undefined") {
-						aarData.timeline[timelabel] = [ [], [], [] ];
-					}
+					try {
+						var u = JSON.parse( rptItems[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i )[2] );
+						(aarData.metadata.objects.units).push(u.unitMeta);
+						if (u.unitMeta[3] > 0) {
+							(aarData.metadata.players).push( [u.unitMeta[1],u.unitMeta[2]] );
+						}
+						continue;
+					} catch(e) {};
 					
-					switch (unittype) {
-						case "<unit>": 
-							(aarData.timeline[timelabel])[0].push( JSON.parse(unitdata) );
-							break;
-						case "<veh>":
-							(aarData.timeline[timelabel])[1].push( JSON.parse(unitdata) );
-							break;
-						case "<av>":
-							(aarData.timeline[timelabel])[2].push( JSON.parse(unitdata) );
-							break;
-					}
+					try {
+						var timelabel = rptItems[i].match( /(<)(\d+)(>)/i)[2];
+						var unittype = rptItems[i].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[1];
+						var unitdata = rptItems[i].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[2];
+						
+						if (typeof (aarData.timeline[timelabel]) == "undefined") {
+							aarData.timeline[timelabel] = [ [], [], [] ];
+						}
+						
+						switch (unittype) {
+							case "<unit>": 
+								(aarData.timeline[timelabel])[0].push( JSON.parse(unitdata) );
+								break;
+							case "<veh>":
+								(aarData.timeline[timelabel])[1].push( JSON.parse(unitdata) );
+								break;
+							case "<av>":
+								(aarData.timeline[timelabel])[2].push( JSON.parse(unitdata) );
+								break;
+						};
+						
+						continue;
+					} catch(e) {};
+					
+					
 				};
-				logMsg( "Timeline: Basic [ OK ]" );
+				logMsg( "Objects [ OK ]" );
 				
-				logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );
-		
+				logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );		
 				/*
 					For each UNIT check all timelines.
 						If there are no data for timeline 
@@ -137,10 +185,19 @@ var rptData = "";
 						var unitId = unitList[i][0];
 						logDebug("INTERPOLATION FOR UNIT " + unitId);
 						
+						var lastKnownTimestamp = 0;
 						var lastKnown = [];
+						var actualKnownTimestamp = 0;
 						var actualKnown = [];
 						var stepsToInterpolate = [];
-						for (var j = 0; j < aarData.timeline.length; j++) {
+						
+						// **************
+						// Looks like if we start to seek for timeframes not from 0 - it will easily avoid interpolation of afterspawned units
+						// But it will cause few second of lag of bots, but who carse
+						// ***********
+						// For each Second
+						for (var j = 1; j < aarData.timeline.length; j++) {
+							// For each Unit per Timeline item
 							for (var k = 0; k < aarData.timeline[j][unitTypeId].length; k++) {
 								if (aarData.timeline[j][unitTypeId][k][0] == unitId || j == (aarData.timeline.length - 1)) {
 									logDebug("Time " + j + " unit data is here! " + aarData.timeline[j][unitTypeId][k]);
@@ -148,10 +205,12 @@ var rptData = "";
 									if (lastKnown.length == 0) {
 										logDebug("Start of Interpol Range");
 										lastKnown = aarData.timeline[j][unitTypeId][k];
+										lastKnownTimestamp = j;
 									} else {
 										if (actualKnown.length == 0) {
 											logDebug("End of Interpol Range");
-											actualKnown = aarData.timeline[j][unitTypeId][k];										
+											actualKnown = aarData.timeline[j][unitTypeId][k];
+											actualKnownTimestamp = j;
 										}
 									}
 								}
@@ -161,7 +220,7 @@ var rptData = "";
 								logDebug("Adding time to empty");
 								stepsToInterpolate.push(j);
 							} else {
-								if (lastKnown.length > 0 && actualKnown.length > 0) {
+								if (lastKnown.length > 0 && actualKnown.length > 0 && (  lastKnownTimestamp != actualKnownTimestamp ) ) {
 									logDebug("Interpolation ( @" + lastKnown[1] + ", @" + actualKnown[1] + ", @" + stepsToInterpolate.length + ")");
 							
 									var posxSteps = interpolateValues( lastKnown[1], actualKnown[1], stepsToInterpolate.length );

@@ -9,7 +9,6 @@
 		<script src="src/js/jquery.min.js"></script>
 		<script src="src/js/jquery-ui.min.js"></script>
 		<script src="src/js/baarv_converter.js"></script>
-	
 	</head>
 	<body>
 		<div id="header">
@@ -20,11 +19,12 @@
 				<button id="uploader-convert" onClick="convertToAAR()" disabled="true">Convert</button>
 				<label>Select RPT file to convert...</label>
 				<div id="uploader">
-					<input type='file' accept='text/plain' onchange='openFile(event)'>
-					
+					<input type='file' accept='.rpt,.txt' onchange='openFile(event)'>					
 				</div>
 			</div>
 		</div>
+		
+		<div id="report-selector"><ul></ul></div>
 		
 		<div id="result-form">
 			<ul>
