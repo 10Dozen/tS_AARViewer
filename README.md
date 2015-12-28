@@ -5,7 +5,7 @@ Version: 0.3
 This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirement: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
 
 #### Mission Scripts Logger
-SQF scripts to collect units data during the mission to Arma's RPT file (e.g. C:\Users\MyUser\AppData\Local\Arma 3). 
+Server-side SQF scripts to collect units data during the mission to Arma's RPT file (e.g. C:\Users\MyUser\AppData\Local\Arma 3). 
 <br />Can be easily disabled by Mission Parameters.
 
 #### AAR Converter
@@ -13,6 +13,7 @@ Allow to convert RPT file to one or several AAR files.
 <br />Islands available:
 - Altis
 - Stratis
+
 <br />Screenshots:
 <br />http://puu.sh/mbCGv/649bd4e363.png
 <br />http://puu.sh/mbCBy/f76b6e45b2.png
