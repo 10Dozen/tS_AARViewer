@@ -10,10 +10,6 @@ Server-side SQF scripts to collect units data during the mission to Arma's RPT f
 
 #### AAR Converter
 Allow to convert RPT file to one or several AAR files.
-<br />Islands available:
-- Altis
-- Stratis
-
 <br />Screenshots:
 <br />http://puu.sh/mbCGv/649bd4e363.png
 <br />http://puu.sh/mbCBy/f76b6e45b2.png
@@ -21,7 +17,11 @@ Allow to convert RPT file to one or several AAR files.
 
 #### AAR Viewer
 Allow to play AAR files in Browser (tested with Google Chrome).
-<br />Screenshots:
+<br />Islands available:
+- Altis
+- Stratis
+
+Screenshots:
 <br />http://puu.sh/mbCPn/c033b60019.png
 <br />http://puu.sh/mbCRd/18e625046d.png
 <br />http://puu.sh/mbCVU/15583aaa1e.jpg
