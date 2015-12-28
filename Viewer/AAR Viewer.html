@@ -2,7 +2,7 @@
 <html lang="us">
 	<head>
 		<meta charset="utf-8">
-		<title>AAR Viewer</title>
+		<title>tSF AAR Viewer</title>
 		
 		<link rel="stylesheet" href="src/css/jquery-ui.css">
 		<link rel="stylesheet" href="src/css/baarv_viewer.css">
@@ -15,36 +15,13 @@
 		<script src="src/js/baarv_viewer.js"></script>
 		
 		<script>
-			$( document ).ready(function () {
-				$( "#slider" ).slider({
-					range: "min",
-					min: 0,
-					max: 100,
-					slide: function( event, ui ) {
-						$( "#player-step > span" ).html( getTimeLabel(ui.value) );
-						playReportStep ( ui.value );
-						aarCurrentTime = ui.value;
-						stopReport();
-					},
-					change: function( event, ui ) {
-						if (ui.value == aarData.metadata.time) { stopReport(); }
-					}
-				});
-				$( "#player-step > span" ).html( "0 s" );
-				
-				$( "#player-speed" ).selectmenu();
-				$( "#player-step-backward" ).button({text: false,icons: { primary: "ui-icon-seek-prev" }}).click(function() { stopReport(); });
-				$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}}).click(function() { stopReport(); });
-				$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}});
-				$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-info" }});
-				$( "#player-line > button" ).attr( "disabled", "true" );
-			});
+			
 		</script>
 	</head>
 	<body>
 		<div class="panzoom"><img name="map" src="" /></div>
 		
-		<div id="player-line">			
+		<div id="player-line">
 			<button id="player-step-backward" onClick="reportPrevStep()">Prev second</button>
 			<button id="player-step-play" onClick="playReportAuto()">Play report</button>
 			<button id="player-step-forward" onClick="reportNextStep()">Next second</button>
@@ -67,14 +44,13 @@
 		
 		<div id="header">
 			<div id="header-title">
-				AAR Viewer
+				<span>tS</span> AAR Viewer
 			</div>
 			<div id="header-status">
-				<button id="uploader-convert" onClick="initAAR()" disabled="true">Play</button>
-				<label>Select AAR file to play...</label>
-				<div id="uploader">
-					<input type='file' accept='text/plain' onchange='openFile(event)'>
-				</div>
+				<label id="header-play-btn" class="header-btn" onClick="initAAR()">Play</label>
+				<input type='file' name='uploader' id="uploader" accept='.txt' onchange='openFile(event)'>	
+				<label id="header-choose-file-btn" class="header-btn" for="uploader">Choose File</label>				
+				<label id="header-status-text">Select AAR file to play...</label>				
 			</div>
 		</div>
 		

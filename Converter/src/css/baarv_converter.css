@@ -2,32 +2,57 @@ body {
 	margin: 0px;
 	padding: 0px;
 	font-family: sans-serif;
+	background-color: #ececec;
 }
 
 /* ****************
 	Landing page 
 **************** */
 #header {
-	background-color: #3366CC;
+	background-color: #252525;
 	color: white;
+}
+
+@font-face {
+    font-family: "tSFont";
+    src: url(tS_EL.otf);
 }
 
 #header-title {
 	font-size: 24px;
-	font-weight: bold;
 	padding-left: 40px;
+	font-family: "tSFont";
+}
+
+#header-title span {
+	background-color: #c52334;
+	padding: 0px 4px;
+	border-radius: 0px 8px 8px 8px;
 }
 
 #header-status {
 	font-size: 18px;
-	background-color: #6798D2;
-	padding: 6px 0px 3px 40px;
-	
+	background-color: #5a5a5a;
+	padding: 6px 0px 3px 40px;	
 }
 
-#uploader {
-	display: inline;
-	padding: 12px 0px 12px 90px;
+#uploader {	
+	display: none;
+}
+
+.header-btn {
+	display: inline-block;
+	border: 2px solid #ececec;
+	color: #ececec;
+	padding: 4px 10px;
+	cursor: pointer;
+	background-color: none;
+}
+
+.header-btn:hover {	
+	background-color:  #ececec;
+	border: 2px solid #ececec;
+	color: #5a5a5a;
 }
 
 #report-selector {
@@ -37,15 +62,20 @@ body {
 
 #report-selector ul li {
 	margin: 6px 0px;
-	padding: 4px 20px;
-	font-size: 20px;
-	background-color: #6798D2;
-	color: white;
+	padding: 6px 16px;
+	font-size: 20px;	
+	color: #252525;
+	border: 1px solid #252525;
+	background-color: none;
+	
 	cursor: pointer;
+	list-style-type: none;
 }
 
 #report-selector ul li:hover {
-	background-color: rgb(155, 195, 78);
+	background-color:  #C52334;
+	border: 1px solid white;
+	color: white;
 }
 
 /* ****************
@@ -104,10 +134,22 @@ body {
 	font-size: 14px;
 }
 
-#output-footer button {
-	display: inline;
+#output-btn-panel {
 	margin-left: 40px;
-	width: 100px;
+}
+.output-btn {
+	display: inline-block;
+	border: 1px solid #252525;
+	color: #252525;
+	padding: 6px 16px;
+	cursor: pointer;
+	background-color: none;
+}
+
+.output-btn:hover {	
+	background-color:  #C52334;
+	border: 1px solid white;
+	color: white;
 }
 
 #output-footer textarea {

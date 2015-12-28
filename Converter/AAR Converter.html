@@ -2,7 +2,7 @@
 <html lang="us">
 	<head>
 		<meta charset="utf-8">
-		<title>AAR Converter</title>
+		<title>tSF AAR Converter</title>
 		
 		<link rel="stylesheet" href="src/css/jquery-ui.css">
 		<link rel="stylesheet" href="src/css/baarv_converter.css">
@@ -13,14 +13,13 @@
 	<body>
 		<div id="header">
 			<div id="header-title">
-				AAR Converter
+				<span>tS</span> AAR Converter
 			</div>
 			<div id="header-status">
-				<button id="uploader-convert" onClick="convertToAAR()" disabled="true">Convert</button>
-				<label>Select RPT file to convert...</label>
-				<div id="uploader">
-					<input type='file' accept='.rpt,.txt' onchange='openFile(event)'>					
-				</div>
+				<label id="header-convert-btn" class="header-btn" onClick="convertToAAR()">Convert</label>
+				<input type='file' name='uploader' id="uploader" accept='.rpt,.txt' onchange='openFile(event)'>	
+				<label id="header-choose-file-btn" class="header-btn" for="uploader">Choose File</label>				
+				<label id="header-status-text">Select RPT file to convert...</label>
 			</div>
 		</div>
 		
@@ -77,8 +76,10 @@
 			</ul>
 			<hr />
 			<div id="output-footer">
-				<button id="output-generate" onClick="showGeneratedAAR()">Generate AAR</button>
-				<button id="output-save" onClick="saveGeneratedAARData()" disabled="true">Save generated data</button>				
+				<div id="output-btn-panel">
+					<label id="output-generate-btn" class="output-btn" onClick="showGeneratedAAR()">Generate AAR</label>
+					<label id="output-generate-btn" class="output-btn" onClick="saveGeneratedAARData()">Save AAR to file</label>
+				</div>
 				<textarea id="output" cols="40" rows="5"></textarea>				
 			</div>
 		</div>
