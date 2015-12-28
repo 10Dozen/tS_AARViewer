@@ -2,32 +2,70 @@ body {
 	margin: 0px;
 	padding: 0px;
 	font-family: sans-serif;
+	background-color: #ececec;
 }
 
 /* *****************
 	Landing page 
 *********************/
 #header {
-	background-color: #3366CC;
+	background-color: #252525;
 	color: white;
+}
+
+@font-face {
+    font-family: "tSFont";
+    src: url(tS_EL.otf);
 }
 
 #header-title {
 	font-size: 24px;
-	font-weight: bold;
 	padding-left: 40px;
+	font-family: "tSFont";
+}
+
+#header-title span {
+	background-color: #c52334;
+	padding: 0px 4px;
+	border-radius: 0px 8px 8px 8px;
 }
 
 #header-status {
 	font-size: 18px;
-	background-color: #6798D2;
+	background-color: #5a5a5a;
 	padding: 6px 0px 3px 40px;
 	
 }
 
-#uploader {
-	display: inline;
-	padding: 12px 0px 12px 90px;
+#uploader {	
+	display: none;
+}
+
+.header-btn {
+	display: inline-block;
+	border: 2px solid #ececec;
+	color: #ececec;
+	padding: 4px 10px;
+	cursor: pointer;
+	background-color: none;
+}
+
+.header-btn:hover {	
+	background-color:  #ececec;
+	border: 2px solid #ececec;
+	color: #5a5a5a;
+}
+
+#header-play-btn {
+	background-color: #ececec;
+	border: 2px solid #ececec;
+	color: #5a5a5a;
+}
+
+#header-play-btn:hover {
+	background-color: #c52334;
+	border: 2px solid #c52334;
+	color: white;
 }
 
 /* *****************
@@ -98,12 +136,19 @@ body {
 	width: 100%;
 	top: -12px;
 	padding: 0px 0px 25px 20px;
-	background-color: #3366CC;
+	background-color: #252525;
 	
 	font-size: 18px;
-	font-weight: bold;
 	color: white;
 	z-index: -4;
+	
+	
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+100,252525+100,000000+100&0.84+25,0.7+56,0.53+84,0+100 */
+	background: -moz-linear-gradient(top,  rgba(0,0,0,0.84) 25%, rgba(0,0,0,0.7) 56%, rgba(0,0,0,0.53) 84%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top,  rgba(0,0,0,0.84) 25%,rgba(0,0,0,0.7) 56%,rgba(0,0,0,0.53) 84%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom,  rgba(0,0,0,0.84) 25%,rgba(0,0,0,0.7) 56%,rgba(0,0,0,0.53) 84%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d6000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+
 }
 
 #player-step {
