@@ -17,11 +17,38 @@ var eStyle = {
 			"bgColor": "#AF4E4E"
 		}
 	}
-}
+};
 
+var statusElement = {
+	"text": "#header-status-text",
+	"bar": "#header-status"
+};
+
+	
 var rptData = "";
 var reportGuid = "";
 var aarData;
+
+function updateHeaderStatus(mode) {
+	switch (mode) {
+		case "default": 
+			$( statusElement.text ).html( eStyle.headerStatus.default.text );
+			$( statusElement.bar ).css( "background-color",  eStyle.headerStatus.default.bgColor )
+			break;
+		case "success":
+			$( statusElement.text ).html( eStyle.headerStatus.success.text );
+			$( statusElement.bar ).css( "background-color", eStyle.headerStatus.success.bgColor );	
+			break;
+		case "failedEmpty":
+			$( statusElement.text ).html( eStyle.headerStatus.failedEmpty.text );
+			$( statusElement.bar ).css( "background-color", eStyle.headerStatus.failedEmpty.bgColor );
+			break;
+		case "failedWrong":
+			$( statusElement.text ).html( eStyle.headerStatus.failedWrong.text );
+			$( statusElement.bar ).css( "background-color", eStyle.headerStatus.failedWrong.bgColor );
+			break;
+	}	
+}
 
 function resetForm() {
 	$( "#result-form" ).css( "top", "-1000px" );
@@ -32,10 +59,7 @@ function resetForm() {
 	$( "#report-selector" ).css( "top", "-1000px" );
 	$( "#report-selector > ul" ).html( "" );
 	
-	$( "#header-convert-btn" ).css( "display", "none" );
-	
-	$( "#header-status-text" ).html( eStyle.headerStatus.default.text );
-	$( "#header-status" ).css( "background-color",  eStyle.headerStatus.default.bgColor )
+	updateHeaderStatus( "default" );
 	
 	rptData = "";
 	reportGuid = "";
@@ -66,35 +90,52 @@ var openFile = function(event) {
 					);
 				}
 				
-				$( "#header-status-text" ).html( eStyle.headerStatus.success.text );
-				$( "#header-status" ).css( "background-color", eStyle.headerStatus.success.bgColor );				
+				updateHeaderStatus( "success" );
 				$( "#report-selector" ).css( "top", "75px" );
 			} else {
 				console.log( "Not an AAR!" );
-				$( "#header-status-text" ).html( eStyle.headerStatus.failedWrong.text );
-				$( "#header-status" ).css( "background-color", eStyle.headerStatus.failedWrong.bgColor );
-				$( "#uploader-convert" ).attr( "disabled", "true" );
+				updateHeaderStatus( "failedWrong" );
 			}
 		} else {
 			console.log( "Empty!" );
-			$( "#header-status-text" ).html( eStyle.headerStatus.failedEmpty.text );
-			$( "#header-status" ).css( "background-color", eStyle.headerStatus.failedEmpty.bgColor );
-			$( "#uploader-convert" ).attr( "disabled", "true" );
+			updateHeaderStatus( "failedEmpty" );
 		}
 	};
 	reader.readAsText(input.files[0]);
 };
-			
+
 function chooseReportToConvert(guid) {
 	reportGuid = guid;
 	
 	$( "#report-selector > ul" ).html("");
 	$( "#report-selector" ).css("top", "-1000px");
-	convertToAAR();
+	convertInit();
 };
-			
+
+function convertInit() {
+	toggleProgressView(true);
+	updateProgressView( "Converting...","Please, wait until conversion is over." );
+	setTimeout( convertToAAR, 500 );
+}
+
+function toggleProgressView(on) {
+	$( "#progress-header" ).html( "" );
+	$( "#progress-status" ).html( "" );	
+	if (on) {
+		$( "#progress-viewer" ).css("top", "150px");
+	} else {
+		$( "#progress-viewer" ).css("top", "-1000px");
+	}
+}
+
+function updateProgressView(header, text) {
+	$( "#progress-header" ).html( header );
+	$( "#progress-status" ).append( text + "<br />" );	
+}
+
 function convertToAAR() {
 	console.log(reportGuid);
+	
 	aarData = {
 		"metadata": {
 			"island": "",
@@ -115,8 +156,6 @@ function convertToAAR() {
 	var consoleDebugEnabled = false;
 	function logMsg(t) { if (consoleMsgEnabled) { console.log( t ) }};
 	function logDebug(t) { if (consoleDebugEnabled) { console.log( t ) }};
-	
-	$( "#header-status-text" ).html( "In progress..." );
 	
 	var re = new RegExp( "<AAR-" + reportGuid + ">.*<\/AAR-" + reportGuid + ">", "g" )
 	var rptItems = rptData.match( re );
@@ -171,7 +210,7 @@ function convertToAAR() {
 	
 	logMsg( "Objects [ OK ]" );
 	
-	logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );		
+	logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );
 	/*
 		For each UNIT check all timelines.
 			If there are no data for timeline 
@@ -180,19 +219,19 @@ function convertToAAR() {
 			- add this data to timeline
 			- check for another range	
 	*/	
-	for (var m = 0; m < 2; m++) {
+	for (var m = 0; m < 2; m++) {		
 		var unitList, unitTypeId;
 
 		if (m == 0) {
 			unitList = aarData.metadata.objects.units;
 			unitTypeId = 0;
-		} else {
+		} else {			
 			unitList = aarData.metadata.objects.vehs;
 			unitTypeId = 1;
-		}
+		}		
 		
 		for (var i = 0; i < unitList.length; i++ ) {
-			var unitId = unitList[i][0];
+			var unitId = unitList[i][0];			
 			logDebug("INTERPOLATION FOR UNIT " + unitId);
 
 			var lastKnownTimestamp = 0;
@@ -259,8 +298,9 @@ function convertToAAR() {
 			}
 		}
 	}
-				
+	
 	aarData.metadata.time = (aarData.timeline).length - 2;
+	
 	logMsg( "Timeline: Interpolating Transitions of Units [ OK ]" );
 
 	logMsg( "Creating form" );
@@ -279,9 +319,10 @@ function convertToAAR() {
 		};
 		$( "#player-list" ).append( "<li class='player-side-icon' style='padding: 2px 4px; background-color: " + color + "'>" + aarData.metadata.players[i][0] + "</li>" );				
 	}
-				
+	
 	logMsg("Done!");
-	$( "#result-form" ).css( "top", "60px" );
+	toggleProgressView(false);
+	$( "#result-form" ).css( "top", "75px" );
 	$( "#header-status-text" ).html( "Converted!" );
 	$( ".dl-2 > input, textarea" ).removeAttr( "disabled" );
 };
@@ -317,7 +358,7 @@ function getTimeLabel(t) {
 	}				
 	return formatTimeNum(timeHours,"h") + formatTimeNum(timeMinutes,"m") + formatTimeNum(timeSeconds,"s")
 }
-			
+
 // Generate
 function generateAAR() {			
 	aarData.metadata.date = $( "#mission-date" ).val();
@@ -326,26 +367,26 @@ function generateAAR() {
 	aarData.metadata.name = $( "#mission-name" ).val();
 	console.log( "AAR text generated.");
 }
-			
-function showGeneratedAAR() {
-	generateAAR();
-	$( "#output-save" ).removeAttr("disabled");
-	$( "#output" ).val( JSON.stringify( aarData ) );
-	console.log( "AAR text generated.");				
-}
-			
+
 function saveGeneratedAARData() {
-	saveAARFile( $( "#output" ).val() );				
+	generateAAR();
+	toggleProgressView(true);
+	updateProgressView("Saving", "Wait until AAR file will be generated.")
+	
+	setTimeout ( saveAARFile, 500, JSON.stringify( aarData ) )
+	//saveAARFile( JSON.stringify( aarData ) );				
 }
-			
-// File Save
-function saveAARFile(data) {
-	var a = document.createElement('a');
-	a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent( JSON.stringify( aarData ) ));
-	a.setAttribute('download', "[AAR][" + aarData.metadata.island + "] " + aarData.metadata.name );
-	a.click();
+
+function saveAARFile(data) {	
+    var a = document.createElement("a");
+    var file = new Blob([data], {type: "text/plain"});
+    a.href = URL.createObjectURL(file);
+    a.download = "[AAR][" + aarData.metadata.island + "] " + aarData.metadata.name;
+    a.click();
+	
+	toggleProgressView(false);
 }
-			
+
 $( document ).ready(function() {
 	$( ".dl-2 > input, textarea, button" ).attr( "disabled", "true" );
 	resetForm();
