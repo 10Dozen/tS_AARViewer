@@ -1,7 +1,7 @@
 # Tactical Shift's AAR Viewer
 Version: 0.4
 
-## What it is?
+## What is it?
 This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirements: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
 
 #### Mission Scripts Logger
