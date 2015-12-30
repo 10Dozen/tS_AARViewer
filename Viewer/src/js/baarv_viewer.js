@@ -47,7 +47,6 @@ var openFile = function(event) {
 	$( "#result-form" ).css( "top", "-1000px" );	
 	$( "#header-status" ).css( "background-color", eStyle.headerStatus.default.bgColor );
 	$( "#header-status-text" ).html( eStyle.headerStatus.default.text );
-	$( "#header-play-btn" ).css( "display", "none" );
 	
 	var input = event.target; 
 
@@ -62,13 +61,11 @@ var openFile = function(event) {
 			$( "#header-status-text" ).html( "Opened!" );
 			$( "#header-status" ).css( "background-color", eStyle.headerStatus.success.bgColor );
 			$( "#header-status-text" ).html( eStyle.headerStatus.success.text );
-			$( "#header-play-btn" ).css( "display", "inline-block" );
 			showAARDetails();
 		} catch (e) {
 			console.log("Error occured during parsing!");
 			$( "#header-status" ).css( "background-color", eStyle.headerStatus.failed.bgColor );
-			$( "#header-status-text" ).html( eStyle.headerStatus.failed.text );
-			$( "#header-play-btn" ).css( "display", "none" );			
+			$( "#header-status-text" ).html( eStyle.headerStatus.failed.text );		
 		}
 	};	
 	reader.readAsText(input.files[0]);
@@ -157,16 +154,16 @@ function initAAR() {
 	panzoomInit();
 	
 	// Spawn
-	// Spawn Units
-	var units = aarData.metadata.objects.units;
-	for (var i = 0; i < units.length; i++) {
-		createObject( units[i], "unit" );
-	}
-	
 	// Spawn Vehicles
 	var vehs = aarData.metadata.objects.vehs;
 	for (var i = 0; i < vehs.length; i++) {
 		createObject( vehs[i], "veh" );
+	}	
+	
+	// Spawn Units
+	var units = aarData.metadata.objects.units;
+	for (var i = 0; i < units.length; i++) {
+		createObject( units[i], "unit" );
 	}
 	
 	document.map.onload = function() {
@@ -446,8 +443,5 @@ $( document ).ready(function () {
 	$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}}).click(function() { stopReport(); });
 	$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}});
 	$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-info" }});
-	$( "#player-line > button" ).attr( "disabled", "true" );
-	
-	$( "#header-play-btn" ).css("display", "none");
-	
+	$( "#player-line > button" ).attr( "disabled", "true" );	
 });

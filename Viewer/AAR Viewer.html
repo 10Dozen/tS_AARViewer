@@ -47,7 +47,6 @@
 				<span>tS</span> AAR Viewer
 			</div>
 			<div id="header-status">
-				<label id="header-play-btn" class="header-btn" onClick="initAAR()">Play</label>
 				<input type='file' name='uploader' id="uploader" accept='.txt' onchange='openFile(event)'>	
 				<label id="header-choose-file-btn" class="header-btn" for="uploader">Choose File</label>				
 				<label id="header-status-text">Select AAR file to play...</label>				
@@ -94,7 +93,12 @@
 					</div>
 					<ul id="player-list"></ul>
 				</li>
+				<br /><hr />
+				<li>
+					<div class="start-btn" onClick="initAAR()">► PLAY</div>
+				</li>
 			</ul>
+			
 		</div>
 	</body>
 </html>

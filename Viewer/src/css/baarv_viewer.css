@@ -120,9 +120,35 @@ body {
 	font-size: 14px;
 }
 
+#start-btn-panel {
+	margin-left: 40px;
+}
+
+.start-btn {
+	display: inline-block;
+	border: 1px solid #252525;
+	color: #252525;
+	padding: 6px 16px;
+	cursor: pointer;
+	width: 500px;
+	line-height: 20px;
+	text-align: center;
+}
+
+.start-btn:hover {	
+	background-color:  #C52334;
+	border: 1px solid white;
+	color: white;
+}
+
 /* ******************
 	Report Player 
 ******************** */
+.panzoom {
+	-webkit-backface-visibility: initial !important;
+	-webkit-transform-origin: 50% 50%;
+}
+
 #player-line {
 	position: absolute;
 	display: inline;
