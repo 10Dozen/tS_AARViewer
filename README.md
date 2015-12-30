@@ -1,5 +1,5 @@
 # Tactical Shift's AAR Viewer
-Version: 0.4
+Version: 0.5
 
 ## What is it?
 This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirements: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
@@ -11,9 +11,9 @@ Server-side SQF scripts to collect units data during the mission to Arma's RPT f
 #### AAR Converter
 Allow to convert RPT file to one or several AAR files.
 <br />Screenshots:
-<br />http://puu.sh/mbCGv/649bd4e363.png
-<br />http://puu.sh/mbCBy/f76b6e45b2.png
-<br />http://puu.sh/mbCGv/649bd4e363.png
+<br />http://puu.sh/mdzAL/3185672966.png
+<br />http://puu.sh/mdzBv/0dde959149.png
+<br />http://puu.sh/mdzBX/8159b49204.png
 
 #### AAR Viewer
 Allow to play AAR files in Browser (tested with Google Chrome).
@@ -22,9 +22,9 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 - Stratis
 
 Screenshots:
-<br />http://puu.sh/mbCPn/c033b60019.png
-<br />http://puu.sh/mbCRd/18e625046d.png
-<br />http://puu.sh/mbCVU/15583aaa1e.jpg
+<br />http://puu.sh/mdzFH/ef9dc68a5f.png
+<br />http://puu.sh/mdzGh/7169d93546.png
+<br />http://puu.sh/mdzIa/f4055a3d1b.png
 
 ### How to use it?
 - Create a mission and add Logger script to it.
