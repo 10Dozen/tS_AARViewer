@@ -51,6 +51,15 @@ dzn_brv_getCoreMetadata = {
 	];
 };
 
+dzn_brv_checkVehicleCategory = {
+	private["_r"];
+	_r = false;
+	{
+		if (_this isKindOf _x) exitWith { _r = true; };
+	} forEach dzn_brv_allowedVehiclesCategories;	
+	_r
+};
+
 dzn_brv_collectMetadata = {	
 	private["_units","_vehs","_name"];
 	
@@ -83,7 +92,7 @@ dzn_brv_collectMetadata = {
 		};
 	} forEach _units;
 	
-	_vehs = [vehicles, { !(_x in dzn_brv_vehList) && !(typeOf _x in dzn_brv_vehicleTypesToExclude)}] call BIS_fnc_conditionalSelect;
+	_vehs = [vehicles, { !(_x in dzn_brv_vehList) && (_x call dzn_brv_checkVehicleCategory) }] call BIS_fnc_conditionalSelect;
 	{
 		_name = format [
 			"%1%2"			

@@ -16,7 +16,6 @@
 				<span>tS</span> AAR Converter
 			</div>
 			<div id="header-status">
-				<label id="header-convert-btn" class="header-btn" onClick="convertToAAR()">Convert</label>
 				<input type='file' name='uploader' id="uploader" accept='.rpt,.txt' onchange='openFile(event)'>	
 				<label id="header-choose-file-btn" class="header-btn" for="uploader">Choose File</label>				
 				<label id="header-status-text">Select RPT file to convert...</label>
@@ -77,11 +76,14 @@
 			<hr />
 			<div id="output-footer">
 				<div id="output-btn-panel">
-					<label id="output-generate-btn" class="output-btn" onClick="showGeneratedAAR()">Generate AAR</label>
 					<label id="output-generate-btn" class="output-btn" onClick="saveGeneratedAARData()">Save AAR to file</label>
-				</div>
-				<textarea id="output" cols="40" rows="5"></textarea>				
+				</div>	
 			</div>
+		</div>
+	
+		<div id="progress-viewer">
+			<div id="progress-header">Converting...</div>
+			<div id="progress-status"></div>
 		</div>
 	</body>
 </html>
