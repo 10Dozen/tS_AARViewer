@@ -78,6 +78,38 @@ body {
 	color: white;
 }
 
+
+/* **********************
+	Progress Bar
+************************/
+#progress-viewer {
+	background-color: #5a5a5a;
+	position: fixed;
+	width: 300 px;
+	top: -2000px;
+	left: 13%;
+	-webkit-box-shadow: 14px 14px 56px -8px rgba(0,0,0,0.75);
+	-moz-box-shadow: 14px 14px 56px -8px rgba(0,0,0,0.75);
+	box-shadow: 14px 14px 56px -8px rgba(0,0,0,0.75);
+}
+
+#progress-header {
+	font-size: 16px;
+	padding: 4px 20px;
+	color: white;
+	border-bottom: 2px solid #c52334;
+}
+
+#progress-status {
+	padding: 4px 30px;
+	background-color: #CCCCCC;
+	font-size: 14px;
+	font-family: monospace;
+	/*overflow-y: scroll; */
+	/*height: 300px;*/
+	white-space:pre;
+}
+
 /* ****************
 	Form 
 **************** */
@@ -137,13 +169,16 @@ body {
 #output-btn-panel {
 	margin-left: 40px;
 }
+
 .output-btn {
 	display: inline-block;
 	border: 1px solid #252525;
 	color: #252525;
 	padding: 6px 16px;
 	cursor: pointer;
-	background-color: none;
+	width: 500px;
+	line-height: 20px;
+	text-align: center;
 }
 
 .output-btn:hover {	
