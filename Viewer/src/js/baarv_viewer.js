@@ -21,6 +21,7 @@ var aarCurrentTime = 0;
 var aarPlaying = false;
 var aarAutoStepper;
 var aarMapParam = [];
+var aarIconSrc = "svg";
 			
 // getMapParams(aarData.metadata.island)
 function getMapParams(name) {
@@ -96,6 +97,21 @@ function showAARDetails() {
 	);
 };
 
+function toggleIconSrc() {
+	if ( $( "#icon-src-switcher-pin" ).css( "float" ) == "left" ) {
+		aarIconSrc = "png";
+		$( "#icon-src-switcher-pin" ).css( "float", "right" );
+		$( "#icon-src-switcher-pin" ).css( "background-color", "#6798D2" );			
+		$( "#icon-src-switcher" ).css( "background-color", "#9BC34E" );
+	} else {
+		aarIconSrc = "svg";
+		$( "#icon-src-switcher-pin" ).css( "float", "left" );
+		$( "#icon-src-switcher-pin" ).css( "background-color", "#9BC34E" );
+		$( "#icon-src-switcher" ).css( "background-color", "#6798D2" );		
+	}
+	$( "#icon-src-switcher  > label" ).html( aarIconSrc.toUpperCase() );
+};
+
 // Time label
 function getTimeLabel(t) {
 	var time = t;
@@ -125,7 +141,7 @@ function createObject(data,type) {
 	var id = data[0];
 	var name = data[1];
 	var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
-	var icon = "src/icons/" + side + "_" + type + ".svg";	
+	var icon = "src/icons/" + side + "_" + type + "." + aarIconSrc;	
 	$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
 	$( "#mrk-unit-" + id ).attr({
 		"side": side,
@@ -292,9 +308,9 @@ function processUnit(data,type) {
 		}
 		
 		if (alive < 1) { 
-			$( unit + "> img" ).attr( "src", "src/icons/dead_unit.svg" ) 
+			$( unit + "> img" ).attr( "src", "src/icons/dead_unit." + aarIconSrc ) 
 		} else {
-			$( unit + "> img" ).attr( "src", "src/icons/" + $( unit ).attr("side") + "_" + $( unit ).attr("type") + ".svg" );			
+			$( unit + "> img" ).attr( "src", "src/icons/" + $( unit ).attr("side") + "_" + $( unit ).attr("type") + "." + aarIconSrc );			
 		}
 	} else {
 		owner = data[5];
@@ -304,17 +320,17 @@ function processUnit(data,type) {
 			var unitName = $( unit ).attr("name") + " (" + unitData[1] + ")";			
 			var unitSide = unitData[2];
 			if (cargo > 0) { unitName = $( unit ).attr("name") + " (" + unitData[1] + " +" + cargo + ")"; }						
-			$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh.svg" )			
+			$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh." + aarIconSrc )			
 			$( unit + "> span").html( unitName );
 		} else {
-			$( unit + "> img" ).attr( "src", "src/icons/unknown_veh.svg" )			
+			$( unit + "> img" ).attr( "src", "src/icons/unknown_veh." + aarIconSrc )			
 			$( unit + "> span").html(  getVehicleMetadata(id)[1] );			
 		}
 		
 		$( unit + " > img" ).rotate( dir );
 		setGridPos(unit, data);
 		
-		if (alive < 1) { $( unit + "> img" ).attr( "src", "src/icons/dead_veh.svg" ) }
+		if (alive < 1) { $( unit + "> img" ).attr( "src", "src/icons/dead_veh." + aarIconSrc ) }
 	}
 };
 
