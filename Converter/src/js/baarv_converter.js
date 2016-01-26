@@ -69,7 +69,13 @@ function resetForm() {
 // Open file
 var openFile = function(event) { 
 	resetForm();
+	toggleProgressView(true);
+	updateProgressView("Opening...", "Please, wait until file read.");
 	
+	setTimeout( readFile(event), 200 );
+}
+
+function readFile(event) {	
 	var input = event.target; 
 	var reader = new FileReader(); 
 	reader.onload = function(){ 
@@ -88,6 +94,7 @@ var openFile = function(event) {
 					$( "#report-selector > ul" ).append(
 						"<li onClick='chooseReportToConvert(\"" + meta.guid + "\"); '>" + meta.island + " ▸ " + meta.logTime + " ▸ " + meta.name + "</li>"
 					);
+					setTimeout( toggleProgressView(false), 500 );
 				}
 				
 				updateHeaderStatus( "success" );
@@ -102,9 +109,10 @@ var openFile = function(event) {
 		}
 	};
 	reader.readAsText(input.files[0]);
+	
 };
 
-function chooseReportToConvert(guid) {
+function chooseReportToConvert(guid) {	
 	reportGuid = guid;
 	
 	$( "#report-selector > ul" ).html("");
