@@ -3,7 +3,7 @@ dzn_brv_escapeQuotes = {
 	private["_result","_i"];
 	_result = "";
 	for "_i" from 0 to (count _this)-1 do {
-		if !( (_this select [_i, 1]) in ['"',"'"] ) then {
+		if !( (_this select [_i, 1]) in ["'",""""] ) then {
 			_result = format [ "%1%2", _result, _this select [_i, 1] ]; 
 		};
 	};
@@ -51,11 +51,11 @@ dzn_brv_addAttackEH = {
 };
 
 dzn_brv_getCoreMetadata = {
-	// AAR-Stratis-21424
-	#define RNUM	str(round(random 9))
-	dzn_brv_guid = ( (worldName) call dzn_brv_escapeQuotes ) + RNUM + RNUM + RNUM + RNUM + RNUM;
-
-	// Return basic misison Metadata
+	dzn_brv_guid  = ( (worldName) call dzn_brv_escapeQuotes );
+	for "_i" from 0 to 4 do {
+		dzn_brv_guid = format["%1%2", dzn_brv_guid, str(round(random 9))];
+	};
+	
 	diag_log format [
 		'<AAR-%3><meta><core>{ "island": "%1", "name": "%2", "guid": "%3" }</core></meta></AAR-%3>'
 		, worldName call dzn_brv_escapeQuotes
