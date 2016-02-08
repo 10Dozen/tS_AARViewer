@@ -1,3 +1,16 @@
+dzn_brv_escapeQuotes = {
+	// @NameEscaped = @Name call dzn_brv_escapeQuotes
+	private["_result","_i"];
+	_result = "";
+	for "_i" from 0 to (count _this)-1 do {
+		if !( (_this select [_i, 1]) in ["'",""""] ) then {
+			_result = format [ "%1%2", _result, _this select [_i, 1] ]; 
+		};
+	};
+	
+	_result
+};
+
 dzn_brv_addAttackEH = {
 	_this addEventHandler [
 		"Fired"
@@ -38,16 +51,16 @@ dzn_brv_addAttackEH = {
 };
 
 dzn_brv_getCoreMetadata = {
-	// AAR-Stratis-21424
-	#define RNUM	str(round(random 9))
-	dzn_brv_guid = worldName + RNUM + RNUM + RNUM + RNUM + RNUM;
-
-	// Return basic misison Metadata
+	dzn_brv_guid  = ( (worldName) call dzn_brv_escapeQuotes );
+	for "_i" from 0 to 4 do {
+		dzn_brv_guid = format["%1%2", dzn_brv_guid, str(round(random 9))];
+	};
+	
 	diag_log format [
 		'<AAR-%3><meta><core>{ "island": "%1", "name": "%2", "guid": "%3" }</core></meta></AAR-%3>'
-		,worldName
-		,briefingName
-		,dzn_brv_guid
+		, worldName call dzn_brv_escapeQuotes
+		, briefingName call dzn_brv_escapeQuotes
+		, dzn_brv_guid
 	];
 };
 
@@ -68,13 +81,13 @@ dzn_brv_collectMetadata = {
 		diag_log format [
 			'<AAR-%5><meta><unit>{ "unitMeta": [%1,"%2","%3",%4] }</unit></meta></AAR-%5>'
 			, dzn_brv_unitIdMax
-			, if (isPlayer _x) then { name _x } else { "" }
+			, if (isPlayer _x) then { (name _x) call dzn_brv_escapeQuotes } else { "" }
 			, switch (side _x) do {
-				case WEST: {"blufor"};
-				case EAST: {"opfor"};
-				case RESISTANCE: {"indep"};
-				case CIVILIAN: {"civ"};
-				default { "unknown" };
+				case WEST: {		"blufor" };
+				case EAST: {		"opfor" };
+				case RESISTANCE: {	"indep" };
+				case CIVILIAN: {		"civ" };
+				default { 			"unknown" };
 			}
 			, if (isPlayer _x) then { 1 } else { 0 }
 			,dzn_brv_guid
@@ -107,8 +120,8 @@ dzn_brv_collectMetadata = {
 		diag_log format [
 			'<AAR-%3><meta><veh>{ "vehMeta": [%1,"%2"] }</veh></meta></AAR-%3>'
 			, dzn_brv_vehIdMax
-			, _name	
-			,dzn_brv_guid
+			, _name call dzn_brv_escapeQuotes
+			, dzn_brv_guid
 		];
 	
 		_x setVariable ["dzn_brv_id", dzn_brv_vehIdMax];

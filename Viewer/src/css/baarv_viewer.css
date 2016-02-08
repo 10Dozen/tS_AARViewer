@@ -141,6 +141,26 @@ body {
 	color: white;
 }
 
+#icon-src-switcher {
+	background-color: #6798D2;
+	border-radius: 3px;
+	border: 1px solid black;	
+	width: 60px;	
+	font-size: 12px;	
+	text-align: center;	
+	cursor: pointer;
+}
+
+#icon-src-switcher label {
+	cursor: pointer;
+}
+
+#icon-src-switcher-pin {
+	float: left;
+	background-color: #9BC34E;
+	width: 10px;
+}
+
 /* ******************
 	Report Player 
 ******************** */
