@@ -20,6 +20,10 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 <br />Islands available:
 - Altis
 - Stratis
+- Chernarus
+- Takistan
+- Porto
+- Bystica
 
 Screenshots:
 <br />http://puu.sh/mdzFH/ef9dc68a5f.png
