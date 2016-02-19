@@ -68,10 +68,9 @@
 		
 		<script>
 			function openFromList(i) {
-				localStorage.setItem('aarTitle', aarConfig[i].title);
-				localStorage.setItem('aarTerrain', aarConfig[i].terrain);
-				localStorage.setItem('aarDate', aarConfig[i].date);			
+				localStorage.setItem('aarTitle', aarConfig[i].title);	
 				localStorage.setItem('aarLink', aarConfig[i].link);
+				window.open("Web%20AAR%20Viewer.html","_self")
 			};
 			
 			$( document ).ready(function () {

@@ -15,7 +15,17 @@
 		<script src="src/js/baarv_viewer.js"></script>
 		
 		<script>
-			
+			document.title = "AAR - " + localStorage.getItem('aarTitle');
+			$( document ).ready(function () {
+				var aarLoadScript = document.createElement('script');
+				aarLoadScript.src = localStorage.getItem('aarLink');
+				aarLoadScript.onload = function() {
+					alert( "Done" ); // её код				
+					// init details
+				}
+				
+				document.body.appendChild(aarLoadScript);
+			});
 		</script>
 	</head>
 	<body>
