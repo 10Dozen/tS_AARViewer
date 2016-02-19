@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="us">
+	<head>
+		<meta charset="utf-8">
+		<title>tSF AAR Viewer</title>
+		
+		<link rel="stylesheet" href="src/css/jquery-ui.css">
+		<link rel="stylesheet" href="src/css/baarv_viewer.css">
+		
+		<script src="config.ini"></script>
+		<script src="src/js/jquery.min.js"></script>
+		<script src="src/js/jquery-ui.min.js"></script>
+		<script src="src/js/jquery.panzoom.js"></script>
+		<script src="src/js/jquery.mousewheel.js"></script>
+		<script src="src/js/baarv_viewer.js"></script>
+		
+		<script>
+			
+		</script>
+	</head>
+	<body>
+		<div class="panzoom"><img name="map" src="" /></div>
+		
+		<div id="player-line">
+			<button id="player-step-backward" onClick="reportPrevStep()">Prev second</button>
+			<button id="player-step-play" onClick="playReportAuto()">Play report</button>
+			<button id="player-step-forward" onClick="reportNextStep()">Next second</button>
+			<select name="player-speed" id="player-speed">
+				<optgroup label="Play speed">
+					<option value="1">x1</option>
+					<option value="2">x2</option>
+					<option value="5">x5</option>
+					<option value="10">x10</option>
+					<option value="50">x50</option>
+				</optgroup>
+			</select>
+			<div id="slider"></div>
+			<div id="player-indicator">
+				<label id="player-step"><span>0 sec</span> / 10 sec</label>					
+			</div>
+			<button id="player-info" onClick="whereAreUnits()">Info</button>
+			<div id="player-header"> Loading... </div>
+		</div>
+		
+		<div id="header">
+			<div id="header-title">
+				<span>tS</span> AAR Viewer
+			</div>
+			<div id="header-status">
+				<!--
+					<input type='file' name='uploader' id="uploader" accept='.txt' onchange='openFile(event)'>	
+					<label id="header-status-text">Select AAR file to play...</label>	
+				-->
+				<label id="header-choose-file-btn" class="header-btn">< Назад</label>				
+							
+			</div>
+		</div>
+		
+		<div id="result-form">
+			<ul>
+				<li>
+					<div class="dl-1">
+						Mission name
+					</div>
+					<div class="dl-2" id="mission-name" />
+				</li>
+				<li>
+					<div class="dl-1">
+						Island
+					</div>
+					<div class="dl-2" id="mission-island" />
+				</li>
+				<li>
+					<div class="dl-1">
+						Date
+					</div>
+					<div class="dl-2" id="mission-date" />
+				</li>
+				<li>
+					<div class="dl-1">
+						Duration
+					</div>
+					<div class="dl-2">
+						<div id="mission-time" />
+					</div>
+				</li>
+				<li>
+					<div class="dl-1">
+						Description:
+					</div>
+					<div class="dl-3" id="mission-desc" ></div>
+				</li>				
+				<li>
+					<div class="dl-1">
+						<h4>Players</h4>
+					</div>
+					<ul id="player-list"></ul>
+				</li>
+				<br /><hr />				
+				<li>
+					<div class="start-btn" onClick="initAAR()">► PLAY</div>
+				</li>
+				<li>
+					<div id="icon-src-switcher" onClick="toggleIconSrc()"><span id="icon-src-switcher-pin">|</span><label>SVG</label></div>
+				</li>
+			</ul>
+			
+		</div>
+	</body>
+</html>

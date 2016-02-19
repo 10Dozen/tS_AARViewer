@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="us">
+	<head>
+		<meta charset="utf-8">
+		<title>Боевые операции Tactical Shift</title>
+		
+		<link rel="stylesheet" href="src/css/jquery-ui.css">
+		<link rel="stylesheet" href="src/css/baarv_viewer.css">
+		
+		<script src="config.ini"></script>
+		<script src="aarListConfig.ini"></script>
+		
+		<script src="src/js/jquery.min.js"></script>
+		<script src="src/js/jquery-ui.min.js"></script>
+		<script src="src/js/jquery.panzoom.js"></script>
+		<script src="src/js/jquery.mousewheel.js"></script>
+		<script src="src/js/baarv_viewer.js"></script>
+	
+		<style>
+			#wrapper {
+				margin-top: 10px;
+				margin-left: 8%;
+				width: 83%;
+			}
+			
+			.item {				
+				margin: 5px 5px;
+				border-left: 5px solid rgba(37, 37, 37, 0.36);
+				cursor: default;
+			}
+			
+			.item:hover {				
+				margin: 5px 5px;
+				border-left: 5px solid #c52334;
+				background-color:rgba(37, 37, 37, 0.36);
+				
+			}
+			
+			.line2 {
+				display: inline-block;
+				width: 20%;
+				text-align: center;
+				padding: 5px 0px;
+			}
+			
+			.line4 {
+				display: inline-block;
+				width: 38%;
+				text-align: center;
+				padding: 5px 0px;
+			}
+			
+			.btn {
+				border: 1px solid #252525;
+				color: #252525;
+			}
+			
+			.btn:hover {
+				background-color: #c52334;
+				color: white;
+			}
+			
+			a {
+				text-decoration: none;
+			}			
+		</style>
+		
+		
+		<script>
+			function openFromList(i) {
+				localStorage.setItem('aarTitle', aarConfig[i].title);
+				localStorage.setItem('aarTerrain', aarConfig[i].terrain);
+				localStorage.setItem('aarDate', aarConfig[i].date);			
+				localStorage.setItem('aarLink', aarConfig[i].link);
+			};
+			
+			$( document ).ready(function () {
+				for (var i=0; i < aarConfig.length; i++) {
+					$( "#wrapper" ).append(
+						"<div class='item'>" 
+						+ "<div class='line2'>" + aarConfig[i].date
+						+ "</div><div class='line4'>" + aarConfig[i].title
+						+ "</div><div class='line2'>" + aarConfig[i].terrain
+						+ "</div><div class='line2'><div class='btn' onClick='openFromList(" + i + ")'>Показать</div></div>"
+						+ "</div>"					
+					);				
+				};				
+			});
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			<div id="header-title">
+				<span>tS</span> Боевые операции
+			</div>
+		</div>
+		
+		<div id="wrapper"></div>
+		
+		
+	</body>
+</html>
