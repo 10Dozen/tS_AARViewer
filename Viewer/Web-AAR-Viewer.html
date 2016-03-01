@@ -35,15 +35,15 @@
 				aarLoadScript.onload = function() {						
 					aarData = aarFileData;
 					showAARDetails();
+					setTimeout( function() {
+					$( "#header-status-text" ).html( "Готово!" );
+						setTimeout( function() {
+							$( "#header-status-text" ).html( "" );
+						} , 1500);
+					} , 500);
 				}
 				
-				document.body.appendChild(aarLoadScript);				
-				setTimeout( function() {
-					$( "#header-status-text" ).html( "Готово!" );
-					setTimeout( function() {
-						$( "#header-status-text" ).html( "" );
-					} , 1500);
-				} , 500);
+				document.body.appendChild(aarLoadScript);
 			});
 		</script>
 	</head>
