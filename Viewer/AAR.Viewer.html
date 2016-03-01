@@ -13,38 +13,9 @@
 		<script src="src/js/jquery.panzoom.js"></script>
 		<script src="src/js/jquery.mousewheel.js"></script>
 		<script src="src/js/baarv_viewer.js"></script>
-		<style>
-			#note {
-				display: inline;
-				font-size: 12px;
-			}
+		
+		<script>
 			
-			#header-status-text {
-				padding: 0px 20px;
-			}
-		</style>
-		<script>		
-			function goToList() {
-				window.open("Web-AAR-List.html","_self")
-			};
-			
-			document.title = "AAR - " + localStorage.getItem('aarTitle');
-			$( document ).ready(function () {			
-				var aarLoadScript = document.createElement('script');
-				aarLoadScript.src = localStorage.getItem('aarLink');
-				aarLoadScript.onload = function() {						
-					aarData = aarFileData;
-					showAARDetails();
-				}
-				
-				document.body.appendChild(aarLoadScript);				
-				setTimeout( function() {
-					$( "#header-status-text" ).html( "Готово!" );
-					setTimeout( function() {
-						$( "#header-status-text" ).html( "" );
-					} , 1500);
-				} , 500);
-			});
 		</script>
 	</head>
 	<body>
@@ -76,12 +47,9 @@
 				<span>tS</span> AAR Viewer
 			</div>
 			<div id="header-status">
-				<!--
-					<input type='file' name='uploader' id="uploader" accept='.txt' onchange='openFile(event)'>	
-					<label id="header-status-text">Select AAR file to play...</label>	
-				-->
-				<label id="header-choose-file-btn" class="header-btn" onClick="goToList()">< Назад</label>
-				<label id="header-status-text">Загрузка...</label>
+				<input type='file' name='uploader' id="uploader" accept='.txt' onchange='openFile(event)'>	
+				<label id="header-choose-file-btn" class="header-btn" for="uploader">Choose File</label>				
+				<label id="header-status-text">Select AAR file to play...</label>				
 			</div>
 		</div>
 		
@@ -89,25 +57,25 @@
 			<ul>
 				<li>
 					<div class="dl-1">
-						Миссия
+						Mission name
 					</div>
 					<div class="dl-2" id="mission-name" />
 				</li>
 				<li>
 					<div class="dl-1">
-						Местность
+						Island
 					</div>
 					<div class="dl-2" id="mission-island" />
 				</li>
 				<li>
 					<div class="dl-1">
-						Дата
+						Date
 					</div>
 					<div class="dl-2" id="mission-date" />
 				</li>
 				<li>
 					<div class="dl-1">
-						Длительность
+						Duration
 					</div>
 					<div class="dl-2">
 						<div id="mission-time" />
@@ -115,25 +83,25 @@
 				</li>
 				<li>
 					<div class="dl-1">
-						Описание:
+						Description:
 					</div>
 					<div class="dl-3" id="mission-desc" ></div>
 				</li>				
 				<li>
 					<div class="dl-1">
-						<h4>Игроки</h4>
+						<h4>Players</h4>
 					</div>
 					<ul id="player-list"></ul>
 				</li>
 				<br /><hr />				
 				<li>
-					<div class="start-btn" onClick="initAAR()">► СМОТРЕТЬ</div>
+					<div class="start-btn" onClick="initAAR()">► PLAY</div>
 				</li>
 				<li>
 					<div id="icon-src-switcher" onClick="toggleIconSrc()"><span id="icon-src-switcher-pin">|</span><label>SVG</label></div>
-					<span id='note'>* Формат файлов иконок (используйте, если иконки не отображаются)</span>
 				</li>
 			</ul>
+			
 		</div>
 	</body>
 </html>

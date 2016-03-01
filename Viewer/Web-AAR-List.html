@@ -17,6 +17,13 @@
 		<script src="src/js/baarv_viewer.js"></script>
 	
 		<style>
+			#header-sans {
+				font-family: sans-serif;
+				font-weight: 100;
+				font-size: 21px;
+				line-height: 45px;
+			}
+			
 			#wrapper {
 				margin-top: 10px;
 				margin-left: 8%;
@@ -27,6 +34,7 @@
 				margin: 5px 5px;
 				border-left: 5px solid rgba(37, 37, 37, 0.36);
 				cursor: default;
+				line-height: 25px;
 			}
 			
 			.item:hover {				
@@ -53,6 +61,7 @@
 			.btn {
 				border: 1px solid #252525;
 				color: #252525;
+				cursor:pointer;
 			}
 			
 			.btn:hover {
@@ -63,7 +72,7 @@
 			a {
 				text-decoration: none;
 			}			
-		</style>
+		</style>	
 		
 		
 		<script>
@@ -73,28 +82,44 @@
 				window.open("Web-AAR-Viewer.html","_self")
 			};
 			
+			function showNoItems() {
+				$( "#wrapper" ).append(
+					"<div class='item'><div class='line4'>Нет данных для отображения</div></div>"
+				);	
+			};
+			
 			$( document ).ready(function () {
-				for (var i=0; i < aarConfig.length; i++) {
-					$( "#wrapper" ).append(
-						"<div class='item'>" 
-						+ "<div class='line2'>" + aarConfig[i].date
-						+ "</div><div class='line4'>" + aarConfig[i].title
-						+ "</div><div class='line2'>" + aarConfig[i].terrain
-						+ "</div><div class='line2'><div class='btn' onClick='openFromList(" + i + ")'>Показать</div></div>"
-						+ "</div>"					
-					);				
-				};				
+				if (typeof aarConfig === 'undefined') {
+					showNoItems()				
+				} else {
+					if (aarConfig.length == 0) {
+						showNoItems();
+					};
+				
+					for (var i=0; i < aarConfig.length; i++) {
+						$( "#wrapper" ).append(
+							"<div class='item'>" 
+							+ "<div class='line2'>" + aarConfig[i].date
+							+ "</div><div class='line4'>" + aarConfig[i].title
+							+ "</div><div class='line2'>" + aarConfig[i].terrain
+							+ "</div><div class='line2'><div class='btn' onClick='openFromList(" + i + ")'>► Показать</div></div>"
+							+ "</div>"					
+						);				
+					};
+				};
 			});
 		</script>
 	</head>
 	<body>
 		<div id="header">
 			<div id="header-title">
-				<span>tS</span> Боевые операции
+				<span>tS</span> <tt id='header-sans'>Боевые операции</tt>
 			</div>
 		</div>
 		
-		<div id="wrapper"></div>
+		<div id="wrapper">
+			
+		</div>
 		
 		
 	</body>
