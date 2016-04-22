@@ -244,6 +244,13 @@ function getVehicleMetadata(id) {
 	return output
 }
 
+function isPlayer(id) {
+	var result = false;
+	if ( (getUnitMetadata(id))[3] ) { result = true };
+	
+	return result	
+}
+
 function setGridPos(unit, data) {
 	var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );	
 	var posy = aarMapParam.size - getScaledVal( data[2] ) - getScaledVal( 16 );
@@ -307,8 +314,12 @@ function processUnit(data,type) {
 			$( unit ).css({ "left": "-20px","top": "-20px" });
 		}
 		
-		if (alive < 1) { 
-			$( unit + "> img" ).attr( "src", "src/icons/dead_unit." + aarIconSrc ) 
+		if (alive < 1) {
+			var typePlayer = "";
+			if (isPlayer(id)) {			
+				typePlayer = "player_";
+			}			
+			$( unit + "> img" ).attr( "src", "src/icons/dead_" + typePlayer + "unit." + aarIconSrc ) 
 		} else {
 			$( unit + "> img" ).attr( "src", "src/icons/" + $( unit ).attr("side") + "_" + $( unit ).attr("type") + "." + aarIconSrc );			
 		}
