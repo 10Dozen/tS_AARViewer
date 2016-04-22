@@ -1,5 +1,5 @@
 # Tactical Shift's AAR Viewer
-Version: 0.6
+Version: 0.7
 
 ## What is it?
 This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirements: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
@@ -24,6 +24,10 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 - Takistan
 - Porto
 - Bystica
+- Shapur
+- Sahrani
+- Isla Abramia
+- Kunduz
 
 Screenshots:
 <br />http://puu.sh/mdzFH/ef9dc68a5f.png
@@ -34,6 +38,6 @@ Screenshots:
 - Create a mission and add Logger script to it.
 - Play your mission
 - Go to C:\Users\%YourUsername%\AppData\Local\Arma 3 and get latest <tt>.rpt</tt> file
-- Open AAR Converter and open .rpt file from it, then choose logged game and click 'Generate'. Populate fields with your custom description for the mission and click - "Generate AAR" and then "Save AAR to file"
+- Open AAR Converter and open .rpt file from it, then choose logged game and click 'Generate'. Populate fields with your custom description for the mission and click - "Save AAR to file"
 - Open AAR Viewer and openyour generated AAR file from it. Click "Play" and wait until map loaded. 
 - Use mouse RMB to pan, and mouse wheel to zoom. If you can't find units - click Help icon at the upper-right corner - it will draw a purple lines from map corner to all units. 
