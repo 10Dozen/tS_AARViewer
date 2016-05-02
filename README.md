@@ -25,6 +25,7 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 - Porto
 - Bystica
 - Shapur
+- Proving Grounds
 - Sahrani
 - Isla Abramia
 - Kunduz
