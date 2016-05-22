@@ -4,6 +4,10 @@ Version: 0.7
 ## What is it?
 This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirements: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
 
+## Demo
+Demo page (thanks to aeroson): http://taw-arma.github.io/tS_AARViewer/
+<br />Tactical Shift MilSim Community: http://tacticalshift.ru/ts_aar/web-aar-list.html
+
 #### Mission Scripts Logger
 Server-side SQF scripts to collect units data during the mission to Arma's RPT file (e.g. C:\Users\MyUser\AppData\Local\Arma 3). 
 <br />Can be easily disabled by Mission Parameters.
