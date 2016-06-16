@@ -175,6 +175,7 @@ function convertToAAR() {
 	logMsg( "Metadata: Core [ OK ]" );
 	
 	logMsg( "Objects [ Processing ]" );
+	
 	for (var i = 0; i < rptItems.length; i++) {		
 		try {
 			var u = JSON.parse( rptItems[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i )[2] );
@@ -192,7 +193,7 @@ function convertToAAR() {
 		} catch(e) {};
 		
 		try {
-			var timelabel = rptItems[i].match( /(<)(\d+)(>)/i)[2];
+			var timelabel = rptItems[i].match( /(<)(\d+)(>)/i)[2];			
 			var unittype = rptItems[i].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[1];
 			var unitdata = rptItems[i].match( /(<unit>|<veh>|<av>)(.*)(<\/unit>|<\/veh>|<\/av>)/i )[2];
 			
@@ -217,6 +218,16 @@ function convertToAAR() {
 	};
 	
 	logMsg( "Objects [ OK ]" );
+	
+	logMsg( "Check timeline [ Processing ]" );
+	for (var i=0; i < aarData.timeline.length; i++) {
+		try { 
+			aarData.timeline[i].length > 0
+		} catch(e) { 
+			aarData.timeline[i] = [[],[],[]];
+		};
+	};
+	logMsg( "Check timeline [ OK ]" );
 	
 	logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );
 	/*
