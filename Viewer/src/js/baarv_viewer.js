@@ -252,9 +252,11 @@ function isPlayer(id) {
 }
 
 function setGridPos(unit, data) {
-	var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );	
-	var posy = aarMapParam.size - getScaledVal( data[2] ) - getScaledVal( 16 );
-	$( unit ).css({ "left": posx, "top": posy });	
+	if ( data[4] ) {
+		var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );	
+		var posy = aarMapParam.size - getScaledVal( data[2] ) - getScaledVal( 16 );
+		$( unit ).css({ "left": posx, "top": posy });
+	}
 }
 
 function drawAttack(data, timelabel) {
