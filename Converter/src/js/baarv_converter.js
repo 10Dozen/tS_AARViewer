@@ -301,7 +301,16 @@ function convertToAAR() {
 						for (var l = 1; l < stepsToInterpolate.length; l++ ) {
 							logDebug( "Time (" + stepsToInterpolate[l] + ")" + [unitId, posxSteps[l], posySteps[l], dirSteps, lastKnown[4], lastKnown[5] ] );
 							if (m == 0) {
-								( aarData.timeline[stepsToInterpolate[l]][unitTypeId] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps, lastKnown[4], lastKnown[5]]  );
+								if (lastKnown[4] == 1) {
+									( aarData.timeline[stepsToInterpolate[l]][unitTypeId] ).push( [
+										unitId
+										, posxSteps[l]
+										, posySteps[l]
+										, dirSteps
+										, lastKnown[4]
+										, lastKnown[5]
+									]  );
+								}
 							} else {
 								( aarData.timeline[stepsToInterpolate[l]][unitTypeId] ).push( [unitId, posxSteps[l], posySteps[l], dirSteps, lastKnown[4], lastKnown[5], lastKnown[6]]  );
 							}
