@@ -1,89 +1,92 @@
 <!doctype html>
 <html lang="us">
-	<head>
-		<meta charset="utf-8">
-		<title>tSF AAR Converter</title>
-		
-		<link rel="stylesheet" href="src/css/jquery-ui.css">
-		<link rel="stylesheet" href="src/css/baarv_converter.css">
-		<script src="src/js/jquery.min.js"></script>
-		<script src="src/js/jquery-ui.min.js"></script>
-		<script src="src/js/baarv_converter_web.js"></script>
-	</head>
-	<body>
-		<div id="header">
-			<div id="header-title">
-				<span>tS</span> AAR Converter
+<head>
+	<meta charset="utf-8">
+	<title>tSF AAR Converter</title>
+
+	<link rel="stylesheet" href="src/css/jquery-ui.css">
+	<link rel="stylesheet" href="src/css/baarv_converter.css">
+	<script src="src/js/jquery.min.js"></script>
+	<script src="src/js/jquery-ui.min.js"></script>
+	<script src="src/js/baarv_converter_web.js"></script>
+</head>
+<body>
+<div id="header">
+	<div id="header-title">
+		<span>tS</span> AAR Converter
+	</div>
+	<div id="header-status">
+		<input type='file' name='uploader' id="uploader" accept='.rpt,.txt' onchange='openFile(event)'>
+		<label id="header-interpolate-btn" class="header-btn header-btn-selected"><span>Interpolation</span></label>
+		<label id="header-choose-file-btn" class="header-btn" for="uploader">Choose File</label>
+		<label id="header-status-text">Select RPT file to convert...</label>
+	</div>
+</div>
+
+<div id="report-selector"><ul></ul></div>
+
+<div id="result-form">
+	<ul>
+		<li>
+			<div class="dl-1">
+				Mission name
 			</div>
-			<div id="header-status">
-				<input type='file' name='uploader' id="uploader" accept='.rpt,.txt' onchange='openFile(event)'>	
-				<label id="header-choose-file-btn" class="header-btn" for="uploader">Choose File</label>				
-				<label id="header-status-text">Select RPT file to convert...</label>
+			<div class="dl-2">
+				<input id="mission-name"></input>
 			</div>
-		</div>
-		
-		<div id="report-selector"><ul></ul></div>
-		
-		<div id="result-form">
-			<ul>
-				<li>
-					<div class="dl-1">
-						Mission name
-					</div>
-					<div class="dl-2">
-						<input id="mission-name"></input>
-					</div>
-				</li>
-				<li>
-					<div class="dl-1">
-						Island
-					</div>
-					<div class="dl-2">
-						<input id="mission-island"></input>
-					</div>
-				</li>
-				<li>
-					<div class="dl-1">
-						Date
-					</div>
-					<div class="dl-2">
-						<input id="mission-date" type="date"></input>
-					</div>
-				</li>
-				<li>
-					<div class="dl-1">
-						Duration
-					</div>
-					<div class="dl-2">
-						<div id="mission-time"></div>
-					</div>
-				</li>
-				<li>
-					<div class="dl-1">
-						Description:
-					</div>
-					<div class="dl-3">
-						<textarea id="mission-desc" cols="40" rows="5"></textarea>
-					</div>
-				</li>				
-				<li>
-					<div class="dl-1">
-						<h4>Players</h4>
-					</div>
-					<ul id="player-list"></ul>
-				</li>
-			</ul>
-			<hr />
-			<div id="output-footer">
-				<div id="output-btn-panel">
-					<label id="output-generate-btn" class="output-btn" onClick="saveGeneratedAARData()">Save AAR to file</label>
-				</div>	
+		</li>
+		<li>
+			<div class="dl-1">
+				Island
 			</div>
+			<div class="dl-2">
+				<input id="mission-island"></input>
+			</div>
+		</li>
+		<li>
+			<div class="dl-1">
+				Date
+			</div>
+			<div class="dl-2">
+				<input id="mission-date" type="date"></input>
+			</div>
+		</li>
+		<li>
+			<div class="dl-1">
+				Duration
+			</div>
+			<div class="dl-2">
+				<div id="mission-time"></div>
+			</div>
+		</li>
+		<li>
+			<div class="dl-1">
+				Description:
+			</div>
+			<div class="dl-3">
+				<textarea id="mission-desc" cols="40" rows="5"></textarea>
+			</div>
+		</li>
+		<li>
+			<div class="dl-1">
+				<h4>Players</h4>
+			</div>
+			<ul id="player-list"></ul>
+		</li>
+	</ul>
+	<hr />
+	<div id="output-footer">
+		<div id="output-btn-panel">
+			<label id="output-generate-btn" class="output-btn" onClick="saveGeneratedAARData()">Save AAR to file</label>
 		</div>
-	
-		<div id="progress-viewer">
-			<div id="progress-header">Converting...</div>
-			<div id="progress-status"></div>
-		</div>
-	</body>
+
+		<div id="output-config-line"></div>
+	</div>
+</div>
+
+<div id="progress-viewer">
+	<div id="progress-header">Converting...</div>
+	<div id="progress-status"></div>
+</div>
+</body>
 </html>

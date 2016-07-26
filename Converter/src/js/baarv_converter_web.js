@@ -24,7 +24,7 @@ var statusElement = {
 	"bar": "#header-status"
 };
 
-	
+var enableInterpolation = true;
 var rptData = "";
 var reportGuid = "";
 var aarData;
@@ -228,7 +228,8 @@ function convertToAAR() {
 		};
 	};
 	logMsg( "Check timeline [ OK ]" );
-	
+
+	if (enableInterpolation) {
 	logMsg( "Timeline: Interpolating Transitions of Units [ Processing ]" );
 	/*
 		For each UNIT check all timelines.
@@ -327,9 +328,10 @@ function convertToAAR() {
 		}
 	}
 	
-	aarData.metadata.time = (aarData.timeline).length - 2;
-	
 	logMsg( "Timeline: Interpolating Transitions of Units [ OK ]" );
+	};
+
+	aarData.metadata.time = (aarData.timeline).length - 2;
 
 	logMsg( "Creating form" );
 	$( "#player-list" ).html( "" );
@@ -353,6 +355,8 @@ function convertToAAR() {
 	$( "#result-form" ).css( "top", "75px" );
 	$( "#header-status-text" ).html( "Converted!" );
 	$( ".dl-2 > input, textarea" ).removeAttr( "disabled" );
+
+
 };
 
 // Interpolate values
@@ -396,11 +400,22 @@ function generateAAR() {
 	console.log( "AAR text generated.");
 }
 
+function generateConfigLine () {
+	return ( '{<br />"date": "' + aarData.metadata.date
+	+ '"<br />,"title": "' + aarData.metadata.name
+	+ '"<br />,"terrain": "' + aarData.metadata.island
+	+ '"<br />,"link": "aars/AAR.' +  aarData.metadata.island + "." + (aarData.metadata.name).replace(/ /g, '_')
+	+ '.txt"<br />},' );
+};
+
+
 function saveGeneratedAARData() {
 	generateAAR();
 	toggleProgressView(true);
 	updateProgressView("Saving", "Wait until AAR file will be generated.")
-	
+
+	$('#output-config-line').html( generateConfigLine() );
+
 	setTimeout ( saveAARFile, 500, "aarFileData = " + JSON.stringify( aarData ) )
 	//saveAARFile( JSON.stringify( aarData ) );				
 }
@@ -415,7 +430,21 @@ function saveAARFile(data) {
 	toggleProgressView(false);
 }
 
+function initToggleInterpolate () {
+	$('#header-interpolate-btn').on("click", function () {
+		if (enableInterpolation) {
+			$(this).removeClass("header-btn-selected");
+			enableInterpolation = false;
+		} else {
+			$(this).addClass("header-btn-selected");
+			enableInterpolation = true;
+		};
+	});
+};
+
+
 $( document ).ready(function() {
 	$( ".dl-2 > input, textarea, button" ).attr( "disabled", "true" );
 	resetForm();
+	initToggleInterpolate();
 });

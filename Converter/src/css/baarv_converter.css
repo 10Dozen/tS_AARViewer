@@ -55,6 +55,16 @@ body {
 	color: #5a5a5a;
 }
 
+.header-btn span {
+	font-size: 12px;
+}
+
+.header-btn-selected {
+	background-color:  #ececec;
+	border: 2px solid #ececec;
+	color: #5a5a5a;
+}
+
 #report-selector {
 	position: absolute;
 	top: -1000px;
@@ -199,4 +209,13 @@ body {
 	color: white;
 	margin: 2px 1px;
 	border-radius: 6px;
+}
+
+/*
+	OUTPUT
+*/
+
+#output-config-line {
+	padding: 4px 0px 4px 20px;
+	font-size: 12px;
 }
