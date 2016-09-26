@@ -29,6 +29,10 @@ var rptData = "";
 var reportGuid = "";
 var aarData;
 
+function normalize(s) {
+	return s.replace(/""/g, '"')
+};
+
 function updateHeaderStatus(mode) {
 	switch (mode) {
 		case "default": 
@@ -89,7 +93,7 @@ function readFile(event) {
 				var listOfMetadata = [];
 				for (var i = 0; i < listOfDirtyMetadata.length; i++) {
 					var parsedMeta = listOfDirtyMetadata[i].match( /(.*)<AAR-.*><meta><core>(.*)<\/core><\/meta><\/AAR-.*>/i);
-					var meta = JSON.parse( parsedMeta[2] )
+					var meta = JSON.parse( normalize(parsedMeta[2]) )
 					meta.logTime = parsedMeta[1].slice(0,-2);
 					$( "#report-selector > ul" ).append(
 						"<li onClick='chooseReportToConvert(\"" + meta.guid + "\"); '>" + meta.island + " ▸ " + meta.logTime + " ▸ " + meta.name + "</li>"
@@ -167,7 +171,7 @@ function convertToAAR() {
 	
 	var re = new RegExp( "<AAR-" + reportGuid + ">.*<\/AAR-" + reportGuid + ">", "g" )
 	var rptItems = rptData.match( re );
-	var metadataCore = JSON.parse( ( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2] ); 
+	var metadataCore = JSON.parse( normalize(( rptItems[0].match( /(<core>)(.*)(<\/core>)/i) )[2]) ); 
 	
 	logMsg( "Metadata: Core [ Processing ]" );
 	aarData.metadata.island = metadataCore.island;
@@ -178,13 +182,13 @@ function convertToAAR() {
 	
 	for (var i = 0; i < rptItems.length; i++) {		
 		try {
-			var u = JSON.parse( rptItems[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i )[2] );
+			var u = JSON.parse( normalize(rptItems[i].match( /(<meta><veh>)(.*)(<\/veh><\/meta>)/i )[2]) );
 			(aarData.metadata.objects.vehs).push(u.vehMeta);
 			continue;
 		} catch(e) {};
 		
 		try {
-			var u = JSON.parse( rptItems[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i )[2] );
+			var u = JSON.parse( normalize(rptItems[i].match( /(<meta><unit>)(.*)(<\/unit><\/meta>)/i )[2]) );
 			(aarData.metadata.objects.units).push(u.unitMeta);
 			if (u.unitMeta[3] > 0) {
 				(aarData.metadata.players).push( [u.unitMeta[1],u.unitMeta[2]] );
@@ -203,13 +207,13 @@ function convertToAAR() {
 
 			switch (unittype) {
 				case "<unit>": 
-					(aarData.timeline[timelabel])[0].push( JSON.parse(unitdata) );
+					(aarData.timeline[timelabel])[0].push( JSON.parse(normalize(unitdata)) );
 					break;
 				case "<veh>":
-					(aarData.timeline[timelabel])[1].push( JSON.parse(unitdata) );
+					(aarData.timeline[timelabel])[1].push( JSON.parse(normalize(unitdata)) );
 					break;
 				case "<av>":
-					(aarData.timeline[timelabel])[2].push( JSON.parse(unitdata) );
+					(aarData.timeline[timelabel])[2].push( JSON.parse(normalize(unitdata)) );
 					break;
 			};
 			
