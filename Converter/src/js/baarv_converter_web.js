@@ -96,9 +96,9 @@ var openConfigFile = function(event) {
 
 			var stringified = JSON.stringify( aarConfig );
 			stringified = stringified.replace(/,/g, ',\n').replace(/{/g, '{\n').replace(/}/g, '\n}');
-			stringified = stringified.replace(/"date"/g, '	"date"').replace(/"terrain"/g, '	"terrain"').replace(/"link"/g, '	"link"').replace(/"title"/g, '	"link"');
+			stringified = stringified.replace(/"date"/g, '	"date"').replace(/"terrain"/g, '	"terrain"').replace(/"link"/g, '	"link"').replace(/"title"/g, '	"title"');
 
-			saveConfigFile("aarData = " + stringified + ";");
+			saveConfigFile("aarConfig = " + stringified + ";");
         } else {
         	console.log( "Not Read!");
         }
@@ -184,7 +184,7 @@ function convertToAAR() {
 			"name": "",
 			"time": 0,
 			"date": "",
-			"summary": "",
+			"desc": "",
 			"players": [],
 			"objects": {
 				"units": [],
@@ -206,7 +206,7 @@ function convertToAAR() {
 	logMsg( "Metadata: Core [ Processing ]" );
 	aarData.metadata.island = metadataCore.island;
 	aarData.metadata.name = metadataCore.name;
-	aarData.metadata.summary = metadataCore.summary;
+	aarData.metadata.desc = metadataCore.summary;
 	logMsg( "Metadata: Core [ OK ]" );
 	
 	logMsg( "Objects [ Processing ]" );
@@ -429,7 +429,7 @@ var AARFileDetailsBase = function() {
 	this.name 		= aarData.metadata.name;
 	this.island 	= aarData.metadata.island;
 	this.date 		= aarFileDate;
-	this.summary	= aarData.metadata.summary;
+	this.summary	= aarData.metadata.desc;
 	this.filename 	= "";
 	this.configLine = "";
 
@@ -442,12 +442,12 @@ var AARFileDetailsBase = function() {
     	this.draw();
 
         aarData.metadata.name 		= $( "#mission-name" ).val();
-		aarData.metadata.summary	= $( "#mission-desc" ).val();
+		aarData.metadata.desc	= $( "#mission-desc" ).val();
 		aarData.metadata.island		= $( "#mission-island" ).val();
 		aarData.metadata.date 		= $( "#mission-date" ).val();
 
         this.name 		= aarData.metadata.name;
-        this.summary	= aarData.metadata.summary;
+        this.summary	= aarData.metadata.desc;
         this.island 	= aarData.metadata.island;
         this.date 		= aarData.metadata.date;
 
