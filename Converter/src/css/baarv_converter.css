@@ -219,3 +219,29 @@ body {
 	padding: 4px 0px 4px 20px;
 	font-size: 12px;
 }
+
+#output-config-uploader{
+	padding-top: 120px;
+}
+
+#configUploader {
+	display: none;
+}
+
+.config-file-btn {
+	display: inline-block;
+	border: 1px solid #252525;
+	color: #252525;
+	margin-left: 40px;
+	padding: 6px 16px;
+	cursor: pointer;
+	width: 140px;
+	line-height: 20px;
+	text-align: center;
+}
+
+.config-file-btn:hover {
+	background-color:  #C52334;
+	border: 1px solid white;
+	color: white;
+}

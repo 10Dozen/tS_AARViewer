@@ -11,6 +11,14 @@ dzn_brv_escapeQuotes = {
 	_result
 };
 
+dzn_brv_getMissionSummary = {	
+	if (!isNil "tSF_SummaryText" && { typename tSF_SummaryText == "STRING" }) then {
+		tSF_SummaryText;		
+	} else {
+		""
+	}
+};
+
 dzn_brv_addAttackEH = {
 	_this addEventHandler [
 		"Fired"
@@ -57,10 +65,11 @@ dzn_brv_getCoreMetadata = {
 	};
 	
 	diag_log format [
-		'<AAR-%3><meta><core>{ "island": "%1", "name": "%2", "guid": "%3" }</core></meta></AAR-%3>'
+		'<AAR-%3><meta><core>{ "island": "%1", "name": "%2", "guid": "%3", "summary": "%4" }</core></meta></AAR-%3>'
 		, worldName call dzn_brv_escapeQuotes
 		, briefingName call dzn_brv_escapeQuotes
 		, dzn_brv_guid
+		, call dzn_brv_getMissionSummary
 	];
 };
 

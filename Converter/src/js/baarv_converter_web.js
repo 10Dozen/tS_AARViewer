@@ -78,11 +78,41 @@ var openFile = function(event) {
 	
 	setTimeout( readFile(event), 200 );
 }
+var openConfigFile = function(event) {
+	console.log('Config File Selected');
+	var input = event.target;
+    var configReader = new FileReader();
+
+	configFilename = configUploader.files[0].name;
+	configReader.onload = function(){
+		console.log("READING");
+		var configData = configReader.result;
+		if (configData.length > 0) {
+			console.log( "Read!");
+			var newConfig = ( AARFileDetails.configLine.replace(/\n/g, '') ).slice(0,-1);
+
+			eval(configData);	// this creates aarConfig variable with configs
+			aarConfig.unshift(JSON.parse(normalize(newConfig)));
+
+			var stringified = JSON.stringify( aarConfig );
+			stringified = stringified.replace(/,/g, ',\n').replace(/{/g, '{\n').replace(/}/g, '\n}');
+			stringified = stringified.replace(/"date"/g, '	"date"').replace(/"terrain"/g, '	"terrain"').replace(/"link"/g, '	"link"').replace(/"title"/g, '	"link"');
+
+			saveConfigFile("aarData = " + stringified + ";");
+        } else {
+        	console.log( "Not Read!");
+        }
+	}
+	configReader.readAsText(input.files[0]);
+};
 
 function readFile(event) {	
 	var input = event.target; 
-	var reader = new FileReader(); 
-	reader.onload = function(){ 
+	var reader = new FileReader();
+
+	aarFileDate = ( (uploader.files[0].name).split("_") )[1];
+
+	reader.onload = function(){
 		var text = reader.result;
 		rptData = text;
 		if (text.length > 0) {
@@ -154,7 +184,7 @@ function convertToAAR() {
 			"name": "",
 			"time": 0,
 			"date": "",
-			"desc": "",
+			"summary": "",
 			"players": [],
 			"objects": {
 				"units": [],
@@ -176,6 +206,7 @@ function convertToAAR() {
 	logMsg( "Metadata: Core [ Processing ]" );
 	aarData.metadata.island = metadataCore.island;
 	aarData.metadata.name = metadataCore.name;
+	aarData.metadata.summary = metadataCore.summary;
 	logMsg( "Metadata: Core [ OK ]" );
 	
 	logMsg( "Objects [ Processing ]" );
@@ -339,8 +370,6 @@ function convertToAAR() {
 
 	logMsg( "Creating form" );
 	$( "#player-list" ).html( "" );
-	$( "#mission-name" ).val( aarData.metadata.name );
-	$( "#mission-island" ).val( aarData.metadata.island );
 	$( "#mission-time" ).html( getTimeLabel(aarData.metadata.time) );
 	
 	for (var i = 0; i < aarData.metadata.players.length; i++) {
@@ -360,7 +389,7 @@ function convertToAAR() {
 	$( "#header-status-text" ).html( "Converted!" );
 	$( ".dl-2 > input, textarea" ).removeAttr( "disabled" );
 
-
+	AARFileDetails = new AARFileDetailsBase();
 };
 
 // Interpolate values
@@ -396,42 +425,105 @@ function getTimeLabel(t) {
 }
 
 // Generate
-function generateAAR() {			
-	aarData.metadata.date = $( "#mission-date" ).val();
-	aarData.metadata.desc = $( "#mission-desc" ).val();
-	aarData.metadata.island = $( "#mission-island" ).val();
-	aarData.metadata.name = $( "#mission-name" ).val();
-	console.log( "AAR text generated.");
-}
+var AARFileDetailsBase = function() {
+	this.name 		= aarData.metadata.name;
+	this.island 	= aarData.metadata.island;
+	this.date 		= aarFileDate;
+	this.summary	= aarData.metadata.summary;
+	this.filename 	= "";
+	this.configLine = "";
 
-function generateConfigLine () {
-	return ( '{<br />"date": "' + aarData.metadata.date
-	+ '"<br />,"title": "' + aarData.metadata.name
-	+ '"<br />,"terrain": "' + aarData.metadata.island
-	+ '"<br />,"link": "aars/AAR.' +  aarData.metadata.island + "." + (aarData.metadata.name).replace(/ /g, '_')
-	+ '.txt"<br />},' );
+    this.setFilename = function() {
+    	this.filename = "AAR." + this.date + "." + this.island + "." + (this.name).replace(/ /g, '_') + ".txt";
+    	this.draw();
+    };
+
+    this.updateAAR = function() {
+    	this.draw();
+
+        aarData.metadata.name 		= $( "#mission-name" ).val();
+		aarData.metadata.summary	= $( "#mission-desc" ).val();
+		aarData.metadata.island		= $( "#mission-island" ).val();
+		aarData.metadata.date 		= $( "#mission-date" ).val();
+
+        this.name 		= aarData.metadata.name;
+        this.summary	= aarData.metadata.summary;
+        this.island 	= aarData.metadata.island;
+        this.date 		= aarData.metadata.date;
+
+        console.log( "AAR text re-generated.");
+    };
+    this.generateConfigLine = function() {
+    	var br = "\n";
+    	this.configLine = '{' +  br + '"date": "' + this.date
+    	+ '"' +  br + ',"title": "' + this.name
+    	+ '"' +  br + ',"terrain": "' + this.island
+    	+ '"' +  br + ',"link": "aars/' + this.filename
+    	+ '"' +  br + '},';
+    }
+
+	this.initEvents = function() {
+		$( "#mission-name" ).on('blur', function () {
+			AARFileDetails.name = $( "#mission-name" ).val();
+			AARFileDetails.setFilename();
+		});
+		$( "#mission-island" ).on('blur', function () {
+			AARFileDetails.island = $( "#mission-island" ).val();
+			AARFileDetails.setFilename();
+		});
+		$( "#mission-date" ).on('blur', function () {
+			AARFileDetails.date = $( "#mission-date" ).val();
+			AARFileDetails.setFilename();
+		});
+	};
+	this.draw = function() {
+		$( "#mission-name" ).val( this.name );
+        $( "#mission-filename" ).val( this.filename );
+        $( "#mission-island" ).val( this.island );
+        $( "#mission-desc" ).val( this.summary );
+        $( "#mission-date" ).val( this.date );
+	};
+	this.init = function() {
+		this.setFilename();
+		this.draw();
+		this.initEvents();
+	};
+
+	this.init();
 };
 
-
 function saveGeneratedAARData() {
-	generateAAR();
+	AARFileDetails.updateAAR();
+	AARFileDetails.generateConfigLine();
+
 	toggleProgressView(true);
 	updateProgressView("Saving", "Wait until AAR file will be generated.")
 
-	$('#output-config-line').html( generateConfigLine() );
+	$('#output-config-uploader').append(
+    	"<label id='config-file-btn' class='config-file-btn' for='configUploader'>Update Config File</label>"
+    );
+	$('#output-config-line').append("<textarea cols='40' rows='6'>" + AARFileDetails.configLine + "</textarea>"	);
+
 
 	setTimeout ( saveAARFile, 500, "aarFileData = " + JSON.stringify( aarData ) )
-	//saveAARFile( JSON.stringify( aarData ) );				
 }
 
 function saveAARFile(data) {	
     var a = document.createElement("a");
     var file = new Blob([data], {type: "text/plain"});
     a.href = URL.createObjectURL(file);
-    a.download = "AAR." + aarData.metadata.island + "." + (aarData.metadata.name).replace(/ /g, '_') + ".txt";
+    a.download = AARFileDetails.filename;
     a.click();
 	
 	toggleProgressView(false);
+}
+
+function saveConfigFile(data) {
+	var a = document.createElement("a");
+    var file = new Blob([data], {type: "text/plain"});
+    a.href = URL.createObjectURL(file);
+    a.download = "aarListConfig.ini";
+    a.click();
 }
 
 function initToggleInterpolate () {
@@ -445,7 +537,6 @@ function initToggleInterpolate () {
 		};
 	});
 };
-
 
 $( document ).ready(function() {
 	$( ".dl-2 > input, textarea, button" ).attr( "disabled", "true" );

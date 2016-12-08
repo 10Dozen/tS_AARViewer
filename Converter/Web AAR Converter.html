@@ -73,6 +73,16 @@
 			</div>
 			<ul id="player-list"></ul>
 		</li>
+
+		<hr />
+		<li>
+			<div class="dl-1">
+				AAR Filename
+			</div>
+			<div class="dl-2">
+				<input id="mission-filename"></input>
+			</div>
+		</li>
 	</ul>
 	<hr />
 	<div id="output-footer">
@@ -81,6 +91,9 @@
 		</div>
 
 		<div id="output-config-line"></div>
+		<div id="output-config-uploader">
+			<input type='file' name='configUploader' id='configUploader' accept='.ini' onchange='openConfigFile(event)'>
+		</div>
 	</div>
 </div>
 
