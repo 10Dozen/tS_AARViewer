@@ -317,7 +317,7 @@ function processUnit(data,type) {
 		inCargo = data[5];	
 		if (inCargo == -1) {
 			$( unit + " > img" ).rotate( dir );
-			$( unit ).css({"color": "rgba(0, 0, 0, " + (showNamesState ? 255 : 0) + ")"})
+			$( unit ).css({"color": "rgba(0, 0, 0, " + (showNamesState ? 255 : 0) + ")"});
 			setGridPos(unit, data);		
 		} else {
 		    console.log(unit);
@@ -329,7 +329,8 @@ function processUnit(data,type) {
 			if (isPlayer(id)) {			
 				typePlayer = "player_";
 			}			
-			$( unit + "> img" ).attr( "src", "src/icons/dead_" + typePlayer + "unit." + aarIconSrc ) 
+			$( unit + "> img" ).attr( "src", "src/icons/dead_" + typePlayer + "unit." + aarIconSrc );
+			$( unit ).css({"color": "rgba(0, 0, 0, " + (showNamesState ? 0.25 : 0) + ")"});
 		} else {
 			$( unit + "> img" ).attr( "src", "src/icons/" + $( unit ).attr("side") + "_" + $( unit ).attr("type") + "." + aarIconSrc );			
 		}
@@ -343,9 +344,11 @@ function processUnit(data,type) {
 			if (cargo > 0) { unitName = $( unit ).attr("name") + " (" + unitData[1] + " +" + cargo + ")"; }						
 			$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh." + aarIconSrc )			
 			$( unit + "> span").html( unitName );
+			$( unit ).css({"color": "rgba(0, 0, 0, 0.6)"});
 		} else {
 			$( unit + "> img" ).attr( "src", "src/icons/unknown_veh." + aarIconSrc )			
-			$( unit + "> span").html(  getVehicleMetadata(id)[1] );			
+			$( unit + "> span").html(  getVehicleMetadata(id)[1] );
+			$( unit ).css({"color": "rgba(0, 0, 0, 0.25)"});
 		}
 		
 		$( unit + " > img" ).rotate( dir );
