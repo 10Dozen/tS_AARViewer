@@ -140,18 +140,24 @@ function createObject(data,type) {
 	// 1: "unit" or "veh"
 	var id = data[0];
 	var name = data[1];
+	console.log(name);
 	var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
 	var icon = "src/icons/" + side + "_" + type + "." + aarIconSrc;	
 	$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
+
 	$( "#mrk-unit-" + id ).attr({
 		"side": side,
 		"type": type,
 		"name": name
 	});
+
+	$("#mrk-unit-" + id + " > .icn").attr({"title": name});
+
 	$( ".icn" ).css({
 		"width": getScaledVal(32) + "px",
 		"height": getScaledVal(32) + "px"		
 	});
+
 	$( "#mrk-unit-" + id ).css( "font-size", getScaledVal(16) + "px" );
 }
 
@@ -311,8 +317,10 @@ function processUnit(data,type) {
 		inCargo = data[5];	
 		if (inCargo == -1) {
 			$( unit + " > img" ).rotate( dir );
+			$( unit ).css({"color": "rgba(0, 0, 0, " + (showNamesState ? 255 : 0) + ")"})
 			setGridPos(unit, data);		
 		} else {
+		    console.log(unit);
 			$( unit ).css({ "left": "-20px","top": "-20px" });
 		}
 		
@@ -369,7 +377,7 @@ function playReportStep (step) {
 // Play AAR in auto mode
 function playReportAuto () {
 	if (!aarPlaying) {
-		stertReport();
+		startReport();
 		aarAutoStepper = setInterval(
 			function () {
 				if (aarCurrentTime != aarData.metadata.time) {				
@@ -386,7 +394,7 @@ function playReportAuto () {
 	}
 };
 
-function stertReport() {
+function startReport() {
 	aarPlaying = true;
 	$( "#player-step-play" ).button( "option", { label: "pause", icons: {primary: "ui-icon-pause"} });
 	clearInterval( aarAutoStepper );
@@ -449,6 +457,12 @@ function whereAreUnits() {
 	}				
 }
 
+var showNamesState = true;
+function toggleNames() {
+    showNamesState = showNamesState ? false : true;
+    playReportStep(aarCurrentTime);
+}
+
 
 $( document ).ready(function () {
 	$( "#slider" ).slider({
@@ -471,6 +485,7 @@ $( document ).ready(function () {
 	$( "#player-step-backward" ).button({text: false,icons: { primary: "ui-icon-seek-prev" }}).click(function() { stopReport(); });
 	$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}}).click(function() { stopReport(); });
 	$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}});
-	$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-info" }});
+	$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-help" }});
+	$( "#player-toggleNames" ).button({text: false, icons: { primary: "ui-icon-tag" }});
 	$( "#player-line > button" ).attr( "disabled", "true" );	
 });

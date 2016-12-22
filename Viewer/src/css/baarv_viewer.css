@@ -236,6 +236,12 @@ body {
 	float: right;
 }
 
+#player-toggleNames {
+	right: 10px;
+	top: 10px;
+	float: right;
+}
+
 /* *********************
 	Units 
 ********************** */
