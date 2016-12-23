@@ -71,7 +71,7 @@ var openFile = function(event) {
 	};	
 	reader.readAsText(input.files[0]);
 };
-
+XXA = [];
 function showAARDetails() {
 	$( "#result-form" ).css( "top", "75px" );	
 	$( "#mission-name" ).html( "<h3>" + aarData.metadata.name + "</h3>" );
@@ -83,6 +83,12 @@ function showAARDetails() {
 		(function (){
 			var output = "";
 			var listOfNames = [];
+			aarData.metadata.players.sort(function (a,b) {
+			    if (a[0] < b[0]) return -1;
+			    if (a[0] > b[0]) return 1;
+			    return 0;
+			});
+
 			for (var i = 0; i < aarData.metadata.players.length; i++) {
 			    var name = aarData.metadata.players[i][0];
 
