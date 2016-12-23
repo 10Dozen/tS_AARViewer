@@ -152,7 +152,7 @@ function createObject(data,type) {
 	// 1: "unit" or "veh"
 	var id = data[0];
 	var name = data[1];
-	console.log(name);
+
 	var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
 	var icon = "src/icons/" + side + "_" + type + "." + aarIconSrc;	
 	$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
@@ -170,7 +170,10 @@ function createObject(data,type) {
 		"height": getScaledVal(32) + "px"		
 	});
 
-	$( "#mrk-unit-" + id ).css( "font-size", getScaledVal(16) + "px" );
+	$( "#mrk-unit-" + id ).css({
+	 	"font-size": getScaledVal(16) + "px",
+	 	"z-index": 2
+	});
 }
 
 // Init AAR
@@ -296,7 +299,7 @@ function drawAttack(data, timelabel) {
 	ctx.beginPath();
 	ctx.moveTo( getScaledVal( data[0] ), aarMapParam.size - getScaledVal( data[1] ) );
 	ctx.lineTo( getScaledVal( data[2] ), aarMapParam.size - getScaledVal( data[3] ) );
-	ctx.lineWidth = getScaledVal( 3 );
+	ctx.lineWidth = getScaledVal( showSmallState ? 1 : 3 );
 	ctx.strokeStyle = '#FF6000';
 	ctx.lineCap = 'round';
 	ctx.stroke();
@@ -323,7 +326,10 @@ function processUnit(data,type) {
 	var unit = "#mrk-unit-" + id;
 	var dir = data[3];
 	var alive = data[4];
-	
+
+	$( unit + " > img" ).css({"width": (showSmallState ? getScaledVal(16) + "px" : getScaledVal(32) + "px")});
+	$( unit + " > span" ).css({"font-size": (showSmallState ? "6px" : "16px")});
+
 	var inCargo, owner, cargo
 	if (type == "unit") {
 		inCargo = data[5];	
@@ -332,7 +338,6 @@ function processUnit(data,type) {
 			$( unit ).css({"color": "rgba(0, 0, 0, " + (showNamesState ? 255 : 0) + ")"});
 			setGridPos(unit, data);		
 		} else {
-		    console.log(unit);
 			$( unit ).css({ "left": "-20px","top": "-20px" });
 		}
 		
@@ -342,7 +347,10 @@ function processUnit(data,type) {
 				typePlayer = "player_";
 			}			
 			$( unit + "> img" ).attr( "src", "src/icons/dead_" + typePlayer + "unit." + aarIconSrc );
-			$( unit ).css({"color": "rgba(0, 0, 0, " + (showNamesState ? 0.25 : 0) + ")"});
+			$( unit ).css({
+				"color": "rgba(0, 0, 0, " + (showNamesState ? 0.25 : 0) + ")",
+				"z-index": 0
+			});
 		} else {
 			$( unit + "> img" ).attr( "src", "src/icons/" + $( unit ).attr("side") + "_" + $( unit ).attr("type") + "." + aarIconSrc );			
 		}
@@ -478,6 +486,11 @@ function toggleNames() {
     playReportStep(aarCurrentTime);
 }
 
+var showSmallState = false;
+function toggleSize() {
+	showSmallState = showSmallState ? false : true;
+    playReportStep(aarCurrentTime);
+}
 
 $( document ).ready(function () {
 	$( "#slider" ).slider({
@@ -502,5 +515,7 @@ $( document ).ready(function () {
 	$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}});
 	$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-help" }});
 	$( "#player-toggleNames" ).button({text: false, icons: { primary: "ui-icon-tag" }});
+	$( "#player-toggleIcons" ).button({text: false, icons: { primary: "ui-icon-circle-zoomout" }});
+
 	$( "#player-line > button" ).attr( "disabled", "true" );	
 });

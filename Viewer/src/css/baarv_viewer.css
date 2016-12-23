@@ -230,16 +230,10 @@ body {
 	font-size: 10px;
 }
 
-#player-info {
+.player-misc-buttons {
 	right: 10px;
-	top: 10px;
-	float: right;
-}
-
-#player-toggleNames {
-	right: 10px;
-	top: 10px;
-	float: right;
+   	top: 10px;
+    float: right;
 }
 
 /* *********************
