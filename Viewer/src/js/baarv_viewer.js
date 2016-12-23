@@ -82,7 +82,13 @@ function showAARDetails() {
 	$( "#player-list" ).html(
 		(function (){
 			var output = "";
+			var listOfNames = [];
 			for (var i = 0; i < aarData.metadata.players.length; i++) {
+			    var name = aarData.metadata.players[i][0];
+
+			    if (listOfNames.indexOf(name) > -1) { continue; };
+
+			    listOfNames.push(name);
 				var color;
 				switch (aarData.metadata.players[i][1]) {
 					case "blufor": color = "RGB(0,77,152)"; break;
@@ -90,7 +96,7 @@ function showAARDetails() {
 					case "indep": color = "RGB(0,127,0)"; break;
 					case "civ": color = "RGB(102,0,127)"; break;
 				};
-				output = output + "<li class='player-side-icon' style='padding: 2px 4px; background-color: " + color + "'>" + aarData.metadata.players[i][0] + "</li>";	
+				output = output + "<li class='player-side-icon' style='padding: 2px 4px; background-color: " + color + "'>" + name + "</li>";
 				}
 			return (output)
 		})()
