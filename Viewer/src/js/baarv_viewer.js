@@ -1,27 +1,93 @@
-var eStyle = {
-	"headerStatus": {
-		"default": {
-			"text": "Open AAR file to play...",
-			"bgColor": "#5a5a5a"			
-		},
-		"success": {
-			"text": "Click 'Play' to start!",
-			"bgColor": "rgb(155, 195, 78)"
-		},
-		"failed": {
-			"text": "File is not AAR file!",
-			"bgColor": "#AF4E4E"
-		}
-	}
-}
-
-
 var aarData = {};
 var aarCurrentTime = 0;
 var aarPlaying = false;
 var aarAutoStepper;
 var aarMapParam = [];
 var aarIconSrc = "svg";
+var eStyle = {
+	"headerStatus": {
+		"default": {
+			"text": "Open AAR file to play...",
+			"bgColor": "#5a5a5a"			
+		}
+		,"onload": {
+			"text": "Загрузка...",
+           "bgColor": "#5a5a5a"
+		}
+		,"success": {
+			"text": "Click 'Play' to start!",
+			"bgColor": "rgb(155, 195, 78)"
+		}
+		,"failed": {
+			"text": "File is not AAR file!",
+			"bgColor": "#AF4E4E"
+		}
+		,"file_not_available": {
+			"text": "AAR failed to download...",
+			"bgColor": "#AF4E4E"
+		}
+		,"offline_mode": {
+			"text": "Select AAR file to play...",
+			"bgColor": "#5a5a5a"
+		}
+	}
+}
+
+
+function goToList() {
+	window.open("Web-AAR-List.html","_self")
+}
+function showLoadingFailed() {
+	$( "#header-status-text" ).html( eStyle.headerStatus.file_not_available.text );
+    $( "#header-status" ).css( "background-color", eStyle.headerStatus.file_not_available.bgColor );
+    setTimeout(switchToOffline, 3000);
+};
+
+function switchToOffline() {
+	$( document ).ready(function () {
+		$( "#header-status-text" ).html( eStyle.headerStatus.offline_mode.text );
+        $( "#header-status" ).css( "background-color", eStyle.headerStatus.offline_mode.bgColor );
+	});
+}
+
+function startViewer() {
+	if (localStorage.getItem('aarTitle') == null) {
+		showLoadingFailed();
+	} else {
+		document.title = "AAR - " + localStorage.getItem('aarTitle');
+		$( "#header-status-text" ).html( eStyle.headerStatus.onload.text );
+		$( "#header-status" ).css( "background-color", eStyle.headerStatus.onload.bgColor );
+
+		var aarLoadScript = document.createElement('script');
+        aarLoadScript.src = localStorage.getItem('aarLink');
+
+        aarLoadScript.addEventListener(
+        	'error'
+      		,showLoadingFailed
+      		,false
+        );
+
+        aarLoadScript.addEventListener(
+			'load'
+ 			,function() {
+ 				$( "#uploader" ).remove();
+ 				$( "#header-choose-file-btn" ).remove();
+
+ 				aarData = aarFileData;
+ 				showAARDetails();
+                setTimeout( function() {
+                	$( "#header-status-text" ).html( "Готово!" );
+                	setTimeout( function() {
+                		$( "#header-status-text" ).html( "" );
+                	} , 1500);
+                } , 500);
+ 			}
+			,false
+        );
+
+        document.body.appendChild(aarLoadScript);
+	}
+}
 			
 // getMapParams(aarData.metadata.island)
 function getMapParams(name) {
@@ -43,35 +109,35 @@ function getScaledVal(value) {
 	return Math.round(value / aarMapParam.scale)
 };
 
+
 // Open file
 var openFile = function(event) {
 	$( "#result-form" ).css( "top", "-1000px" );	
 	$( "#header-status" ).css( "background-color", eStyle.headerStatus.default.bgColor );
 	$( "#header-status-text" ).html( eStyle.headerStatus.default.text );
-	
-	var input = event.target; 
 
-	var reader = new FileReader(); 
-	reader.onload = function(){ 
-		var text = reader.result;
+	var reader = new FileReader();
+
+	reader.onload = function() {
 		try {
-			aarData = JSON.parse(text);
-			console.log("Parsed!");
+			eval(this.result);
+        	aarData = aarFileData;
+        	console.log("Parsed!");
 
-			// Detail screen
-			$( "#header-status-text" ).html( "Opened!" );
-			$( "#header-status" ).css( "background-color", eStyle.headerStatus.success.bgColor );
-			$( "#header-status-text" ).html( eStyle.headerStatus.success.text );
-			showAARDetails();
+        	$( "#header-status-text" ).html( "Opened!" );
+            $( "#header-status" ).css( "background-color", eStyle.headerStatus.success.bgColor );
+            $( "#header-status-text" ).html( eStyle.headerStatus.success.text );
+            showAARDetails();
 		} catch (e) {
 			console.log("Error occured during parsing!");
-			$( "#header-status" ).css( "background-color", eStyle.headerStatus.failed.bgColor );
-			$( "#header-status-text" ).html( eStyle.headerStatus.failed.text );		
+        	$( "#header-status" ).css( "background-color", eStyle.headerStatus.failed.bgColor );
+        	$( "#header-status-text" ).html( eStyle.headerStatus.failed.text );
 		}
-	};	
-	reader.readAsText(input.files[0]);
+	};
+
+	reader.readAsText(uploader.files[0]);
 };
-XXA = [];
+
 function showAARDetails() {
 	$( "#result-form" ).css( "top", "75px" );	
 	$( "#mission-name" ).html( "<h3>" + aarData.metadata.name + "</h3>" );
@@ -517,5 +583,7 @@ $( document ).ready(function () {
 	$( "#player-toggleNames" ).button({text: false, icons: { primary: "ui-icon-tag" }});
 	$( "#player-toggleIcons" ).button({text: false, icons: { primary: "ui-icon-circle-zoomout" }});
 
-	$( "#player-line > button" ).attr( "disabled", "true" );	
+	$( "#player-line > button" ).attr( "disabled", "true" );
+
+	startViewer();
 });

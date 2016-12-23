@@ -23,29 +23,6 @@
 				padding: 0px 20px;
 			}
 		</style>
-		<script>		
-			function goToList() {
-				window.open("Web-AAR-List.html","_self")
-			};
-			
-			document.title = "AAR - " + localStorage.getItem('aarTitle');
-			$( document ).ready(function () {			
-				var aarLoadScript = document.createElement('script');
-				aarLoadScript.src = localStorage.getItem('aarLink');
-				aarLoadScript.onload = function() {						
-					aarData = aarFileData;
-					showAARDetails();
-					setTimeout( function() {
-					$( "#header-status-text" ).html( "Готово!" );
-						setTimeout( function() {
-							$( "#header-status-text" ).html( "" );
-						} , 1500);
-					} , 500);
-				}
-				
-				document.body.appendChild(aarLoadScript);
-			});
-		</script>
 	</head>
 	<body>
 		<div class="panzoom"><img name="map" src="" /></div>
@@ -78,11 +55,11 @@
 				<span>tS</span> AAR Viewer
 			</div>
 			<div id="header-status">
-				<!--
-					<input type='file' name='uploader' id="uploader" accept='.txt' onchange='openFile(event)'>	
-					<label id="header-status-text">Select AAR file to play...</label>	
-				-->
-				<label id="header-choose-file-btn" class="header-btn" onClick="goToList()">< Назад</label>
+				<label id="header-back-btn" class="header-btn" onClick="goToList()">< Назад</label>
+
+				<input type='file' name='uploader' id="uploader" accept='.txt' onchange='openFile(event)'>
+				<label id="header-choose-file-btn" class="header-btn" for="uploader">Choose File</label>
+
 				<label id="header-status-text">Загрузка...</label>
 			</div>
 		</div>
