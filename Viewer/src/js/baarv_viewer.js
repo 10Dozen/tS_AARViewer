@@ -45,12 +45,14 @@ function showLoadingFailed() {
 
 function switchToOffline() {
 	$( document ).ready(function () {
+	    $( "#header-choose-file-btn" ).show();
 		$( "#header-status-text" ).html( eStyle.headerStatus.offline_mode.text );
         $( "#header-status" ).css( "background-color", eStyle.headerStatus.offline_mode.bgColor );
 	});
 }
 
 function startViewer() {
+    $( "#header-choose-file-btn" ).hide();
 	if (localStorage.getItem('aarTitle') == null) {
 		showLoadingFailed();
 	} else {
@@ -401,7 +403,7 @@ function processUnit(data,type) {
 		inCargo = data[5];	
 		if (inCargo == -1) {
 			$( unit + " > img" ).rotate( dir );
-			$( unit ).css({"color": "rgba(0, 0, 0, " + (showNamesState ? 255 : 0) + ")"});
+			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.unit + ")"});
 			setGridPos(unit, data);		
 		} else {
 			$( unit ).css({ "left": "-20px","top": "-20px" });
@@ -414,7 +416,7 @@ function processUnit(data,type) {
 			}			
 			$( unit + "> img" ).attr( "src", "src/icons/dead_" + typePlayer + "unit." + aarIconSrc );
 			$( unit ).css({
-				"color": "rgba(0, 0, 0, " + (showNamesState ? 0.25 : 0) + ")",
+				"color": "rgba(0, 0, 0, " + showNameOpacity.vehEmpty + ")",
 				"z-index": 0
 			});
 		} else {
@@ -430,11 +432,11 @@ function processUnit(data,type) {
 			if (cargo > 0) { unitName = $( unit ).attr("name") + " (" + unitData[1] + " +" + cargo + ")"; }						
 			$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh." + aarIconSrc )			
 			$( unit + "> span").html( unitName );
-			$( unit ).css({"color": "rgba(0, 0, 0, 0.6)"});
+			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.veh + ")"});
 		} else {
 			$( unit + "> img" ).attr( "src", "src/icons/unknown_veh." + aarIconSrc )			
 			$( unit + "> span").html(  getVehicleMetadata(id)[1] );
-			$( unit ).css({"color": "rgba(0, 0, 0, 0.25)"});
+			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.vehEmpty + ")"});
 		}
 		
 		$( unit + " > img" ).rotate( dir );
@@ -546,9 +548,32 @@ function whereAreUnits() {
 	}				
 }
 
-var showNamesState = true;
+
+var showNameMode = "Show";
+var showNameOpacity = { "unit": 1, "veh": 0.6, "vehEmpty": 0.25};
 function toggleNames() {
-    showNamesState = showNamesState ? false : true;
+    /*
+     * Modes are: "Show", "HideUnits", "HideVeh", "HideAll"
+     */
+    switch (showNameMode) {
+        case "Show":
+            showNameMode = "HideUnits";
+            showNameOpacity = { "unit": 1, "veh": 0.6, "vehEmpty": 0.25};
+            break;
+        case "HideUnits":
+            showNameMode = "HideVeh";
+            showNameOpacity = { "unit": 0, "veh": 0.6, "vehEmpty": 0.25};
+            break;
+        case "HideVeh":
+            showNameMode = "HideAll";
+            showNameOpacity = { "unit": 1, "veh": 0, "vehEmpty": 0};
+            break;
+        case "HideAll":
+            showNameMode = "Show";
+            showNameOpacity = { "unit": 0, "veh": 0, "vehEmpty": 0};
+            break;
+    }
+
     playReportStep(aarCurrentTime);
 }
 
