@@ -33,10 +33,13 @@ var eStyle = {
 	}
 }
 
-
 function goToList() {
-	window.open("Web-AAR-List.html","_self")
+ 	window.open(
+ 		window.location.href == "http://aar.tacticalshift.ru/Web-AAR-Viewer.html" ? "http://aar.tacticalshift.ru" : "Web-AAR-List.html"
+ 		,"_self"
+ 	)
 }
+
 function showLoadingFailed() {
 	$( "#header-status-text" ).html( eStyle.headerStatus.file_not_available.text );
     $( "#header-status" ).css( "background-color", eStyle.headerStatus.file_not_available.bgColor );
