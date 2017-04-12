@@ -110,7 +110,8 @@ function readFile(event) {
 	var input = event.target; 
 	var reader = new FileReader();
 
-	aarFileDate = ( (uploader.files[0].name).split("_") )[1];
+	var fileName = (uploader.files[0].name).split("_");
+	aarFileDate =  fileName[1] == "x64" ? fileName[2] : fileName[1];
 
 	reader.onload = function(){
 		var text = reader.result;
