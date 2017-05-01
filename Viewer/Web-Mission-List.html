@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="us">
+	<head>
+		<meta charset="utf-8">
+		<title>Список боевых операций Tactical Shift</title>
+		
+		<link rel="stylesheet" href="src/css/jquery-ui.css">
+		<link rel="stylesheet" href="src/css/baarv_viewer.css">
+		
+		<script src="config.ini"></script>
+		<script src="aarListConfig.ini"></script>
+		
+		<script src="src/js/jquery.min.js"></script>
+		<script src="src/js/jquery-ui.min.js"></script>
+		<script src="src/js/jquery.panzoom.js"></script>
+		<script src="src/js/jquery.mousewheel.js"></script>
+		<script src="src/js/baarv_viewer.js"></script>
+	
+		<style>
+			#header-sans {
+				font-family: sans-serif;
+				font-weight: 100;
+				font-size: 21px;
+				line-height: 45px;
+			}
+			
+			#wrapper {
+				margin-top: 10px;
+				margin-left: 8%;
+				width: 83%;
+			}
+			
+			.item {				
+				margin: 5px 5px;
+				border-left: 5px solid rgba(37, 37, 37, 0.36);
+				cursor: default;
+				line-height: 25px;
+			}
+			
+			.item:hover {				
+				margin: 5px 5px;
+				border-left: 5px solid #c52334;
+				background-color:rgba(37, 37, 37, 0.36);
+				
+			}
+			
+			.line2 {
+				display: inline-block;
+				width: 20%;
+				text-align: center;
+				padding: 5px 0px;
+			}
+			
+			.line4 {
+				display: inline-block;
+				width: 38%;
+				text-align: center;
+				padding: 5px 0px;
+			}
+			
+			.btn {
+				border: 1px solid #252525;
+				color: #252525;
+				cursor:pointer;
+			}
+			
+			.btn:hover {
+				background-color: #c52334;
+				color: white;
+			}
+			
+			a {
+				text-decoration: none;
+			}			
+		</style>	
+		
+		
+		<script>
+			function openFromList(i) {
+				localStorage.setItem('aarTitle', aarConfig[i].title);	
+				localStorage.setItem('aarLink', aarConfig[i].link);
+				window.open("Web-AAR-Viewer.html","_self")
+			};
+			
+			function showNoItems() {
+				$( "#wrapper" ).append(
+					"<div class='item'><div class='line4'>Нет данных для отображения</div></div>"
+				);	
+			};
+			
+			function searchDuplicates(item, list) {
+				var result = 0;
+				for (var i = 0; i < list.length; i++) {
+					if ( list[i][0].indexOf(item) > -1 ) {
+						result++
+					}
+				}
+
+				return result
+			}
+
+			var list = [];
+			var resultList = [];
+			var resultListFull = [];
+			$( document ).ready(function () {
+				if (typeof aarConfig === 'undefined') {
+					showNoItems()				
+				} else {
+					if (aarConfig.length == 0) {
+						showNoItems();
+					};
+					
+					for (var i=0; i < aarConfig.length; i++) {
+						
+						var id = (new Date( aarConfig[i].link.split(".")[1] ) == "Invalid Date") ? 1 : 2;
+						var terrain = aarConfig[i].link.split(".")[id];
+						var name = aarConfig[i].link.split(".")[id + 1];
+						
+						list.push( [name, terrain] );
+					};
+					
+					for (var j = 0; j < list.length; j++) {
+						if ( 
+							list[j][0].indexOf("T2_") < 0 
+							&& list[j][0].indexOf("[T2]") < 0 
+							&& list[j][0].indexOf("NEWYEAR_")
+						) {
+							if ( resultList.indexOf(list[j][0]) < 0 ) {
+								var n = searchDuplicates(list[j][0], list);
+								
+								resultList.push( list[j][0] )
+								resultListFull.push( [list[j][0], list[j][1], n] );
+							};
+						}
+					};
+					
+					for (var k = 0; k < resultListFull.length; k++) {
+						$( "#wrapper" ).append(
+								"<div class='item'>" 
+								+ "<div class='line4'>" + resultListFull[k][0]
+								+ "</div><div class='line4'>" + resultListFull[k][1]
+								+ "</div><div class='line2'>" + resultListFull[k][2]
+								+ "</div></div>"					
+						);	
+					}
+				};
+			});
+		</script>
+	</head>
+	<body>
+		<div id="header">
+			<div id="header-title">
+				<span>tS</span> <tt id='header-sans'>Боевые операции</tt>
+			</div>
+		</div>
+		
+		<div id="wrapper">
+			
+		</div>
+		
+		
+	</body>
+</html>
