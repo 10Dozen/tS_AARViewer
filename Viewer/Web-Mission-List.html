@@ -132,32 +132,22 @@
 								resultListFull.push( [list[j][0], list[j][1], n] );
 							};
 						}
-					};
+					};					
 					
+					$( "#wrapper" ).append("<table></table>");					
 					for (var k = 0; k < resultListFull.length; k++) {
-						$( "#wrapper" ).append(
-								"<div class='item'>" 
-								+ "<div class='line4'>" + resultListFull[k][0]
-								+ "</div><div class='line4'>" + resultListFull[k][1]
-								+ "</div><div class='line2'>" + resultListFull[k][2]
-								+ "</div></div>"					
+						$( "table" ).append(
+							"<tr><td>" + resultListFull[k][0] + "</td>"
+							+ "<td>" + resultListFull[k][1] + "</td>"
+							+ "<td>" + resultListFull[k][2] + "</td>"
+							+ "</tr>"		
 						);	
 					}
 				};
 			});
 		</script>
 	</head>
-	<body>
-		<div id="header">
-			<div id="header-title">
-				<span>tS</span> <tt id='header-sans'>Боевые операции</tt>
-			</div>
-		</div>
-		
-		<div id="wrapper">
-			
-		</div>
-		
-		
+	<body>		
+		<div id="wrapper"></div>
 	</body>
 </html>
