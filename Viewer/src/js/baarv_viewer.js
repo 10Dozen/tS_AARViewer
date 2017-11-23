@@ -4,6 +4,16 @@ var aarPlaying = false;
 var aarAutoStepper;
 var aarMapParam = [];
 var aarIconSrc = "svg";
+
+var aarAttackLines = [];
+var aarAttackLinesContext;
+var aarAttackLinesTimeout = 3;
+
+var whereAreUnitsState = false;
+var showNameMode = "Show";
+var showNameOpacity = { "unit": 1, "veh": 0.6, "vehEmpty": 0.25};
+var showSmallState = false;
+
 var eStyle = {
 	"headerStatus": {
 		"default": {
@@ -218,35 +228,6 @@ function getTimeLabel(t) {
 	return formatTimeNum(timeHours,"h") + formatTimeNum(timeMinutes,"m") + formatTimeNum(timeSeconds,"s")
 }
 
-function createObject(data,type) {
-	// 0: Unit Array
-	// 1: "unit" or "veh"
-	var id = data[0];
-	var name = data[1];
-
-	var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
-	var icon = "src/icons/" + side + "_" + type + "." + aarIconSrc;	
-	$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
-
-	$( "#mrk-unit-" + id ).attr({
-		"side": side,
-		"type": type,
-		"name": name
-	});
-
-	$("#mrk-unit-" + id + " > .icn").attr({"title": name});
-
-	$( ".icn" ).css({
-		"width": getScaledVal(32) + "px",
-		"height": getScaledVal(32) + "px"		
-	});
-
-	$( "#mrk-unit-" + id ).css({
-	 	"font-size": getScaledVal(16) + "px",
-	 	"z-index": 2
-	});
-}
-
 // Init AAR
 function initAAR() {	
 	$( "#result-form" ).remove();
@@ -281,6 +262,9 @@ function initAAR() {
 	
 	$( "#player-header" ).html(aarData.metadata.name + " (" + aarData.metadata.date + ")");
 	$( "#player-line > button" ).removeAttr( "disabled" );
+	$( ".panzoom" ).append("<canvas id='attackLinesCanvas' width='" + aarMapParam.size + "' height='" + aarMapParam.size + "'></canvas>");
+	$( "#attackLinesCanvas" ).css({"top": "0px", "left": "0px"});
+	aarAttackLinesContext = $( "#attackLinesCanvas" )[0].getContext("2d");
 };
 
 // Panzoom Init
@@ -343,6 +327,37 @@ function isPlayer(id) {
 	return result	
 }
 
+// Actors
+
+function createObject(data,type) {
+	// 0: Unit Array
+	// 1: "unit" or "veh"
+	var id = data[0];
+	var name = data[1];
+
+	var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
+	var icon = "src/icons/" + side + "_" + type + "." + aarIconSrc;
+	$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
+
+	$( "#mrk-unit-" + id ).attr({
+		"side": side,
+		"type": type,
+		"name": name
+	});
+
+	$("#mrk-unit-" + id + " > .icn").attr({"title": name});
+
+	$( ".icn" ).css({
+		"width": getScaledVal(32) + "px",
+		"height": getScaledVal(32) + "px"
+	});
+
+	$( "#mrk-unit-" + id ).css({
+	 	"font-size": getScaledVal(16) + "px",
+	 	"z-index": 2
+	});
+}
+
 function setGridPos(unit, data) {
 	if ( data[4] ) {
 		var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );	
@@ -350,6 +365,55 @@ function setGridPos(unit, data) {
 		$( unit ).css({ "left": posx, "top": posy });
 	}
 }
+
+// attackLinesCanvas
+// aarAttackLines
+// in AAR attacks looks like:   [1473,3036,1445,2619]
+function addAttackLine(data, timelabel) {
+     aarAttackLines.push( {
+        path: [
+            getScaledVal( data[0] )
+            , aarMapParam.size - getScaledVal( data[1] )
+            , getScaledVal( data[2] )
+            , aarMapParam.size - getScaledVal( data[3] )
+        ]
+        , timelabel: timelabel
+        , isVisible: true
+    } );
+}
+
+function redrawAttackLines(timelabel) {
+    aarAttackLinesContext.clearRect(0,0,aarMapParam.size,aarMapParam.size);
+
+    aarAttackLinesContext.save();
+    for (var i = 0; i < aarAttackLines.length; i++) {
+        if (
+            true
+            || timelabel - (aarAttackLines[i].timelabel) > aarAttackLinesTimeout
+            || timelabel - (aarAttackLines[i].timelabel) > 0
+        ) {
+            drawAttackLine(aarAttackLines[i]);
+            aarAttackLines[i].isVisible = true;
+        } else {
+            aarAttackLines[i].isVisible = false;
+           // aarAttackLines.splice(i,1);
+        }
+    };
+
+    aarAttackLinesContext.restore();
+}
+
+function drawAttackLine(attackData) {
+    aarAttackLinesContext.beginPath();
+    aarAttackLinesContext.moveTo( attackData.path[0], attackData.path[1] );
+    aarAttackLinesContext.lineTo( attackData.path[2], attackData.path[3] );
+    aarAttackLinesContext.lineWidth = getScaledVal( showSmallState ? 1 : 3 );
+    aarAttackLinesContext.strokeStyle = "#FF6000";
+    aarAttackLinesContext.lineCap = 'round';
+    aarAttackLinesContext.stroke();
+}
+
+/*
 
 function drawAttack(data, timelabel) {
 	var id = "av-" + timelabel + "-" + data[0] + data[1] + data[2] + data[3];
@@ -388,6 +452,7 @@ function clearAttacks(timelabel) {
 		};
 	});
 }
+*/
 
 // Process unit - animate
 function processUnit(data,type) {
@@ -454,7 +519,7 @@ function playReportStep (step) {
 	var units = aarData.timeline[step][0];
 	var vehs = aarData.timeline[step][1];
 	var attacks = aarData.timeline[step][2];
-	clearAttacks(step);
+	//clearAttacks(step);
 	
 	for (var i = 0; i < units.length; i++) {		
 		processUnit( units[i], "unit" );
@@ -463,8 +528,11 @@ function playReportStep (step) {
 		processUnit( vehs[i], "veh" );
 	};
 	for (var i = 0; i < attacks.length; i++) {
-		drawAttack(attacks[i], step);
+		// drawAttack(attacks[i], step);
+		addAttackLine(attacks[i], step);
 	}
+	redrawAttackLines(step);
+
 	$( ".panzoom" ).panzoom('resetDimensions');
 };
 
@@ -518,7 +586,7 @@ function reportPrevStep () {
 	}
 };
 
-var whereAreUnitsState = false;
+// Additional functions
 function whereAreUnits() {
 	var whereAreUnitsCanvas = "where-are-units-canvas";
 	if (whereAreUnitsState) {
@@ -551,9 +619,6 @@ function whereAreUnits() {
 	}				
 }
 
-
-var showNameMode = "Show";
-var showNameOpacity = { "unit": 1, "veh": 0.6, "vehEmpty": 0.25};
 function toggleNames() {
     /*
      * Modes are: "Show", "HideUnits", "HideVeh", "HideAll"
@@ -580,7 +645,6 @@ function toggleNames() {
     playReportStep(aarCurrentTime);
 }
 
-var showSmallState = false;
 function toggleSize() {
 	showSmallState = showSmallState ? false : true;
     playReportStep(aarCurrentTime);
