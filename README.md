@@ -66,9 +66,9 @@ Screenshots:
 5. Switch image to Indexed colors and edit it's pallete. Your goal is to leave about 8-12 colors, so make all similar shades exactly the same color (e.g. 1 green color, 1 white, 1 black, 1 gray, 1 blue, 1 orange (for roads), 1 pale orange (offroads), 1 brown (terrain height lines) - it will be enough to represent all elements in the map)
 
 6. Now save the image and edit /Viewer/config.ini file and add your map to JS-array in format:
-[ @worldname, { "size": @imagesize, "scale": @imagescale, "img": @pathtoimagefile } ]
-, where:
-@worldname -- arma's world name (island name in config or from saved editor mission folder, e.g. MissionName.Altis);
-@imagesize -- size of image (number, e.g. 10241);
-@imagescale -- divider from step 4 (number, e.g. 1.5 -> 10241 * 1.5 = 15361 - original map scale);
-@pathtoimagefile -- path to file (as string, e.g. "src/maps/Stratis_8192_1.png")
+<br />[ @worldname, { "size": @imagesize, "scale": @imagescale, "img": @pathtoimagefile } ]
+<br />, where:
+<br />@worldname -- arma's world name (island name in config or from saved editor mission folder, e.g. MissionName.Altis);
+<br />@imagesize -- size of image (number, e.g. 10241);
+<br />@imagescale -- divider from step 4 (number, e.g. 1.5 -> 10241 * 1.5 = 15361 - original map scale);
+<br />@pathtoimagefile -- path to file (as string, e.g. "src/maps/Stratis_8192_1.png")
