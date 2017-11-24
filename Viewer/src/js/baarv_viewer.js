@@ -262,9 +262,22 @@ function initAAR() {
 	
 	$( "#player-header" ).html(aarData.metadata.name + " (" + aarData.metadata.date + ")");
 	$( "#player-line > button" ).removeAttr( "disabled" );
+	/*
 	$( ".panzoom" ).append("<canvas id='attackLinesCanvas' width='" + aarMapParam.size + "' height='" + aarMapParam.size + "'></canvas>");
 	$( "#attackLinesCanvas" ).css({"top": "0px", "left": "0px"});
 	aarAttackLinesContext = $( "#attackLinesCanvas" )[0].getContext("2d");
+	*/
+
+	$( ".panzoom" ).append("<div id='attackLinesDiv' ></div>");
+	$( "#attackLinesDiv" ).css({
+	    "top": "0px"
+	    , "left": "0px"
+	    , "display": "inline"
+	    , "position": "absolute"
+	    , "z-index": 3
+	    , "width": aarMapParam.size
+	    , "height": aarMapParam.size
+	});
 };
 
 // Panzoom Init
@@ -369,6 +382,7 @@ function setGridPos(unit, data) {
 // attackLinesCanvas
 // aarAttackLines
 // in AAR attacks looks like:   [1473,3036,1445,2619]
+
 function addAttackLine(data, timelabel) {
      aarAttackLines.push( {
         path: [
@@ -382,10 +396,8 @@ function addAttackLine(data, timelabel) {
     } );
 }
 
-function redrawAttackLines(timelabel) {
-    aarAttackLinesContext.clearRect(0,0,aarMapParam.size,aarMapParam.size);
 
-    aarAttackLinesContext.save();
+function redrawAttackLines(timelabel) {
     for (var i = 0; i < aarAttackLines.length; i++) {
         if (
             true
@@ -399,8 +411,31 @@ function redrawAttackLines(timelabel) {
            // aarAttackLines.splice(i,1);
         }
     };
+}
 
-    aarAttackLinesContext.restore();
+// attackLinesDiv
+function drawAttackLine(attackData) {
+
+
+}
+
+/*
+function redrawAttackLines(timelabel) {
+    aarAttackLinesContext.clearRect(0,0,aarMapParam.size,aarMapParam.size);
+
+    for (var i = 0; i < aarAttackLines.length; i++) {
+        if (
+            true
+            || timelabel - (aarAttackLines[i].timelabel) > aarAttackLinesTimeout
+            || timelabel - (aarAttackLines[i].timelabel) > 0
+        ) {
+            drawAttackLine(aarAttackLines[i]);
+            aarAttackLines[i].isVisible = true;
+        } else {
+            aarAttackLines[i].isVisible = false;
+           // aarAttackLines.splice(i,1);
+        }
+    };
 }
 
 function drawAttackLine(attackData) {
@@ -413,6 +448,7 @@ function drawAttackLine(attackData) {
     aarAttackLinesContext.stroke();
 }
 
+*/
 /*
 
 function drawAttack(data, timelabel) {
