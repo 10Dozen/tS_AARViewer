@@ -4,6 +4,16 @@ var aarPlaying = false;
 var aarAutoStepper;
 var aarMapParam = [];
 var aarIconSrc = "svg";
+
+var $avl;
+var aarAttackLines = [];
+var aarAttackLinesTimeout = 3;
+
+var whereAreUnitsState = false;
+var showNameMode = "Show";
+var showNameOpacity = { "unit": 1, "veh": 0.6, "vehEmpty": 0.25};
+var showSmallState = false;
+
 var eStyle = {
 	"headerStatus": {
 		"default": {
@@ -218,35 +228,6 @@ function getTimeLabel(t) {
 	return formatTimeNum(timeHours,"h") + formatTimeNum(timeMinutes,"m") + formatTimeNum(timeSeconds,"s")
 }
 
-function createObject(data,type) {
-	// 0: Unit Array
-	// 1: "unit" or "veh"
-	var id = data[0];
-	var name = data[1];
-
-	var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
-	var icon = "src/icons/" + side + "_" + type + "." + aarIconSrc;	
-	$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
-
-	$( "#mrk-unit-" + id ).attr({
-		"side": side,
-		"type": type,
-		"name": name
-	});
-
-	$("#mrk-unit-" + id + " > .icn").attr({"title": name});
-
-	$( ".icn" ).css({
-		"width": getScaledVal(32) + "px",
-		"height": getScaledVal(32) + "px"		
-	});
-
-	$( "#mrk-unit-" + id ).css({
-	 	"font-size": getScaledVal(16) + "px",
-	 	"z-index": 2
-	});
-}
-
 // Init AAR
 function initAAR() {	
 	$( "#result-form" ).remove();
@@ -281,6 +262,17 @@ function initAAR() {
 	
 	$( "#player-header" ).html(aarData.metadata.name + " (" + aarData.metadata.date + ")");
 	$( "#player-line > button" ).removeAttr( "disabled" );
+    $( ".panzoom" ).append("<div id='attackLinesDiv' ></div>");
+    $avl = $( "#attackLinesDiv" );
+	$avl.css({
+	    "top": "0px"
+	    , "left": "0px"
+	    , "display": "inline"
+	    , "position": "absolute"
+	    , "z-index": 3
+	    , "width": aarMapParam.size
+	    , "height": aarMapParam.size
+	});
 };
 
 // Panzoom Init
@@ -343,50 +335,46 @@ function isPlayer(id) {
 	return result	
 }
 
+// Actors
+
+function createObject(data,type) {
+	// 0: Unit Array
+	// 1: "unit" or "veh"
+	var id = data[0];
+	var name = data[1];
+
+	var side = (function(){var a = ""; if (type == "unit") { a = data[2] } else { a ="unknown" }; return a})();
+	var icon = "src/icons/" + side + "_" + type + "." + aarIconSrc;
+	$( ".panzoom" ).append( "<div id='mrk-unit-" + id + "' class='unit-marker'><img class='icn' dir='0' src='" + icon + "' /><span>" + name + "</span></div>" );
+
+	$( "#mrk-unit-" + id ).attr({
+		"side": side,
+		"type": type,
+		"name": name
+	});
+
+	$("#mrk-unit-" + id + " > .icn").attr({"title": name});
+
+	$( ".icn" ).css({
+		"width": getScaledVal(32) + "px",
+		"height": getScaledVal(32) + "px"
+	});
+
+	$( "#mrk-unit-" + id ).css({
+	 	"font-size": getScaledVal(16) + "px",
+	 	"z-index": 2
+	});
+}
+
 function setGridPos(unit, data) {
 	if ( data[4] ) {
-		var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );	
-		var posy = aarMapParam.size - getScaledVal( data[2] ) - getScaledVal( 16 );
-		$( unit ).css({ "left": posx, "top": posy });
+		var pos = getGridPos(data[1], data[2])
+		$( unit ).css({ "left": pos.x - $( unit ).outerWidth() /2 , "top": pos.y - getScaledVal( 16 ) });
 	}
 }
 
-function drawAttack(data, timelabel) {
-	var id = "av-" + timelabel + "-" + data[0] + data[1] + data[2] + data[3];
-	$( ".panzoom" ).append(
-		"<canvas id='" + id 
-		+ "' width='" + aarMapParam.size
-		+ "' height='" + aarMapParam.size
-		+ "' timelabel='" + timelabel
-		+ "'></canvas>"
-	);
-	
-	$( "#" + id ).css({
-		"top": "0px",
-		"left": "0px"
-	});
-	
-	var ctx = $( "#" + id )[0].getContext('2d');
-	ctx.beginPath();
-	ctx.moveTo( getScaledVal( data[0] ), aarMapParam.size - getScaledVal( data[1] ) );
-	ctx.lineTo( getScaledVal( data[2] ), aarMapParam.size - getScaledVal( data[3] ) );
-	ctx.lineWidth = getScaledVal( showSmallState ? 1 : 3 );
-	ctx.strokeStyle = '#FF6000';
-	ctx.lineCap = 'round';
-	ctx.stroke();
-}
-
-
-function clearAttacks(timelabel) {
-	$( "canvas" ).each(function () {
-		var canvas = $( this );
-		if ( 
-			( timelabel - canvas.attr( "timelabel" ) ) < 0
-			|| ( timelabel - canvas.attr( "timelabel" ) ) > 3
-		) {
-			canvas.remove();
-		};
-	});
+function getGridPos(x,y) {
+    return { x: getScaledVal( x ), y: aarMapParam.size - getScaledVal( y ) };
 }
 
 // Process unit - animate
@@ -407,9 +395,10 @@ function processUnit(data,type) {
 		if (inCargo == -1) {
 			$( unit + " > img" ).rotate( dir );
 			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.unit + ")"});
+			$( unit ).css({"visibility": ""});
 			setGridPos(unit, data);		
 		} else {
-			$( unit ).css({ "left": "-20px","top": "-20px" });
+			$( unit ).css({ "left": "-20px","top": "-20px", "visibility": "hidden" });
 		}
 		
 		if (alive < 1) {
@@ -427,7 +416,7 @@ function processUnit(data,type) {
 		}
 	} else {
 		owner = data[5];
-		cargo = data[6];		
+		cargo = data[6];
 		if (owner > -1 || cargo > -1) {
 			var unitData = getUnitMetadata(owner);
 			var unitName = $( unit ).attr("name") + " (" + unitData[1] + ")";			
@@ -441,7 +430,7 @@ function processUnit(data,type) {
 			$( unit + "> span").html(  getVehicleMetadata(id)[1] );
 			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.vehEmpty + ")"});
 		}
-		
+
 		$( unit + " > img" ).rotate( dir );
 		setGridPos(unit, data);
 		
@@ -449,12 +438,55 @@ function processUnit(data,type) {
 	}
 };
 
+// Attacks
+function drawAttackLine(attackData) {
+    var size = aarMapParam.size;
+
+    $avl.append("<svg class='attack-vector' id='av-" + attackData.id + "' height='" + size + "' width='" + size + "' >"
+        + "<line x1='" + attackData.pos1.x + "' y1='" + attackData.pos1.y
+        + "' x2='" + attackData.pos2.x + "' y2='" + attackData.pos2.y
+        + "' style='stroke:rgb(245, 132, 0);stroke-width:" + (showSmallState ? 1 : 3 ) + "'></line>"
+        + "</svg>"
+    );
+}
+
+function removeAttackLine(id) {
+    $( "#av-" + id ).remove();
+}
+
+function addAttackLine(data, timelabel) {
+    // in AAR attacks looks like:   [1473,3036,1445,2619]
+    var id = "" + timelabel + data[0] + data[1] + data[2] + data[3];
+
+    if ( aarAttackLines.filter(function( obj ) { return (obj.id == id);}).length == 0 ) {
+        aarAttackLines.push( {
+            id: id
+            , pos1: getGridPos(data[0], data[1])
+            , pos2: getGridPos(data[2], data[3])
+            , timelabel: timelabel
+        } );
+    }
+}
+
+function redrawAttackLines(timelabel) {
+    for (var i = 0; i < aarAttackLines.length; i++) {
+        if (
+            aarAttackLines[i].timelabel + aarAttackLinesTimeout - timelabel > 0
+            && timelabel >= aarAttackLines[i].timelabel
+        ) {
+            drawAttackLine(aarAttackLines[i]);
+        } else {
+            removeAttackLine(aarAttackLines[i].id);
+        }
+    };
+}
+
 // Play AAR frame (1 second)
 function playReportStep (step) {
 	var units = aarData.timeline[step][0];
 	var vehs = aarData.timeline[step][1];
 	var attacks = aarData.timeline[step][2];
-	clearAttacks(step);
+	//clearAttacks(step);
 	
 	for (var i = 0; i < units.length; i++) {		
 		processUnit( units[i], "unit" );
@@ -463,8 +495,11 @@ function playReportStep (step) {
 		processUnit( vehs[i], "veh" );
 	};
 	for (var i = 0; i < attacks.length; i++) {
-		drawAttack(attacks[i], step);
+		// drawAttack(attacks[i], step);
+		addAttackLine(attacks[i], step);
 	}
+	redrawAttackLines(step);
+
 	$( ".panzoom" ).panzoom('resetDimensions');
 };
 
@@ -518,42 +553,38 @@ function reportPrevStep () {
 	}
 };
 
-var whereAreUnitsState = false;
+// Additional functions
 function whereAreUnits() {
-	var whereAreUnitsCanvas = "where-are-units-canvas";
+	var whereAreUnitsLayer = "where-are-units-canvas";
 	if (whereAreUnitsState) {
 		whereAreUnitsState = false;
-		$( "#" + whereAreUnitsCanvas ).remove();
+		$( "#" + whereAreUnitsLayer ).remove();
 	} else {
 		whereAreUnitsState = true;
-		$( ".panzoom" ).append(
-			"<canvas id='" + whereAreUnitsCanvas + "'"
-			+ "' width='" + aarMapParam.size
-			+ "' height='" + aarMapParam.size
-			+ "'></canvas>"
-		);
-		$( "#" + whereAreUnitsCanvas ).css({
-			"top": "0px",
-			"left": "0px"
-		});
-		
-		for (var i = 0; i < aarData.timeline[aarCurrentTime][0].length; i++) {
-			var icn = aarData.timeline[aarCurrentTime][0][i];
-			var ctx = $( "#" + whereAreUnitsCanvas )[0].getContext('2d');
-			ctx.beginPath();
-			ctx.moveTo( 0, 0 );
-			ctx.lineTo( getScaledVal( icn[1] ), aarMapParam.size - getScaledVal( icn[2] ) );
-			ctx.lineWidth = 3;
-			ctx.strokeStyle = '#8E00FF';
-			ctx.lineCap = 'round';
-			ctx.stroke();
-		};					
+        $( ".panzoom" ).append("<div id='" + whereAreUnitsLayer + "' ></div>");
+        var $wul = $( "#" + whereAreUnitsLayer );
+        $wul.css({
+            "top": "0px"
+            , "left": "0px"
+            , "display": "inline"
+            , "position": "absolute"
+            , "z-index": 3
+            , "width": aarMapParam.size
+            , "height": aarMapParam.size
+        });
+
+        for (var i = 0; i < aarData.timeline[aarCurrentTime][0].length; i++) {
+            var icn = aarData.timeline[aarCurrentTime][0][i];
+            $wul.append("<svg class='attack-vector' height='" + aarMapParam.size + "' width='" + aarMapParam.size + "' >"
+                + "<line x1='0' y1='0' "
+                + "x2='" + getScaledVal( icn[1] ) + "' y2='" + (aarMapParam.size - getScaledVal( icn[2] ))
+                + "' style='stroke:#8E00FF;stroke-width:6;stroke-dasharray:50'></line>"
+                + "</svg>"
+            );
+        }
 	}				
 }
 
-
-var showNameMode = "Show";
-var showNameOpacity = { "unit": 1, "veh": 0.6, "vehEmpty": 0.25};
 function toggleNames() {
     /*
      * Modes are: "Show", "HideUnits", "HideVeh", "HideAll"
@@ -580,7 +611,6 @@ function toggleNames() {
     playReportStep(aarCurrentTime);
 }
 
-var showSmallState = false;
 function toggleSize() {
 	showSmallState = showSmallState ? false : true;
     playReportStep(aarCurrentTime);
