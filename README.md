@@ -43,6 +43,8 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 - Malden
 - Kolguev
 - Nogova
+- Diyala
+- Lythium
 
 Screenshots:
 <br />http://puu.sh/mdzFH/ef9dc68a5f.png
