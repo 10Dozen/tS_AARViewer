@@ -5,8 +5,8 @@ var aarAutoStepper;
 var aarMapParam = [];
 var aarIconSrc = "svg";
 
+var $avl;
 var aarAttackLines = [];
-var aarAttackLinesContext;
 var aarAttackLinesTimeout = 3;
 
 var whereAreUnitsState = false;
@@ -262,14 +262,9 @@ function initAAR() {
 	
 	$( "#player-header" ).html(aarData.metadata.name + " (" + aarData.metadata.date + ")");
 	$( "#player-line > button" ).removeAttr( "disabled" );
-	/*
-	$( ".panzoom" ).append("<canvas id='attackLinesCanvas' width='" + aarMapParam.size + "' height='" + aarMapParam.size + "'></canvas>");
-	$( "#attackLinesCanvas" ).css({"top": "0px", "left": "0px"});
-	aarAttackLinesContext = $( "#attackLinesCanvas" )[0].getContext("2d");
-	*/
-
-	$( ".panzoom" ).append("<div id='attackLinesDiv' ></div>");
-	$( "#attackLinesDiv" ).css({
+    $( ".panzoom" ).append("<div id='attackLinesDiv' ></div>");
+    $avl = $( "#attackLinesDiv" );
+	$avl.css({
 	    "top": "0px"
 	    , "left": "0px"
 	    , "display": "inline"
@@ -373,122 +368,17 @@ function createObject(data,type) {
 
 function setGridPos(unit, data) {
 	if ( data[4] ) {
-		var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );	
+		var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );
 		var posy = aarMapParam.size - getScaledVal( data[2] ) - getScaledVal( 16 );
-		$( unit ).css({ "left": posx, "top": posy });
+
+		var pos = getGridPos(data[1], data[2])
+		$( unit ).css({ "left": pos.x - $( unit ).outerWidth() /2 , "top": pos.y - getScaledVal( 16 ) });
 	}
 }
 
-// attackLinesCanvas
-// aarAttackLines
-// in AAR attacks looks like:   [1473,3036,1445,2619]
-
-function addAttackLine(data, timelabel) {
-     aarAttackLines.push( {
-        path: [
-            getScaledVal( data[0] )
-            , aarMapParam.size - getScaledVal( data[1] )
-            , getScaledVal( data[2] )
-            , aarMapParam.size - getScaledVal( data[3] )
-        ]
-        , timelabel: timelabel
-        , isVisible: true
-    } );
+function getGridPos(x,y) {
+    return { x: getScaledVal( x ), y: aarMapParam.size - getScaledVal( y ) };
 }
-
-
-function redrawAttackLines(timelabel) {
-    for (var i = 0; i < aarAttackLines.length; i++) {
-        if (
-            true
-            || timelabel - (aarAttackLines[i].timelabel) > aarAttackLinesTimeout
-            || timelabel - (aarAttackLines[i].timelabel) > 0
-        ) {
-            drawAttackLine(aarAttackLines[i]);
-            aarAttackLines[i].isVisible = true;
-        } else {
-            aarAttackLines[i].isVisible = false;
-           // aarAttackLines.splice(i,1);
-        }
-    };
-}
-
-// attackLinesDiv
-function drawAttackLine(attackData) {
-
-
-}
-
-/*
-function redrawAttackLines(timelabel) {
-    aarAttackLinesContext.clearRect(0,0,aarMapParam.size,aarMapParam.size);
-
-    for (var i = 0; i < aarAttackLines.length; i++) {
-        if (
-            true
-            || timelabel - (aarAttackLines[i].timelabel) > aarAttackLinesTimeout
-            || timelabel - (aarAttackLines[i].timelabel) > 0
-        ) {
-            drawAttackLine(aarAttackLines[i]);
-            aarAttackLines[i].isVisible = true;
-        } else {
-            aarAttackLines[i].isVisible = false;
-           // aarAttackLines.splice(i,1);
-        }
-    };
-}
-
-function drawAttackLine(attackData) {
-    aarAttackLinesContext.beginPath();
-    aarAttackLinesContext.moveTo( attackData.path[0], attackData.path[1] );
-    aarAttackLinesContext.lineTo( attackData.path[2], attackData.path[3] );
-    aarAttackLinesContext.lineWidth = getScaledVal( showSmallState ? 1 : 3 );
-    aarAttackLinesContext.strokeStyle = "#FF6000";
-    aarAttackLinesContext.lineCap = 'round';
-    aarAttackLinesContext.stroke();
-}
-
-*/
-/*
-
-function drawAttack(data, timelabel) {
-	var id = "av-" + timelabel + "-" + data[0] + data[1] + data[2] + data[3];
-	$( ".panzoom" ).append(
-		"<canvas id='" + id 
-		+ "' width='" + aarMapParam.size
-		+ "' height='" + aarMapParam.size
-		+ "' timelabel='" + timelabel
-		+ "'></canvas>"
-	);
-	
-	$( "#" + id ).css({
-		"top": "0px",
-		"left": "0px"
-	});
-	
-	var ctx = $( "#" + id )[0].getContext('2d');
-	ctx.beginPath();
-	ctx.moveTo( getScaledVal( data[0] ), aarMapParam.size - getScaledVal( data[1] ) );
-	ctx.lineTo( getScaledVal( data[2] ), aarMapParam.size - getScaledVal( data[3] ) );
-	ctx.lineWidth = getScaledVal( showSmallState ? 1 : 3 );
-	ctx.strokeStyle = '#FF6000';
-	ctx.lineCap = 'round';
-	ctx.stroke();
-}
-
-
-function clearAttacks(timelabel) {
-	$( "canvas" ).each(function () {
-		var canvas = $( this );
-		if ( 
-			( timelabel - canvas.attr( "timelabel" ) ) < 0
-			|| ( timelabel - canvas.attr( "timelabel" ) ) > 3
-		) {
-			canvas.remove();
-		};
-	});
-}
-*/
 
 // Process unit - animate
 function processUnit(data,type) {
@@ -508,9 +398,10 @@ function processUnit(data,type) {
 		if (inCargo == -1) {
 			$( unit + " > img" ).rotate( dir );
 			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.unit + ")"});
+			$( unit ).css({"visibility": ""});
 			setGridPos(unit, data);		
 		} else {
-			$( unit ).css({ "left": "-20px","top": "-20px" });
+			$( unit ).css({ "left": "-20px","top": "-20px", "visibility": "hidden" });
 		}
 		
 		if (alive < 1) {
@@ -528,7 +419,7 @@ function processUnit(data,type) {
 		}
 	} else {
 		owner = data[5];
-		cargo = data[6];		
+		cargo = data[6];
 		if (owner > -1 || cargo > -1) {
 			var unitData = getUnitMetadata(owner);
 			var unitName = $( unit ).attr("name") + " (" + unitData[1] + ")";			
@@ -542,13 +433,56 @@ function processUnit(data,type) {
 			$( unit + "> span").html(  getVehicleMetadata(id)[1] );
 			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.vehEmpty + ")"});
 		}
-		
+
 		$( unit + " > img" ).rotate( dir );
 		setGridPos(unit, data);
 		
 		if (alive < 1) { $( unit + "> img" ).attr( "src", "src/icons/dead_veh." + aarIconSrc ) }
 	}
 };
+
+// Attacks
+function drawAttackLine(attackData) {
+    var size = aarMapParam.size;
+
+    $avl.append("<svg class='attack-vector' id='av-" + attackData.id + "' height='" + size + "' width='" + size + "' >"
+        + "<line x1='" + attackData.pos1.x + "' y1='" + attackData.pos1.y
+        + "' x2='" + attackData.pos2.x + "' y2='" + attackData.pos2.y
+        + "' style='stroke:rgb(245, 132, 0);stroke-width:" + (showSmallState ? 1 : 3 ) + "'></line>"
+        + "</svg>"
+    );
+}
+
+function removeAttackLine(id) {
+    $( "#av-" + id ).remove();
+}
+
+function addAttackLine(data, timelabel) {
+    // in AAR attacks looks like:   [1473,3036,1445,2619]
+    var id = "" + timelabel + data[0] + data[1] + data[2] + data[3];
+
+    if ( aarAttackLines.filter(function( obj ) { return (obj.id == id);}).length == 0 ) {
+        aarAttackLines.push( {
+            id: id
+            , pos1: getGridPos(data[0], data[1])
+            , pos2: getGridPos(data[2], data[3])
+            , timelabel: timelabel
+        } );
+    }
+}
+
+function redrawAttackLines(timelabel) {
+    for (var i = 0; i < aarAttackLines.length; i++) {
+        if (
+            aarAttackLines[i].timelabel + aarAttackLinesTimeout - timelabel > 0
+            && timelabel >= aarAttackLines[i].timelabel
+        ) {
+            drawAttackLine(aarAttackLines[i]);
+        } else {
+            removeAttackLine(aarAttackLines[i].id);
+        }
+    };
+}
 
 // Play AAR frame (1 second)
 function playReportStep (step) {
@@ -624,34 +558,33 @@ function reportPrevStep () {
 
 // Additional functions
 function whereAreUnits() {
-	var whereAreUnitsCanvas = "where-are-units-canvas";
+	var whereAreUnitsLayer = "where-are-units-canvas";
 	if (whereAreUnitsState) {
 		whereAreUnitsState = false;
-		$( "#" + whereAreUnitsCanvas ).remove();
+		$( "#" + whereAreUnitsLayer ).remove();
 	} else {
 		whereAreUnitsState = true;
-		$( ".panzoom" ).append(
-			"<canvas id='" + whereAreUnitsCanvas + "'"
-			+ "' width='" + aarMapParam.size
-			+ "' height='" + aarMapParam.size
-			+ "'></canvas>"
-		);
-		$( "#" + whereAreUnitsCanvas ).css({
-			"top": "0px",
-			"left": "0px"
-		});
-		
-		for (var i = 0; i < aarData.timeline[aarCurrentTime][0].length; i++) {
-			var icn = aarData.timeline[aarCurrentTime][0][i];
-			var ctx = $( "#" + whereAreUnitsCanvas )[0].getContext('2d');
-			ctx.beginPath();
-			ctx.moveTo( 0, 0 );
-			ctx.lineTo( getScaledVal( icn[1] ), aarMapParam.size - getScaledVal( icn[2] ) );
-			ctx.lineWidth = 3;
-			ctx.strokeStyle = '#8E00FF';
-			ctx.lineCap = 'round';
-			ctx.stroke();
-		};					
+        $( ".panzoom" ).append("<div id='" + whereAreUnitsLayer + "' ></div>");
+        var $wul = $( "#" + whereAreUnitsLayer );
+        $wul.css({
+            "top": "0px"
+            , "left": "0px"
+            , "display": "inline"
+            , "position": "absolute"
+            , "z-index": 3
+            , "width": aarMapParam.size
+            , "height": aarMapParam.size
+        });
+
+        for (var i = 0; i < aarData.timeline[aarCurrentTime][0].length; i++) {
+            var icn = aarData.timeline[aarCurrentTime][0][i];
+            $wul.append("<svg class='attack-vector' height='" + aarMapParam.size + "' width='" + aarMapParam.size + "' >"
+                + "<line x1='0' y1='0' "
+                + "x2='" + getScaledVal( icn[1] ) + "' y2='" + (aarMapParam.size - getScaledVal( icn[2] ))
+                + "' style='stroke:#8E00FF;stroke-width:6;stroke-dasharray:50'></line>"
+                + "</svg>"
+            );
+        }
 	}				
 }
 
