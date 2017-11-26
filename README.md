@@ -1,5 +1,5 @@
 # Tactical Shift's AAR Viewer
-Version: 0.92
+Version: 0.93
 
 ## What is it?
 This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirements: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
@@ -35,6 +35,9 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 - Sahrani (SMD_Sahrani_A3, CUP Sahrani)
 - Porto
 - Isla Abramia
+- Isla Duala
+- Helvantis
+- Panthera island
 - Kunduz
 - Everon
 - Malden
