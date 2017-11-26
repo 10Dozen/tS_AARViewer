@@ -368,9 +368,6 @@ function createObject(data,type) {
 
 function setGridPos(unit, data) {
 	if ( data[4] ) {
-		var posx = getScaledVal( data[1] ) - ( $( unit ).outerWidth() /2 );
-		var posy = aarMapParam.size - getScaledVal( data[2] ) - getScaledVal( 16 );
-
 		var pos = getGridPos(data[1], data[2])
 		$( unit ).css({ "left": pos.x - $( unit ).outerWidth() /2 , "top": pos.y - getScaledVal( 16 ) });
 	}
