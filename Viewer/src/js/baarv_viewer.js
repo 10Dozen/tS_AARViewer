@@ -239,7 +239,8 @@ function initAAR() {
 
 	aarMapParam = getMapParams(aarData.metadata.island);
 	
-	$( ".panzoom > img" ).attr( "src", aarMapParam.img );	
+	// $( ".panzoom > img" ).attr( "src", aarMapParam.img );
+	drawMap(true);
 	panzoomInit();
 	
 	// Spawn
@@ -273,6 +274,53 @@ function initAAR() {
 	    , "width": aarMapParam.size
 	    , "height": aarMapParam.size
 	});
+};
+
+function drawMap(config) {
+    /* Will  {
+    *   size: 8533
+    *   scale: 1.5
+    *   tiles: [NW,NE,SW,SE]        or [NW, N, NE, W, C, E, SW, S, SE] or [C]
+    *   img: "src/maps/Takistan/*.png"
+    */
+    config = {
+        size: 8533
+        , scale: 1.5
+        , tiles: ["NW", "NE", "SW", "SE"]
+        , img: "src/maps/Takistan/*.png"
+    };
+
+    var url = config.img
+    var sizeStep = Math.floor(config.size / ({"1": 1, "4": 2, "9": 3})["" + config.tiles.length] );
+    var offsets = {
+        "1": {
+            "C": { "top": "0px", "left": "0px" }
+        }
+        , "4": {
+            "NW": { "top": "0px", "left": "0px" }
+            , "NE": { "top": "0px", "left": "" + sizeStep + "px" }
+            , "SW": { "top": "" + sizeStep + "px", "left": "0px" }
+            , "SE": { "top": "" + sizeStep + "px", "left": "" + sizeStep + "px" }
+        }
+        , "9": {
+            "NW": { "top": "0px", "left": "0px" }
+            , "N": { "top": "0px", "left": "" + sizeStep + "px" }
+            , "NE": { "top": "0px", "left": "" + 2*sizeStep + "px" }
+            , "W": { "top": "" + sizeStep + "px", "left": "0px" }
+            , "C": { "top": "" + sizeStep + "px", "left": "" + sizeStep + "px" }
+            , "E": { "top": "" + sizeStep + "px", "left": "" + 2*sizeStep + "px" }
+            , "SW": { "top": "" + 2*sizeStep + "px", "left": "0px" }
+            , "S": { "top": "" + 2*sizeStep + "px", "left": "" + sizeStep + "px" }
+            , "SE": { "top": "" + 2*sizeStep + "px", "left": "" + 2*sizeStep + "px" }
+        }
+    };
+
+    for (var i = 0; i < config.tiles.length; i++) {
+        $( ".panzoom" ).append("<img name='" + config.tiles[i] + "' class='map-tile' src='" + config.img.replace('*', config.tiles[i]) + "' />" );
+
+        var offset = offsets["" + config.tiles.length][config.tiles[i]];
+        $( "img[name=" + config.tiles[i] + "]" ).css( offset );
+    }
 };
 
 // Panzoom Init
