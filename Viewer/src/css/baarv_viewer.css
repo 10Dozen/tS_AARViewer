@@ -270,6 +270,15 @@ body {
 	font-size: 12px;
 }
 
+/* *********************
+	Map
+********************** */
+
+.map-tile {
+    display: inline;
+    position:  absolute;
+}
+
 .attack-vector {
     top: 0px;
     left: 0px;
