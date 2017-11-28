@@ -297,28 +297,27 @@ function drawMap(config) {
     *   img: "src/maps/Takistan/*.png"
     */
 
-    var offsets = getOffsets(config.tiles, config.size);
+	var offsets = getOffsets(config.tiles, config.size);
 
-    $( ".panzoom" ).append("<img name='tile-0' class='map-tile' src='" + config.img.replace('*', 0) + "' />" );
-    $( "img[name=tile-0]" ).css({
-        "top": "0px"
-        , "left": "0px"
-        , "width": aarMapParam.size
-    });
+	$( ".panzoom" ).append("<img name='tile-0' class='map-tile' src='" + config.img.replace('*', "00") + "' />" );
+	$( "img[name=tile-0]" ).css({
+		"top": "0px"
+		, "left": "0px"
+		, "width": aarMapParam.size
+	});
 
-    for (var i = 1; i <= config.tiles; i++) {
-        $( ".panzoom" ).append("<img name='tile-" + i + "' class='map-tile' src='" + config.img.replace('*', i) + "' />" );
-        $( "img[name=tile-" + i + "]" ).css( offsets[i-1] );
-        document.getElementsByName("tile-" + i)[0].onload = mapOnLoad;
-    }
+	for (var i = 1; i <= config.tiles; i++) {
+		$( ".panzoom" ).append("<img name='tile-" + i + "' class='map-tile' "
+			+ "src='" + config.img.replace('*', (i < 10 ? "0" + i : "" + i)) + "' />" );
+		$( "img[name=tile-" + i + "]" ).css( offsets[i-1] );
+		document.getElementsByName("tile-" + i)[0].onload = mapOnLoad;
+	}
 };
 
 
 function redrawMapOnZoom(scale) {
-	console.log(scale);
-
 	if (!mapZoomedOut && scale < mapZoomedOutThreshold) {
-		console.log("Change to single tile");
+		// console.log("Change to single tile");
 		mapZoomedOut = true;
 
 		$( "img[name=tile-0]" ).css("visibility", "");
@@ -326,7 +325,7 @@ function redrawMapOnZoom(scale) {
 			$("img[name=tile-" + i + "]").css("visibility","hidden");
 		}
 	} else if (mapZoomedOut && scale >= mapZoomedOutThreshold) {
-		console.log("Change to several tiles");
+		// console.log("Change to several tiles");
 		mapZoomedOut = false;
 
 		$( "img[name=tile-0]" ).css("visibility", "hidden");
@@ -336,53 +335,9 @@ function redrawMapOnZoom(scale) {
 	}
 }
 
-/*
-function drawMap(config) {
-    /* Config  {
-    *   size: 8533
-    *   scale: 1.5
-    *   tiles: [NW,NE,SW,SE]        or [NW, N, NE, W, C, E, SW, S, SE] or [C]
-    *   img: "src/maps/Takistan/*.png"
-
-    var url = config.img
-    var sizeStep = Math.floor(config.size / ({"1": 1, "4": 2, "9": 3})["" + config.tiles.length] );
-    var offsets = {
-        "1": {
-            "C": { "top": "0px", "left": "0px" }
-        }
-        , "4": {
-            "NW": { "top": "0px", "left": "0px" }
-            , "NE": { "top": "0px", "left": "" + sizeStep + "px" }
-            , "SW": { "top": "" + sizeStep + "px", "left": "0px" }
-            , "SE": { "top": "" + sizeStep + "px", "left": "" + sizeStep + "px" }
-        }
-        , "9": {
-            "NW": { "top": "0px", "left": "0px" }
-            , "N": { "top": "0px", "left": "" + sizeStep + "px" }
-            , "NE": { "top": "0px", "left": "" + 2*sizeStep + "px" }
-            , "W": { "top": "" + sizeStep + "px", "left": "0px" }
-            , "C": { "top": "" + sizeStep + "px", "left": "" + sizeStep + "px" }
-            , "E": { "top": "" + sizeStep + "px", "left": "" + 2*sizeStep + "px" }
-            , "SW": { "top": "" + 2*sizeStep + "px", "left": "0px" }
-            , "S": { "top": "" + 2*sizeStep + "px", "left": "" + sizeStep + "px" }
-            , "SE": { "top": "" + 2*sizeStep + "px", "left": "" + 2*sizeStep + "px" }
-        }
-    };
-
-    for (var i = 0; i < config.tiles.length; i++) {
-        $( ".panzoom" ).append("<img name='" + config.tiles[i] + "' class='map-tile' src='" + config.img.replace('*', config.tiles[i]) + "' />" );
-
-        var offset = offsets["" + config.tiles.length][config.tiles[i]];
-        $( "img[name=" + config.tiles[i] + "]" ).css( offset );
-
-        eval( "document." + config.tiles[i] + ".onload = mapOnLoad" );
-    }
-};
-*/
-
 function mapOnLoad() {
-    $( ".panzoom" ).panzoom('resetDimensions');
-     playReportStep( 0 );
+	$( ".panzoom" ).panzoom('resetDimensions');
+	playReportStep( 0 );
 }
 
 // Panzoom Init
