@@ -277,6 +277,7 @@ body {
 .map-tile {
     display: inline;
     position:  absolute;
+    image-rendering: pixelated;
 }
 
 .attack-vector {
