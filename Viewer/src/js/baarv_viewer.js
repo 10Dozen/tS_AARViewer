@@ -3,6 +3,9 @@ var aarCurrentTime = 0;
 var aarPlaying = false;
 var aarAutoStepper;
 var aarMapParam = [];
+var mapZoomedOut = false;
+var mapZoomedOutThreshold = 0.6;
+
 var aarIconSrc = "svg";
 
 var $avl;
@@ -238,9 +241,7 @@ function initAAR() {
 	$( "#player-line" ).css( "top", "12px" );
 
 	aarMapParam = getMapParams(aarData.metadata.island);
-	
-	// $( ".panzoom > img" ).attr( "src", aarMapParam.img );
-	drawMap(true);
+	drawMap(aarMapParam);
 	panzoomInit();
 	
 	// Spawn
@@ -248,19 +249,14 @@ function initAAR() {
 	var vehs = aarData.metadata.objects.vehs;
 	for (var i = 0; i < vehs.length; i++) {
 		createObject( vehs[i], "veh" );
-	}	
+	}
 	
 	// Spawn Units
 	var units = aarData.metadata.objects.units;
 	for (var i = 0; i < units.length; i++) {
 		createObject( units[i], "unit" );
 	}
-	
-	document.map.onload = function() {
-		$( ".panzoom" ).panzoom('resetDimensions');
-		playReportStep( 0 );
-	};
-	
+
 	$( "#player-header" ).html(aarData.metadata.name + " (" + aarData.metadata.date + ")");
 	$( "#player-line > button" ).removeAttr( "disabled" );
     $( ".panzoom" ).append("<div id='attackLinesDiv' ></div>");
@@ -276,19 +272,77 @@ function initAAR() {
 	});
 };
 
+function getOffsets(tiles, size) {
+	var result = [];
+	var gridSize = Math.sqrt(tiles);
+	var stepSize = Math.floor(size / gridSize);
+
+	for (var i = 0; i < gridSize; i++) {
+		for (var j = 0; j < gridSize; j++) {
+			result.push({
+				top: stepSize * i
+				, left: stepSize * j
+			})
+		}
+	}
+
+	return result;
+}
+
 function drawMap(config) {
-    /* Will  {
+    /* Config  {
+    *   size: 8533
+    *   scale: 1.5
+    *   tiles: 16
+    *   img: "src/maps/Takistan/*.png"
+    */
+
+    var offsets = getOffsets(config.tiles, config.size);
+
+    $( ".panzoom" ).append("<img name='tile-0' class='map-tile' src='" + config.img.replace('*', 0) + "' />" );
+    $( "img[name=tile-0]" ).css({
+        "top": "0px"
+        , "left": "0px"
+        , "width": aarMapParam.size
+    });
+
+    for (var i = 1; i <= config.tiles; i++) {
+        $( ".panzoom" ).append("<img name='tile-" + i + "' class='map-tile' src='" + config.img.replace('*', i) + "' />" );
+        $( "img[name=tile-" + i + "]" ).css( offsets[i-1] );
+        document.getElementsByName("tile-" + i)[0].onload = mapOnLoad;
+    }
+};
+
+
+function redrawMapOnZoom(scale) {
+	console.log(scale);
+
+	if (!mapZoomedOut && scale < mapZoomedOutThreshold) {
+		console.log("Change to single tile");
+		mapZoomedOut = true;
+
+		$( "img[name=tile-0]" ).css("visibility", "");
+		for (var i = 1; i <= aarMapParam.tiles; i++) {
+			$("img[name=tile-" + i + "]").css("visibility","hidden");
+		}
+	} else if (mapZoomedOut && scale >= mapZoomedOutThreshold) {
+		console.log("Change to several tiles");
+		mapZoomedOut = false;
+
+		$( "img[name=tile-0]" ).css("visibility", "hidden");
+		for (var i = 1; i <= aarMapParam.tiles; i++) {
+			$("img[name=tile-" + i + "]").css("visibility","");
+		}
+	}
+}
+
+/*
+function drawMap(config) {
+    /* Config  {
     *   size: 8533
     *   scale: 1.5
     *   tiles: [NW,NE,SW,SE]        or [NW, N, NE, W, C, E, SW, S, SE] or [C]
     *   img: "src/maps/Takistan/*.png"
-    */
-    config = {
-        size: 8533
-        , scale: 1.5
-        , tiles: ["NW", "NE", "SW", "SE"]
-        , img: "src/maps/Takistan/*.png"
-    };
 
     var url = config.img
     var sizeStep = Math.floor(config.size / ({"1": 1, "4": 2, "9": 3})["" + config.tiles.length] );
@@ -320,8 +374,16 @@ function drawMap(config) {
 
         var offset = offsets["" + config.tiles.length][config.tiles[i]];
         $( "img[name=" + config.tiles[i] + "]" ).css( offset );
+
+        eval( "document." + config.tiles[i] + ".onload = mapOnLoad" );
     }
 };
+*/
+
+function mapOnLoad() {
+    $( ".panzoom" ).panzoom('resetDimensions');
+     playReportStep( 0 );
+}
 
 // Panzoom Init
 var panzoomInit = function() {
@@ -330,6 +392,11 @@ var panzoomInit = function() {
 		minScale: 0.1,
 		maxScale: 4		
 	});
+
+	$('.panzoom').on('panzoomzoom', function(e, panzoom , scale, opts) {
+		redrawMapOnZoom(scale);
+	});
+
 	
 	$panzoom.parent().on('mousewheel.focal', function( e ) {
 		e.preventDefault();
