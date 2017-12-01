@@ -868,6 +868,13 @@ function whereAreUnits() {
 	}				
 }
 
+var isAA = false;
+function toggleAA() {
+	isAA = !isAA;
+	$(".map-tile").css("image-rendering", isAA ? "auto" : "");
+	$( "#player-toggleAA" ).button({text: false, icons: { primary: isAA ? "ui-icon-grip-solid-horizontal" : "ui-icon-grip-dotted-horizontal" }});
+}
+
 $( document ).ready(function () {
 	$( "#slider" ).slider({
 		range: "min",
@@ -890,9 +897,10 @@ $( document ).ready(function () {
 	$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}}).click(function() { stopReport(); });
 	$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}});
 	$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-help" }});
+	$( "#player-toggleAA" ).button({text: false, icons: { primary: "ui-icon-grip-dotted-horizontal" }});
 	$( "#player-toggleNames" ).button({text: false, icons: { primary: "ui-icon-tag" }});
 	$( "#player-toggleIcons" ).button({text: false, icons: { primary: "ui-icon-circle-zoomout" }});
-	$( "#player-toggleScale" ).button({text: false, icons: { primary: "ui-icon-arrowthick-2-e-w" }});
+	$( "#player-toggleScale" ).button({text: false, icons: { primary: "ui-icon-arrow-2-e-w" }});
 
 	$( "#player-line > button" ).attr( "disabled", "true" );
 
