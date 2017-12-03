@@ -75,8 +75,8 @@ Screenshots:
 
 5. Now tiles should be created:
 <br />If map size is less than 5120px - it's enough to save the map image as {Name}_01.png and set tiles: 1 in config.ini.
-<br />For large maps - make several tiles, each tile should be less than 5120x5120px (it's easy to do using Slice tool and Export for Web in Photoshop). Tiles should be named from {Name}_01 to {Name}_{NumberOfTiles} and "tiles" parameter in config should be set to actual number of tiles (e.g. for 4x4 tiles -> tiles: 16 in config.ini and images should be named from Stratis_01 to Stratis_25). You should also create map imaged resized to < 5120x5120px and save it as %Name%_00.png.
-<br />All tiles for world should be placed in /src/maps/%WorldName%/ folder and this folder should be used in the "config.ini" for as "img" path (e.g. for Stratis_00...Statis_16 - "img": "src/maps/Stratis/Stratis_*.png").
+<br />For large maps - make several tiles, each tile should be less than 5120x5120px (it's easy to do using Slice tool and Export for Web in Photoshop). Tiles should be named from {Name}_01 to {Name}_{NumberOfTiles} and "tiles" parameter in config should be set to actual number of tiles (e.g. for 4x4 tiles -> tiles: 16 in config.ini and images should be named from Stratis_01 to Stratis_25). You should also create map imaged resized to < 5120x5120px and save it as {Name}_00.png.
+<br />All tiles for world should be placed in /src/maps/{WorldName}/ folder and this folder should be used in the "config.ini" for as "img" path (e.g. for Stratis_00...Statis_16 - "img": "src/maps/Stratis/Stratis_*.png").
 <br />Map image may be scaled down (e.g. 30x30km map may be scaled 3 times to 10x10km and then tiles may be created).
 
 
