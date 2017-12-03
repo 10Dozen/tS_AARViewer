@@ -238,6 +238,35 @@ body {
 }
 
 /* *********************
+	Scaleometer
+********************** */
+#scalemeter {
+	/*
+	border-top: 3px solid black;
+    border-left: 3px solid black;
+    */
+    position: absolute;
+    z-index: 5;
+    font-family: "Consolas";
+    font-size: 16px;
+    padding-left: 8px;
+}
+
+.scale-h {
+	width: 100px;
+	height: 8px;
+	position: absolute;
+    z-index: 5;
+}
+
+.scale-v {
+	width: 8px;
+	height: 100px;
+	position: absolute;
+    z-index: 5;
+}
+
+/* *********************
 	Units 
 ********************** */
 .unit-marker {
@@ -268,6 +297,16 @@ body {
 	background-color: #D8D8D8;
 	padding: 3px;
 	font-size: 12px;
+}
+
+/* *********************
+	Map
+********************** */
+
+.map-tile {
+    display: inline;
+    position:  absolute;
+    image-rendering: pixelated;
 }
 
 .attack-vector {

@@ -3,17 +3,194 @@ var aarCurrentTime = 0;
 var aarPlaying = false;
 var aarAutoStepper;
 var aarMapParam = [];
+var mapZoomedOut = false;
+var mapZoomedOutThreshold = 0.6;
 var aarIconSrc = "svg";
-
 var $avl;
 var aarAttackLines = [];
 var aarAttackLinesTimeout = 3;
-
 var whereAreUnitsState = false;
-var showNameMode = "Show";
-var showNameOpacity = { "unit": 1, "veh": 0.6, "vehEmpty": 0.25};
-var showSmallState = false;
 
+// Label Draw Manager
+var LDM = {
+	mode: "all"
+	, opacity: {unit: 1, veh: 0.6, vehEmpty: 0.25}
+	, btn: {
+		color: "#fff"
+		, text: "Labels []"
+	}
+	, change: function () {
+		switch (this.mode) {
+			case "all":
+				this.mode = "units";
+				this.opacity = {unit: 1, veh: 0, vehEmpty: 0 };
+				this.btn.color = "#ffdd61";
+				this.btn.text = "Labels [Units only]";
+				break;
+			case "units":
+				this.mode = "vehicles";
+				this.opacity = {unit: 0, veh: 0.6, vehEmpty: 0.25 };
+				this.btn.color = "#56b1ff";
+				this.btn.text = "Labels [Vehicles only]";
+				break;
+			case "vehicles":
+				this.mode = "none";
+				this.opacity = {unit: 0, veh: 0, vehEmpty: 0 };
+				this.btn.color = "rgb(208, 255, 56)";
+				this.btn.text = "Labels [None]";
+				break;
+			case "none":
+				this.mode = "all";
+				this.opacity = {unit: 1, veh: 0.6, vehEmpty: 0.25};
+				this.btn.color = "";
+				this.btn.text = "Labels [All]";
+				break;
+		}
+
+		$("#player-toggleNames > span").css("background-color", this.btn.color);
+		$("#player-toggleNames").attr("title", this.btn.text)
+		playReportStep(aarCurrentTime,true);
+	}
+};
+
+// Unit Size Manager
+var USM = {
+	mode: "normal"
+	, size: {
+		icon: 32
+		, text: 16
+	}
+	, btn: {
+		color: ""
+		, text: "Names mode [Normal]"
+	}
+	, attackLineSize: 3
+	, change: function() {
+		switch (this.mode) {
+			case "normal":
+				this.mode = "small";
+				this.size.icon = 16;
+				this.size.text = 6;
+				this.btn.color = "#ffdd61";
+				this.btn.text = "Icon size [Small]";
+				this.attackLineSize = 1;
+				break;
+			case "small":
+				this.mode = "large";
+				this.size.icon = 256;
+				this.size.text = 128;
+				this.btn.color = "#56b1ff";
+				this.btn.text = "Icon size [Large]";
+				this.attackLineSize = 16;
+				break;
+			case "large":
+				this.mode = "normal";
+				this.size.icon = 32;
+				this.size.text = 16;
+				this.btn.color = "";
+				this.btn.text = "Icon size [Normal]";
+				this.attackLineSize = 3;
+				break;
+		}
+
+		$("#player-toggleIcons > span").css("background-color", this.btn.color);
+		$("#player-toggleIcons").attr("title", this.btn.text)
+		playReportStep(aarCurrentTime,true);
+	}
+};
+
+// Scale-o-meter Manager
+var SMM = {
+    mode: "hidden"
+	, btn: {
+		color: ""
+		, text: "Scale-o-meter [Corner]"
+	}
+	, css: {}
+	, change: function() {
+		switch (this.mode) {
+			case "corner":
+				this.mode = "center";
+				this.btn.color = "#ffdd61";
+				this.btn.text = "Scale-o-meter [Center]";
+				this.css = {
+					top: $(window).scrollTop() + $(window).height() / 2
+					, left: $(window).scrollLeft() + $(window).width() / 2
+				};
+				break;
+			case "center":
+				this.mode = "hidden";
+				this.btn.color = "#56b1ff";
+				this.btn.text = "Scale-o-meter [Hidden]";
+				this.css = {
+					visibility: "hidden"
+				};
+				break;
+			case "hidden":
+				this.mode = "corner";
+				this.btn.color = "";
+				this.btn.text = "Scale-o-meter [Corner]";
+				this.css = {
+					visibility: ""
+					, top: 64
+					, left: 32
+				};
+				break;
+		}
+
+		$("#scalemeter").css(this.css);
+		$(".scale-h").css(this.css);
+		$(".scale-v").css(this.css)
+
+		$("#player-toggleScale > span").css("background-color", this.btn.color);
+		$("#player-toggleScale").attr("title", this.btn.text)
+	}
+	, redraw: function (scale) {
+		var scaleSize = Math.ceil(100 * scale);
+		var params;
+
+		if (scaleSize >= 150) {
+			// 50m
+			params = {
+				width: scaleSize/2
+				, height: scaleSize/2
+				, label: "50m"
+			};
+
+		} else if (scaleSize >= 50) {
+			// 100m
+			params = {
+				width: scaleSize
+				, height: scaleSize
+				, label: "100m"
+			};
+		} else if (scaleSize >= 20 ) {
+			// 500m
+			params = {
+				width: scaleSize*5
+				, height: scaleSize*5
+				, label: "500m"
+			};
+		} else {
+			// 1km
+			params = {
+				width: scaleSize*10
+				, height: scaleSize*10
+				, label: "1km"
+			};
+		}
+
+		$("#scalemeter").html(params.label);
+		$("#scale-h-1 > line").attr("x2", params.width);
+		$("#scale-h-2 > line").attr("x2", params.width / 2);
+		$("#scale-v-1 > line").attr("y2", params.height);
+		$("#scale-v-2 > line").attr("y2", params.height / 2);
+		$(".scale-h").css("width", params.width);
+		$(".scale-v").css("height", params.height);
+	}
+};
+
+// showSmallState
 var eStyle = {
 	"headerStatus": {
 		"default": {
@@ -114,7 +291,7 @@ function getMapParams(name) {
 	};	
 	if (!params) { 
 		console.log("Island config not found!"); 
-		params =  { "size": 0, "scale": 1, "img": "" } 
+		params = { size: 20480, scale: 1, tiles: 1, img: "src/maps/NoTerrain_*.png" };
 	};
 	
 	return params;
@@ -238,8 +415,7 @@ function initAAR() {
 	$( "#player-line" ).css( "top", "12px" );
 
 	aarMapParam = getMapParams(aarData.metadata.island);
-	
-	$( ".panzoom > img" ).attr( "src", aarMapParam.img );	
+	drawMap(aarMapParam);
 	panzoomInit();
 	
 	// Spawn
@@ -247,19 +423,14 @@ function initAAR() {
 	var vehs = aarData.metadata.objects.vehs;
 	for (var i = 0; i < vehs.length; i++) {
 		createObject( vehs[i], "veh" );
-	}	
+	}
 	
 	// Spawn Units
 	var units = aarData.metadata.objects.units;
 	for (var i = 0; i < units.length; i++) {
 		createObject( units[i], "unit" );
 	}
-	
-	document.map.onload = function() {
-		$( ".panzoom" ).panzoom('resetDimensions');
-		playReportStep( 0 );
-	};
-	
+
 	$( "#player-header" ).html(aarData.metadata.name + " (" + aarData.metadata.date + ")");
 	$( "#player-line > button" ).removeAttr( "disabled" );
     $( ".panzoom" ).append("<div id='attackLinesDiv' ></div>");
@@ -275,6 +446,77 @@ function initAAR() {
 	});
 };
 
+function getOffsets(tiles, size) {
+	var result = [];
+	var gridSize = Math.sqrt(tiles);
+	var stepSize = Math.floor(size / gridSize);
+
+	for (var i = 0; i < gridSize; i++) {
+		for (var j = 0; j < gridSize; j++) {
+			result.push({
+				top: stepSize * i
+				, left: stepSize * j
+			})
+		}
+	}
+
+	return result;
+}
+
+function drawMap(config) {
+    /* Config  {
+    *   size: 8533
+    *   scale: 1.5
+    *   tiles: 16
+    *   img: "src/maps/Takistan/*.png"
+    */
+
+	var offsets = getOffsets(config.tiles, config.size);
+
+    if (config.tiles > 1 || config.img == "src/maps/NoTerrain_*.png") {
+        $( ".panzoom" ).append("<img name='tile-0' class='map-tile' src='" + config.img.replace('*', "00") + "' />" );
+        $( "img[name=tile-0]" ).css({
+            "top": "0px"
+            , "left": "0px"
+            , "width": aarMapParam.size
+        });
+	}
+
+	for (var i = 1; i <= config.tiles; i++) {
+		$( ".panzoom" ).append("<img name='tile-" + i + "' class='map-tile' "
+			+ "src='" + config.img.replace('*', (i < 10 ? "0" + i : "" + i)) + "' />" );
+		$( "img[name=tile-" + i + "]" ).css( offsets[i-1] );
+	}
+
+	document.getElementsByName("tile-" + config.tiles)[0].onload = mapOnLoad;
+};
+
+function redrawMapOnZoom(scale) {
+    if (aarMapParam.tiles == 1) { return; };
+	if (!mapZoomedOut && scale < mapZoomedOutThreshold) {
+		// console.log("Change to single tile");
+		mapZoomedOut = true;
+
+		$( "img[name=tile-0]" ).css("visibility", "");
+		for (var i = 1; i <= aarMapParam.tiles; i++) {
+			$("img[name=tile-" + i + "]").css("visibility","hidden");
+		}
+	} else if (mapZoomedOut && scale >= mapZoomedOutThreshold) {
+		// console.log("Change to several tiles");
+		mapZoomedOut = false;
+
+		$( "img[name=tile-0]" ).css("visibility", "hidden");
+		for (var i = 1; i <= aarMapParam.tiles; i++) {
+			$("img[name=tile-" + i + "]").css("visibility","");
+		}
+	}
+}
+
+function mapOnLoad() {
+	$( ".panzoom" ).panzoom('resetDimensions');
+	playReportStep( 0, false );
+}
+
 // Panzoom Init
 var panzoomInit = function() {
 	var $panzoom = $('.panzoom').panzoom();
@@ -282,7 +524,14 @@ var panzoomInit = function() {
 		minScale: 0.1,
 		maxScale: 4		
 	});
-	
+
+	$('.panzoom').on('panzoomzoom', function(e, panzoom , scale, opts) {
+		redrawMapOnZoom(scale);
+		SMM.redraw(scale);
+	});
+	SMM.change();
+	SMM.redraw(1);
+
 	$panzoom.parent().on('mousewheel.focal', function( e ) {
 		e.preventDefault();
 		var delta = e.delta || e.originalEvent.wheelDelta;
@@ -369,7 +618,10 @@ function createObject(data,type) {
 function setGridPos(unit, data) {
 	if ( data[4] ) {
 		var pos = getGridPos(data[1], data[2])
-		$( unit ).css({ "left": pos.x - $( unit ).outerWidth() /2 , "top": pos.y - getScaledVal( 16 ) });
+		$( unit ).css({
+			"left": pos.x - $( unit ).outerWidth() /2
+			, "top": pos.y - ( $( unit ).outerHeight() - $( unit + " > span" ).outerHeight() )/2
+		});
 	}
 }
 
@@ -381,20 +633,34 @@ function getGridPos(x,y) {
 function processUnit(data,type) {
 	// 0: unit/vehicle data
 	// 1: "unit" or "veh"
-	var id = data[0];	
+	var id = data[0];
 	var unit = "#mrk-unit-" + id;
+
+	$( unit + " > img" ).css({"width": getScaledVal(USM.size.icon), "height": getScaledVal(USM.size.icon)});
+    $( unit + " > span" ).css({"font-size": USM.size.text});
+
+	if (data.length == 1) {
+		if (type == "unit") {
+			$( unit ).css({"color": "rgba(0, 0, 0, " + LDM.opacity.unit + ")"});
+		} else {
+			$( unit ).css({"color": "rgba(0, 0, 0, " + LDM.opacity.vehEmpty + ")"});
+		}
+
+		return;
+	}
+
 	var dir = data[3];
 	var alive = data[4];
 
-	$( unit + " > img" ).css({"width": (showSmallState ? getScaledVal(16) + "px" : getScaledVal(32) + "px")});
-	$( unit + " > span" ).css({"font-size": (showSmallState ? "6px" : "16px")});
+	$( unit + " > img" ).css({"width": getScaledVal(USM.size.icon), "height": getScaledVal(USM.size.icon)});
+	$( unit + " > span" ).css({"font-size": USM.size.text});
 
 	var inCargo, owner, cargo
 	if (type == "unit") {
 		inCargo = data[5];	
 		if (inCargo == -1) {
 			$( unit + " > img" ).rotate( dir );
-			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.unit + ")"});
+			$( unit ).css({"color": "rgba(0, 0, 0, " + LDM.opacity.unit + ")"});
 			$( unit ).css({"visibility": ""});
 			setGridPos(unit, data);		
 		} else {
@@ -408,7 +674,7 @@ function processUnit(data,type) {
 			}			
 			$( unit + "> img" ).attr( "src", "src/icons/dead_" + typePlayer + "unit." + aarIconSrc );
 			$( unit ).css({
-				"color": "rgba(0, 0, 0, " + showNameOpacity.vehEmpty + ")",
+				"color": "rgba(0, 0, 0, " +  LDM.opacity.vehEmpty + ")",
 				"z-index": 0
 			});
 		} else {
@@ -424,11 +690,11 @@ function processUnit(data,type) {
 			if (cargo > 0) { unitName = $( unit ).attr("name") + " (" + unitData[1] + " +" + cargo + ")"; }						
 			$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh." + aarIconSrc )			
 			$( unit + "> span").html( unitName );
-			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.veh + ")"});
+			$( unit ).css({"color": "rgba(0, 0, 0, " + LDM.opacity.veh + ")"});
 		} else {
 			$( unit + "> img" ).attr( "src", "src/icons/unknown_veh." + aarIconSrc )			
 			$( unit + "> span").html(  getVehicleMetadata(id)[1] );
-			$( unit ).css({"color": "rgba(0, 0, 0, " + showNameOpacity.vehEmpty + ")"});
+			$( unit ).css({"color": "rgba(0, 0, 0, " + LDM.opacity.vehEmpty + ")"});
 		}
 
 		$( unit + " > img" ).rotate( dir );
@@ -445,7 +711,7 @@ function drawAttackLine(attackData) {
     $avl.append("<svg class='attack-vector' id='av-" + attackData.id + "' height='" + size + "' width='" + size + "' >"
         + "<line x1='" + attackData.pos1.x + "' y1='" + attackData.pos1.y
         + "' x2='" + attackData.pos2.x + "' y2='" + attackData.pos2.y
-        + "' style='stroke:rgb(245, 132, 0);stroke-width:" + (showSmallState ? 1 : 3 ) + "'></line>"
+        + "' style='stroke:rgb(245, 132, 0);stroke-width:" + USM.attackLineSize + "'></line>"
         + "</svg>"
     );
 }
@@ -482,12 +748,29 @@ function redrawAttackLines(timelabel) {
 }
 
 // Play AAR frame (1 second)
-function playReportStep (step) {
+function playReportStep (step, forced) {
 	var units = aarData.timeline[step][0];
 	var vehs = aarData.timeline[step][1];
 	var attacks = aarData.timeline[step][2];
-	//clearAttacks(step);
-	
+
+	if (forced) {
+		$("[id^=mrk-unit-]").each(function () {
+			var id = parseInt( $( this ).attr("id").split("-")[2] );
+			var type = $( this ).attr("type");
+
+			if (type == "unit") {
+				var unitData = units.filter(function (unit) { if (unit[0] == id) { return unit }; return; });
+				processUnit( unitData.length > 0 ? unitData : [id], "unit" );
+			} else {
+				var vehData = vehs.filter(function (veh) { if (vehs[0] == id) { return veh } });
+				processUnit( vehData.length > 0 ? vehData : [id], "veh" );
+			}
+		});
+
+		$( ".panzoom" ).panzoom('resetDimensions');
+		return;
+	}
+
 	for (var i = 0; i < units.length; i++) {		
 		processUnit( units[i], "unit" );
 	};
@@ -540,7 +823,7 @@ function reportNextStep () {
 		aarCurrentTime = aarCurrentTime + 1;
 		$( "#slider" ).slider({ value: aarCurrentTime });
 		$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
-		playReportStep ( aarCurrentTime );		
+		playReportStep ( aarCurrentTime, false );
 	}
 };
 
@@ -549,7 +832,7 @@ function reportPrevStep () {
 		aarCurrentTime = aarCurrentTime - 1;
 		$( "#slider" ).slider({ value: aarCurrentTime });
 		$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
-		playReportStep ( aarCurrentTime );
+		playReportStep ( aarCurrentTime, false );
 	}
 };
 
@@ -585,35 +868,11 @@ function whereAreUnits() {
 	}				
 }
 
-function toggleNames() {
-    /*
-     * Modes are: "Show", "HideUnits", "HideVeh", "HideAll"
-     */
-    switch (showNameMode) {
-        case "Show":
-            showNameMode = "HideUnits";
-            showNameOpacity = { "unit": 1, "veh": 0.6, "vehEmpty": 0.25};
-            break;
-        case "HideUnits":
-            showNameMode = "HideVeh";
-            showNameOpacity = { "unit": 0, "veh": 0.6, "vehEmpty": 0.25};
-            break;
-        case "HideVeh":
-            showNameMode = "HideAll";
-            showNameOpacity = { "unit": 1, "veh": 0, "vehEmpty": 0};
-            break;
-        case "HideAll":
-            showNameMode = "Show";
-            showNameOpacity = { "unit": 0, "veh": 0, "vehEmpty": 0};
-            break;
-    }
-
-    playReportStep(aarCurrentTime);
-}
-
-function toggleSize() {
-	showSmallState = showSmallState ? false : true;
-    playReportStep(aarCurrentTime);
+var isAA = false;
+function toggleAA() {
+	isAA = !isAA;
+	$(".map-tile").css("image-rendering", isAA ? "auto" : "");
+	$( "#player-toggleAA" ).button({text: false, icons: { primary: isAA ? "ui-icon-grip-solid-horizontal" : "ui-icon-grip-dotted-horizontal" }});
 }
 
 $( document ).ready(function () {
@@ -623,7 +882,7 @@ $( document ).ready(function () {
 		max: 100,
 		slide: function( event, ui ) {
 			$( "#player-step > span" ).html( getTimeLabel(ui.value) );
-			playReportStep ( ui.value );
+			playReportStep ( ui.value, false );
 			aarCurrentTime = ui.value;
 			stopReport();
 		},
@@ -638,8 +897,10 @@ $( document ).ready(function () {
 	$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}}).click(function() { stopReport(); });
 	$( "#player-step-play" ).button({text: false,icons: {primary: "ui-icon-play"}});
 	$( "#player-info" ).button({text: false, icons: { primary: "ui-icon-help" }});
+	$( "#player-toggleAA" ).button({text: false, icons: { primary: "ui-icon-grip-dotted-horizontal" }});
 	$( "#player-toggleNames" ).button({text: false, icons: { primary: "ui-icon-tag" }});
 	$( "#player-toggleIcons" ).button({text: false, icons: { primary: "ui-icon-circle-zoomout" }});
+	$( "#player-toggleScale" ).button({text: false, icons: { primary: "ui-icon-arrow-2-e-w" }});
 
 	$( "#player-line > button" ).attr( "disabled", "true" );
 
