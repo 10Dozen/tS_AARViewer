@@ -25,26 +25,31 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 <br />Islands available:
 - Altis
 - Stratis
-- Chernarus
+- Malden 2035
+- Tanoa
+
+- Chernarus (Chernarus Summer, Chernarus Winter)
 - Utes
 - Bystica
+- Bukovina
 - Takistan
 - Zargabad
 - Shapur
 - Proving Grounds
 - Sahrani (SMD_Sahrani_A3, CUP Sahrani)
 - Porto
-- Isla Abramia
-- Isla Duala
-- Helvantis
-- Panthera island
-- Kunduz
 - Everon
 - Malden
 - Kolguev
 - Nogova
-- Diyala
+
+- Kunduz
 - Lythium
+- Diyala
+- Isla Abramia
+- Isla Duala
+- Lingor / Dingor
+- Helvantis
 
 Screenshots:
 <br />http://puu.sh/mdzFH/ef9dc68a5f.png
@@ -60,20 +65,26 @@ Screenshots:
 - Use mouse RMB to pan, and mouse wheel to zoom. If you can't find units - click Help icon at the upper-right corner - it will draw a purple lines from map corner to all units. 
 
 ### How to extend Map compatibility?
-1. Get 2d map from Arma via TOPOGRAPHY cheat (see https://community.bistudio.com/wiki/ArmA:_Cheats for details). It will dump map in .emf format to your C:/ drive
+1. Get 2d map from Arma via TOPOGRAPHY or EXPORTNOGRID cheat (see https://community.bistudio.com/wiki/ArmA:_Cheats for details). It will dump map in .emf format to your C:/ drive
 
 2. Convert .emf to .png (there is a tutorial and converter http://killzonekid.com/arma-scripting-tutorials-how-to-export-topography/ ). I've noticed that Arma3 version of emf2png working bad, so use Arma2 version of the converter.
 
 3. Now open your .png file in photoshop (or corel or whatever app that can resize image and convert it to indexed colors with configurable pallete)
 
-4. Map should be a square for better accuracy. If map is bigger than 10241px, then you should resize it (extra large images are handled weird by browser). E.g. for map of 15361px it will be enough to divide by 1.5 => 15361 / 1.5 = 10241. Remeber divider, it will be needed for config.
+4. Map should be a square for better accuracy and size should be equal to world size. Then switch image to Indexed colors and edit it's pallete. Your goal is to leave about 8-12 colors, so make all similar shades exactly the same color (e.g. 1 green color, 1 white, 1 black, 1 gray, 1 blue, 1 orange (for roads), 1 pale orange (offroads), 1 brown (terrain height lines) - it will be enough to represent all elements in the map)
 
-5. Switch image to Indexed colors and edit it's pallete. Your goal is to leave about 8-12 colors, so make all similar shades exactly the same color (e.g. 1 green color, 1 white, 1 black, 1 gray, 1 blue, 1 orange (for roads), 1 pale orange (offroads), 1 brown (terrain height lines) - it will be enough to represent all elements in the map)
+5. Now tiles should be created:
+<br />If map size is less than 5120px - it's enough to save the map image as %Name%_01.png and set tiles: 1 in config.ini.
+<br />For large maps - make several tiles, each tile should be less than 5120x5120px (it's easy to do using Slice tool and Export for Web in Photoshop). Tiles should be named from %Name%_01 to %Name%_%NumberOfTiles% and "tiles" parameter in config should be set to actual number of tiles (e.g. for 4x4 tiles -> tiles: 16 in config.ini and images should be named from Stratis_01 to Stratis_25). You should also create map imaged resized to < 5120x5120px and save it as %Name%_00.png.
+<br />All tiles for world should be placed in /src/maps/%WorldName%/ folder and this folder should be used in the "config.ini" for as "img" path (e.g. for Stratis_00...Statis_16 - "img": "src/maps/Stratis/Stratis_*.png").
+<br />Map image may be scaled down (e.g. 30x30km map may be scaled 3 times to 10x10km and then tiles may be created).
+
 
 6. Now save the image and edit /Viewer/config.ini file and add your map to JS-array in format:
-<br />[ @worldname, { "size": @imagesize, "scale": @imagescale, "img": @pathtoimagefile } ]
+<br />[ @worldname, { size: @imagesize, scale: @imagescale, tiles: @tilesNumber "img": @pathtoimagefiles } ]
 <br />, where:
 <br />@worldname -- arma's world name (island name in config or from saved editor mission folder, e.g. MissionName.Altis);
-<br />@imagesize -- size of image (number, e.g. 10241);
-<br />@imagescale -- divider from step 4 (number, e.g. 1.5 -> 10241 * 1.5 = 15361 - original map scale);
-<br />@pathtoimagefile -- path to file (as string, e.g. "src/maps/Stratis_8192_1.png")
+<br />@imagesize -- size of full image (size before tiles were created; number, e.g. 10241);
+<br />@imagescale -- multiplier for scale (number, e.g. for map of 30000 scaled down to 10000 multiplier is 3 -> 10000 * 3 = 30000 - original world size);
+<br />@tilesNumber -- number of tiles used
+<br />@pathtoimagefile -- path to files (as string, e.g. "src/maps/Stratis/Stratis_*.png")
