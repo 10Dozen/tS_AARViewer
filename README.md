@@ -59,7 +59,7 @@ Screenshots:
 ### How to use it?
 - Create a mission and add Logger script to it.
 - Play your mission
-- Go to C:\Users\%YourUsername%\AppData\Local\Arma 3 and get latest <tt>.rpt</tt> file
+- Go to C:\Users\\%YourUsername%\AppData\Local\Arma 3 and get latest <tt>.rpt</tt> file
 - Open AAR Converter and open .rpt file from it, then choose logged game. Populate fields with your custom description for the mission and click - "Save AAR to file".
 - Open AAR Viewer and open your generated AAR file with it. Click "Play" and wait until map loaded. 
 - Use mouse RMB to pan, and mouse wheel to zoom. If you can't find units - click Help icon at the upper-right corner - it will draw a purple lines from map corner to all units. 
@@ -67,7 +67,7 @@ Screenshots:
 ### How to extend Map compatibility?
 1. Get 2d map from Arma via TOPOGRAPHY or EXPORTNOGRID cheat (see https://community.bistudio.com/wiki/ArmA:_Cheats for details). It will dump map in .emf format to your C:/ drive
 
-2. Convert .emf to .png (there is a tutorial and converter http://killzonekid.com/arma-scripting-tutorials-how-to-export-topography/ ). I've noticed that Arma3 version of emf2png working bad, so use Arma2 version of the converter.
+2. Convert .emf to .png (there is a tutorial and converter http://killzonekid.com/arma-scripting-tutorials-how-to-export-topography/ ). 
 
 3. Now open your .png file in photoshop (or corel or whatever app that can resize image and convert it to indexed colors with configurable pallete)
 
