@@ -24,8 +24,8 @@ link8[] = {7,9};
 link9[] = {8,10};
 link10[] = {9,8};
 link11[] = {10,1};
-globals[] = {0.000000,0,0,0,0,640,480,1,269,6316128,1,-215.815369,341.770203,-447.838074,-1256.756104,514,869,1};
-window[] = {2,-1,-1,-32000,-32000,1036,1798,3211,174,3,532};
+globals[] = {0.000000,0,0,0,0,640,480,1,269,6316128,1,-215.815369,341.770203,-447.838074,-1256.756104,514,885,1};
+window[] = {2,-1,-1,-1,-1,1087,225,1638,225,3,532};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -39,7 +39,7 @@ class FSM
                         itemno = 0;
                         init = /*%FSM<STATEINIT""">*/"private[""_longTimer"",""_shortTimer"",""_debug""];" \n
                          "" \n
-                         "_debug = true;" \n
+                         "_debug = false;" \n
                          "if (_debug) then { " \n
                          "	diag_log ""BRV: REPORT Init"";" \n
                          "	diag_log format [""BRV: dzn_brv_allowLogAI=%1"", dzn_brv_allowLogAI]; " \n
