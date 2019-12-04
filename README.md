@@ -50,6 +50,8 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 - Isla Duala
 - Lingor / Dingor
 - Helvantis
+- Vt5
+- Ruha
 
 Screenshots:
 <br />http://puu.sh/mdzFH/ef9dc68a5f.png
