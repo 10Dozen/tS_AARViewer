@@ -227,7 +227,7 @@ function goToList() {
  	)
 }
 
-function showLoadingFailed() {
+function onFailedAARLoad() {
 	$( "#header-status-text" ).html( eStyle.headerStatus.file_not_available.text );
     $( "#header-status" ).css( "background-color", eStyle.headerStatus.file_not_available.bgColor );
     setTimeout(switchToOffline, 3000);
@@ -241,46 +241,57 @@ function switchToOffline() {
 	});
 }
 
-function startViewer() {
-    $( "#header-choose-file-btn" ).hide();
-	if (localStorage.getItem('aarTitle') == null) {
-		showLoadingFailed();
-	} else {
-		document.title = "AAR - " + localStorage.getItem('aarTitle');
-		$( "#header-status-text" ).html( eStyle.headerStatus.onload.text );
-		$( "#header-status" ).css( "background-color", eStyle.headerStatus.onload.bgColor );
-
-		var aarLoadScript = document.createElement('script');
-        aarLoadScript.src = localStorage.getItem('aarLink');
-
-        aarLoadScript.addEventListener(
-        	'error'
-      		,showLoadingFailed
-      		,false
-        );
-
-        aarLoadScript.addEventListener(
-			'load'
- 			,function() {
- 				$( "#uploader" ).remove();
- 				$( "#header-choose-file-btn" ).remove();
-
- 				aarData = aarFileData;
- 				showAARDetails();
-                setTimeout( function() {
-                	$( "#header-status-text" ).html( "Готово!" );
-                	setTimeout( function() {
-                		$( "#header-status-text" ).html( "" );
-                	} , 1500);
-                } , 500);
- 			}
-			,false
-        );
-
-        document.body.appendChild(aarLoadScript);
+function onSuccessAARLoad() {
+	$( "#uploader" ).remove();
+	$( "#header-choose-file-btn" ).remove();
+	
+	aarData = aarFileData;
+	
+	document.title = "AAR - " + aarData.metadata.name;
+	$( "#header-status-text" ).html( eStyle.headerStatus.onload.text );
+	$( "#header-status" ).css( "background-color", eStyle.headerStatus.onload.bgColor );
+	
+	showAARDetails();
+	
+	setTimeout( function() {
+		$( "#header-status-text" ).html( "Готово!" );
+		setTimeout( function() { $( "#header-status-text" ).html( "" ); } , 1500);
+	});
+	
+	// If was opened from storage link - update URL with path
+	if (localStorage.getItem('aarLink') != null) {
+		let url = window.location.protocol + "//" + window.location.host + window.location.pathname + '?aar=' + encodeURI(localStorage.getItem('aarLink'));
+		window.history.pushState({ path: url }, '', url);
 	}
 }
-			
+
+function loadAAR(path) {
+	var aarLoadScript = document.createElement('script');
+    aarLoadScript.src = path;
+	aarLoadScript.addEventListener('error', onFailedAARLoad, false);
+	aarLoadScript.addEventListener('load', onSuccessAARLoad, false);
+	document.body.appendChild(aarLoadScript);
+}
+
+function startViewer() {
+    $( "#header-choose-file-btn" ).hide();
+	
+	let aarPath = "";
+	const urlParams = new URLSearchParams(window.location.search);
+	if (urlParams.has('aar')) {
+		aarPath = decodeURI(urlParams.get('aar'));
+		localStorage.removeItem('aarLink');
+	} else {
+		if (localStorage.getItem('aarLink') != null) {
+			aarPath = localStorage.getItem('aarLink');
+		} else {
+			onFailedAARLoad();
+		};
+	};
+	
+	loadAAR(aarPath);
+}
+
 // getMapParams(aarData.metadata.island)
 function getMapParams(name) {
 	var params;	

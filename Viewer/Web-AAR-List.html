@@ -81,9 +81,13 @@
 		
 		<script>
 			function openFromList(i) {
+				/*
 				localStorage.setItem('aarTitle', aarConfig[i].title);	
 				localStorage.setItem('aarLink', aarConfig[i].link);
 				window.open("Web-AAR-Viewer.html","_self")
+				*/
+				
+				window.open("Web-AAR-Viewer.html?aar=" + encodeURI(aarConfig[i].link),"_self");
 			};
 			
 			function showNoItems() {
