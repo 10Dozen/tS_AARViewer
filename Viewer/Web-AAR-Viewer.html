@@ -3,10 +3,10 @@
 	<head>
 		<meta charset="utf-8">
 		<title>tSF AAR Viewer</title>
-		
+
 		<link rel="stylesheet" href="src/css/jquery-ui.css">
 		<link rel="stylesheet" href="src/css/baarv_viewer.css">
-		
+
 		<script src="config.ini"></script>
 		<script src="src/js/jquery.min.js"></script>
 		<script src="src/js/jquery-ui.min.js"></script>
@@ -18,7 +18,7 @@
 				display: inline;
 				font-size: 12px;
 			}
-			
+
 			#header-status-text {
 				padding: 0px 20px;
 			}
@@ -26,23 +26,23 @@
 	</head>
 	<body>
 		<div class="panzoom"></div>
-		
+
 		<div id="player-line">
 			<button id="player-step-backward" onClick="reportPrevStep()">Prev second</button>
 			<button id="player-step-play" onClick="playReportAuto()">Play report</button>
 			<button id="player-step-forward" onClick="reportNextStep()">Next second</button>
 			<select name="player-speed" id="player-speed">
 				<optgroup label="Play speed">
-					<option value="1">x1</option>
-					<option value="2">x2</option>
-					<option value="5">x5</option>
-					<option value="10">x10</option>
-					<option value="50">x50</option>
+					<option value="1">x0.5</option>
+					<option value="2">x1</option>
+					<option value="10">x5</option>
+					<option value="20">x10</option>
+					<option value="100">x50</option>
 				</optgroup>
 			</select>
 			<div id="slider"></div>
 			<div id="player-indicator">
-				<label id="player-step"><span>0 sec</span> / 10 sec</label>					
+				<label id="player-step"><span>0 sec</span> / 10 sec</label>
 			</div>
 			<button id="player-toggleAA" class="player-misc-buttons" onClick="toggleAA()">Toggle Antialiasing</button>
 			<button id="player-info" class="player-misc-buttons" onClick="whereAreUnits()">Find units</button>
@@ -73,7 +73,7 @@
 				<label id="header-status-text">Загрузка...</label>
 			</div>
 		</div>
-		
+
 		<div id="result-form">
 			<ul>
 				<li>
@@ -107,14 +107,14 @@
 						Описание:
 					</div>
 					<div class="dl-3" id="mission-desc" ></div>
-				</li>				
+				</li>
 				<li>
 					<div class="dl-1">
 						<h4>Игроки</h4>
 					</div>
 					<ul id="player-list"></ul>
 				</li>
-				<br /><hr />				
+				<br /><hr />
 				<li>
 					<div class="start-btn" onClick="initAAR()">► СМОТРЕТЬ</div>
 				</li>
