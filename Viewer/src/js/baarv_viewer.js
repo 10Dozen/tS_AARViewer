@@ -790,22 +790,22 @@ function playReportStep (step, forced) {
 function playReportAuto () {
 	if (!aarPlaying) {
 		startReport();
-		var autoPlayTicks = 0;
+		let frameTime = 100; // 10 fps
+		var accumulator = aarCurrentTime;
 		aarAutoStepper = setInterval(
 			function () {
-				autoPlayTicks++;
 				let speed = $( "#player-speed" ).val();
-				if ((autoPlayTicks * speed) % 10 != 0) {
-					return;
-				}
-				if (aarCurrentTime != aarData.metadata.time) {
-					reportNextStep();
+				let delta = speed * frameTime / 2000;
+				accumulator = Math.min(accumulator + delta, aarData.metadata.time);
+				if (accumulator <= aarData.metadata.time) {
+					aarCurrentTime = Math.floor(accumulator);
+					reportCurrentStep();
 				} else {
 					clearInterval( aarAutoStepper );
 					stopReport();
 				}
 			}
-			, 200
+			, frameTime
 		);
 	} else {
 		stopReport();
@@ -824,21 +824,23 @@ function stopReport() {
 	clearInterval( aarAutoStepper );
 };
 
-function reportNextStep () {
+function reportCurrentStep () {
+	$( "#slider" ).slider({ value: aarCurrentTime });
+	$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
+	playReportStep ( aarCurrentTime, false );
+};
+
+function reportNextStep() {
 	if ( aarCurrentTime + 1 <= aarData.metadata.time ) {
-		aarCurrentTime = aarCurrentTime + 1;
-		$( "#slider" ).slider({ value: aarCurrentTime });
-		$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
-		playReportStep ( aarCurrentTime, false );
+		aarCurrentTime = aarCurrentTime - 1;
+		reportCurrentStep();
 	}
 };
 
-function reportPrevStep () {
+function reportPrevStep() {
 	if ( aarCurrentTime - 1 >= 0 ) {
 		aarCurrentTime = aarCurrentTime - 1;
-		$( "#slider" ).slider({ value: aarCurrentTime });
-		$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
-		playReportStep ( aarCurrentTime, false );
+		reportCurrentStep();
 	}
 };
 
