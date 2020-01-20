@@ -832,7 +832,7 @@ function reportCurrentStep () {
 
 function reportNextStep() {
 	if ( aarCurrentTime + 1 <= aarData.metadata.time ) {
-		aarCurrentTime = aarCurrentTime - 1;
+		aarCurrentTime = aarCurrentTime + 1;
 		reportCurrentStep();
 	}
 };
