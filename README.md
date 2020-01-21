@@ -1,5 +1,5 @@
 # Tactical Shift's AAR Viewer
-Version: 1.1
+Version: 1.2
 
 ## What is it?
 This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses only JavaScript, so there are only 2 requirements: modern browser (e.g. Google Chrome) and good graphic card (i guess, you have one if you are playing Arma 3).
@@ -57,6 +57,9 @@ Screenshots:
 <br />http://puu.sh/mdzFH/ef9dc68a5f.png
 <br />http://puu.sh/mdzGh/7169d93546.png
 <br />http://puu.sh/mdzIa/f4055a3d1b.png
+
+Now it's possible to share link to AAR by URI param:
+http://aar.tacticalshift.ru/Web-AAR-Viewer.html?aar=aars/AAR.2020-01-18.DYA.M1-_CO26_Unpredictable_Contract_1B.txt
 
 ### How to use it?
 - Create a mission and add Logger script to it.
