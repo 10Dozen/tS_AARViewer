@@ -195,11 +195,11 @@ var eStyle = {
 	"headerStatus": {
 		"default": {
 			"text": "Open AAR file to play...",
-			"bgColor": "#5a5a5a"			
+			"bgColor": "#5a5a5a"
 		}
 		,"onload": {
 			"text": "Загрузка...",
-           "bgColor": "#5a5a5a"
+           "		bgColor": "#5a5a5a"
 		}
 		,"success": {
 			"text": "Click 'Play' to start!",
@@ -267,15 +267,13 @@ function onSuccessAARLoad() {
 
 function loadAAR(path) {
 	var aarLoadScript = document.createElement('script');
-    aarLoadScript.src = path;
+	aarLoadScript.src = path;
 	aarLoadScript.addEventListener('error', onFailedAARLoad, false);
 	aarLoadScript.addEventListener('load', onSuccessAARLoad, false);
 	document.body.appendChild(aarLoadScript);
 }
-
 function startViewer() {
     $( "#header-choose-file-btn" ).hide();
-	
 	let aarPath = "";
 	const urlParams = new URLSearchParams(window.location.search);
 	if (urlParams.has('aar')) {
@@ -294,17 +292,17 @@ function startViewer() {
 
 // getMapParams(aarData.metadata.island)
 function getMapParams(name) {
-	var params;	
+	var params;
 	for (var i = 0; i < maps.length; i++) {
 		if (maps[i][0].toLowerCase() == name.toLowerCase()) {
 			params = maps[i][1];
 		};
-	};	
-	if (!params) { 
-		console.log("Island config not found!"); 
+	};
+	if (!params) {
+		console.log("Island config not found!");
 		params = { size: 20480, scale: 1, tiles: 1, img: "src/maps/NoTerrain_*.png" };
 	};
-	
+
 	return params;
 };
 
@@ -315,7 +313,7 @@ function getScaledVal(value) {
 
 // Open file
 var openFile = function(event) {
-	$( "#result-form" ).css( "top", "-1000px" );	
+	$( "#result-form" ).css( "top", "-1000px" );
 	$( "#header-status" ).css( "background-color", eStyle.headerStatus.default.bgColor );
 	$( "#header-status-text" ).html( eStyle.headerStatus.default.text );
 
@@ -342,7 +340,7 @@ var openFile = function(event) {
 };
 
 function showAARDetails() {
-	$( "#result-form" ).css( "top", "75px" );	
+	$( "#result-form" ).css( "top", "75px" );
 	$( "#mission-name" ).html( "<h3>" + aarData.metadata.name + "</h3>" );
 	$( "#mission-island" ).html( aarData.metadata.island );
 	$( "#mission-date" ).html( aarData.metadata.date );
@@ -382,13 +380,13 @@ function toggleIconSrc() {
 	if ( $( "#icon-src-switcher-pin" ).css( "float" ) == "left" ) {
 		aarIconSrc = "png";
 		$( "#icon-src-switcher-pin" ).css( "float", "right" );
-		$( "#icon-src-switcher-pin" ).css( "background-color", "#6798D2" );			
+		$( "#icon-src-switcher-pin" ).css( "background-color", "#6798D2" );
 		$( "#icon-src-switcher" ).css( "background-color", "#9BC34E" );
 	} else {
 		aarIconSrc = "svg";
 		$( "#icon-src-switcher-pin" ).css( "float", "left" );
 		$( "#icon-src-switcher-pin" ).css( "background-color", "#9BC34E" );
-		$( "#icon-src-switcher" ).css( "background-color", "#6798D2" );		
+		$( "#icon-src-switcher" ).css( "background-color", "#6798D2" );
 	}
 	$( "#icon-src-switcher  > label" ).html( aarIconSrc.toUpperCase() );
 };
@@ -401,10 +399,10 @@ function getTimeLabel(t) {
 	var timeSeconds = time - timeHours*60*60 - timeMinutes*60;
 	var output = "";
 	function formatTimeNum(t,l) {
-		var output = t + " " + l + " ";		
-		if (t > 0) { 
-			if (t < 10) {output = "0" + output;} 
-		} else { 
+		var output = t + " " + l + " ";
+		if (t > 0) {
+			if (t < 10) {output = "0" + output;}
+		} else {
 			if (l == "s") {
 				output = "00 s"
 			} else {
@@ -412,15 +410,15 @@ function getTimeLabel(t) {
 			}
 		}
 		return output
-	}	
+	}
 	return formatTimeNum(timeHours,"h") + formatTimeNum(timeMinutes,"m") + formatTimeNum(timeSeconds,"s")
 }
 
 // Init AAR
-function initAAR() {	
+function initAAR() {
 	$( "#result-form" ).remove();
 	$( "#header" ).remove();
-	
+
 	$( "#player-step" ).html( "<span>0 s</span> / " + getTimeLabel(aarData.metadata.time) );
 	$( "#slider").slider( "option", "max", aarData.metadata.time );
 	$( "#player-line" ).css( "top", "12px" );
@@ -428,14 +426,14 @@ function initAAR() {
 	aarMapParam = getMapParams(aarData.metadata.island);
 	drawMap(aarMapParam);
 	panzoomInit();
-	
+
 	// Spawn
 	// Spawn Vehicles
 	var vehs = aarData.metadata.objects.vehs;
 	for (var i = 0; i < vehs.length; i++) {
 		createObject( vehs[i], "veh" );
 	}
-	
+
 	// Spawn Units
 	var units = aarData.metadata.objects.units;
 	for (var i = 0; i < units.length; i++) {
@@ -533,7 +531,7 @@ var panzoomInit = function() {
 	var $panzoom = $('.panzoom').panzoom();
 	$('.panzoom').panzoom("option", {
 		minScale: 0.1,
-		maxScale: 4		
+		maxScale: 4
 	});
 
 	$('.panzoom').on('panzoomzoom', function(e, panzoom , scale, opts) {
@@ -572,9 +570,9 @@ function getUnitMetadata(id) {
 		if ( aarData.metadata.objects.units[i][0] == id ) {
 			output = aarData.metadata.objects.units[i];
 			i = aarData.metadata.objects.units.length;
-		}		
+		}
 	}
-	return output;	
+	return output;
 }
 
 function getVehicleMetadata(id) {
@@ -583,7 +581,7 @@ function getVehicleMetadata(id) {
 		if ( aarData.metadata.objects.vehs[i][0] == id ) {
 			output = aarData.metadata.objects.vehs[i];
 			i = aarData.metadata.objects.vehs.length;
-		}		
+		}
 	}
 	return output
 }
@@ -591,8 +589,8 @@ function getVehicleMetadata(id) {
 function isPlayer(id) {
 	var result = false;
 	if ( (getUnitMetadata(id))[3] ) { result = true };
-	
-	return result	
+
+	return result
 }
 
 // Actors
@@ -668,49 +666,49 @@ function processUnit(data,type) {
 
 	var inCargo, owner, cargo
 	if (type == "unit") {
-		inCargo = data[5];	
+		inCargo = data[5];
 		if (inCargo == -1) {
 			$( unit + " > img" ).rotate( dir );
 			$( unit ).css({"color": "rgba(0, 0, 0, " + LDM.opacity.unit + ")"});
 			$( unit ).css({"visibility": ""});
-			setGridPos(unit, data);		
+			setGridPos(unit, data);
 		} else {
 			$( unit ).css({ "left": "-20px","top": "-20px", "visibility": "hidden" });
 		}
-		
+
 		if (alive < 1) {
 			var typePlayer = "";
-			if (isPlayer(id)) {			
+			if (isPlayer(id)) {
 				typePlayer = "player_";
-			}			
+			}
 			$( unit + "> img" ).attr( "src", "src/icons/dead_" + typePlayer + "unit." + aarIconSrc );
 			$( unit ).css({
 				"color": "rgba(0, 0, 0, " +  LDM.opacity.vehEmpty + ")",
 				"z-index": 0
 			});
 		} else {
-			$( unit + "> img" ).attr( "src", "src/icons/" + $( unit ).attr("side") + "_" + $( unit ).attr("type") + "." + aarIconSrc );			
+			$( unit + "> img" ).attr( "src", "src/icons/" + $( unit ).attr("side") + "_" + $( unit ).attr("type") + "." + aarIconSrc );
 		}
 	} else {
 		owner = data[5];
 		cargo = data[6];
 		if (owner > -1 || cargo > -1) {
 			var unitData = getUnitMetadata(owner);
-			var unitName = $( unit ).attr("name") + " (" + unitData[1] + ")";			
+			var unitName = $( unit ).attr("name") + " (" + unitData[1] + ")";
 			var unitSide = unitData[2];
-			if (cargo > 0) { unitName = $( unit ).attr("name") + " (" + unitData[1] + " +" + cargo + ")"; }						
-			$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh." + aarIconSrc )			
+			if (cargo > 0) { unitName = $( unit ).attr("name") + " (" + unitData[1] + " +" + cargo + ")"; }
+			$( unit + "> img" ).attr( "src", "src/icons/" + unitSide + "_veh." + aarIconSrc )
 			$( unit + "> span").html( unitName );
 			$( unit ).css({"color": "rgba(0, 0, 0, " + LDM.opacity.veh + ")"});
 		} else {
-			$( unit + "> img" ).attr( "src", "src/icons/unknown_veh." + aarIconSrc )			
+			$( unit + "> img" ).attr( "src", "src/icons/unknown_veh." + aarIconSrc )
 			$( unit + "> span").html(  getVehicleMetadata(id)[1] );
 			$( unit ).css({"color": "rgba(0, 0, 0, " + LDM.opacity.vehEmpty + ")"});
 		}
 
 		$( unit + " > img" ).rotate( dir );
 		setGridPos(unit, data);
-		
+
 		if (alive < 1) { $( unit + "> img" ).attr( "src", "src/icons/dead_veh." + aarIconSrc ) }
 	}
 };
@@ -782,7 +780,7 @@ function playReportStep (step, forced) {
 		return;
 	}
 
-	for (var i = 0; i < units.length; i++) {		
+	for (var i = 0; i < units.length; i++) {
 		processUnit( units[i], "unit" );
 	};
 	for (var i = 0; i < vehs.length; i++) {
@@ -801,16 +799,22 @@ function playReportStep (step, forced) {
 function playReportAuto () {
 	if (!aarPlaying) {
 		startReport();
+		let frameTime = 100; // 10 fps
+		var accumulator = aarCurrentTime;
 		aarAutoStepper = setInterval(
 			function () {
-				if (aarCurrentTime != aarData.metadata.time) {				
-					reportNextStep();
+				let speed = $( "#player-speed" ).val();
+				let delta = speed * frameTime / 2000;
+				accumulator = Math.min(accumulator + delta, aarData.metadata.time);
+				if (accumulator <= aarData.metadata.time) {
+					aarCurrentTime = Math.floor(accumulator);
+					reportCurrentStep();
 				} else {
 					clearInterval( aarAutoStepper );
 					stopReport();
 				}
 			}
-			, 2000/( $( "#player-speed" ).val() )
+			, frameTime
 		);
 	} else {
 		stopReport();
@@ -829,21 +833,23 @@ function stopReport() {
 	clearInterval( aarAutoStepper );
 };
 
-function reportNextStep () {
-	if ( aarCurrentTime + 1 <= aarData.metadata.time ) {		
+function reportCurrentStep () {
+	$( "#slider" ).slider({ value: aarCurrentTime });
+	$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
+	playReportStep ( aarCurrentTime, false );
+};
+
+function reportNextStep() {
+	if ( aarCurrentTime + 1 <= aarData.metadata.time ) {
 		aarCurrentTime = aarCurrentTime + 1;
-		$( "#slider" ).slider({ value: aarCurrentTime });
-		$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
-		playReportStep ( aarCurrentTime, false );
+		reportCurrentStep();
 	}
 };
 
-function reportPrevStep () {
+function reportPrevStep() {
 	if ( aarCurrentTime - 1 >= 0 ) {
 		aarCurrentTime = aarCurrentTime - 1;
-		$( "#slider" ).slider({ value: aarCurrentTime });
-		$( "#player-step > span" ).html( getTimeLabel(aarCurrentTime) );
-		playReportStep ( aarCurrentTime, false );
+		reportCurrentStep();
 	}
 };
 
@@ -876,7 +882,7 @@ function whereAreUnits() {
                 + "</svg>"
             );
         }
-	}				
+	}
 }
 
 var isAA = false;
@@ -902,7 +908,8 @@ $( document ).ready(function () {
 		}
 	});
 	$( "#player-step > span" ).html( "0 s" );
-	
+
+	$( "#player-speed" ).val(50);
 	$( "#player-speed" ).selectmenu();
 	$( "#player-step-backward" ).button({text: false,icons: { primary: "ui-icon-seek-prev" }}).click(function() { stopReport(); });
 	$( "#player-step-forward" ).button({text: false,icons: {primary: "ui-icon-seek-next"}}).click(function() { stopReport(); });
