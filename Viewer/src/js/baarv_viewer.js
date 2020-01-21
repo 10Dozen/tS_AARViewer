@@ -1,3 +1,40 @@
+
+var appProperties = {
+	"headerStatus": {
+		"default": {
+			"text": "Open AAR file to play...",
+			"bgColor": "#5a5a5a"
+		}
+		,"onload": {
+			"text": "Загрузка...",
+           "bgColor": "#5a5a5a"
+		}
+		,"success": {
+			"text": "Click 'Play' to start!",
+			"bgColor": "rgb(155, 195, 78)"
+		}
+		,"failed": {
+			"text": "File is not AAR file!",
+			"bgColor": "#AF4E4E"
+		}
+		,"file_not_available": {
+			"text": "AAR failed to download...",
+			"bgColor": "#AF4E4E"
+		}
+		,"offline_mode": {
+			"text": "Select AAR file to play...",
+			"bgColor": "#5a5a5a"
+		}
+		, "ready": {
+			"text": "Готово!"
+		}
+	},
+	"links": {
+		"aarList": "http://aar.tacticalshift.ru",
+		"aarViewer": "http://aar.tacticalshift.ru/Web-AAR-Viewer.html"
+	}
+}
+
 var aarData = {};
 var aarCurrentTime = 0;
 var aarPlaying = false;
@@ -190,54 +227,25 @@ var SMM = {
 	}
 };
 
-// showSmallState
-var eStyle = {
-	"headerStatus": {
-		"default": {
-			"text": "Open AAR file to play...",
-			"bgColor": "#5a5a5a"
-		}
-		,"onload": {
-			"text": "Загрузка...",
-           "		bgColor": "#5a5a5a"
-		}
-		,"success": {
-			"text": "Click 'Play' to start!",
-			"bgColor": "rgb(155, 195, 78)"
-		}
-		,"failed": {
-			"text": "File is not AAR file!",
-			"bgColor": "#AF4E4E"
-		}
-		,"file_not_available": {
-			"text": "AAR failed to download...",
-			"bgColor": "#AF4E4E"
-		}
-		,"offline_mode": {
-			"text": "Select AAR file to play...",
-			"bgColor": "#5a5a5a"
-		}
-	}
-}
 
 function goToList() {
  	window.open(
- 		window.location.href == "http://aar.tacticalshift.ru/Web-AAR-Viewer.html" ? "http://aar.tacticalshift.ru" : "Web-AAR-List.html"
+ 		window.location.href == appProperties.links.arrViewer ? appProperties.links.aarList : "Web-AAR-List.html"
  		,"_self"
  	)
 }
 
 function onFailedAARLoad() {
-	$( "#header-status-text" ).html( eStyle.headerStatus.file_not_available.text );
-    $( "#header-status" ).css( "background-color", eStyle.headerStatus.file_not_available.bgColor );
+	$( "#header-status-text" ).html( appProperties.headerStatus.file_not_available.text );
+    $( "#header-status" ).css( "background-color", appProperties.headerStatus.file_not_available.bgColor );
     setTimeout(switchToOffline, 3000);
 };
 
 function switchToOffline() {
 	$( document ).ready(function () {
 	    $( "#header-choose-file-btn" ).show();
-		$( "#header-status-text" ).html( eStyle.headerStatus.offline_mode.text );
-        $( "#header-status" ).css( "background-color", eStyle.headerStatus.offline_mode.bgColor );
+		$( "#header-status-text" ).html( appProperties.headerStatus.offline_mode.text );
+        $( "#header-status" ).css( "background-color", appProperties.headerStatus.offline_mode.bgColor );
 	});
 }
 
@@ -248,13 +256,13 @@ function onSuccessAARLoad() {
 	aarData = aarFileData;
 	
 	document.title = "AAR - " + aarData.metadata.name;
-	$( "#header-status-text" ).html( eStyle.headerStatus.onload.text );
-	$( "#header-status" ).css( "background-color", eStyle.headerStatus.onload.bgColor );
+	$( "#header-status-text" ).html( appProperties.headerStatus.onload.text );
+	$( "#header-status" ).css( "background-color", appProperties.headerStatus.onload.bgColor );
 	
 	showAARDetails();
 	
 	setTimeout( function() {
-		$( "#header-status-text" ).html( "Готово!" );
+		$( "#header-status-text" ).html( appProperties.headerStatus.ready.text );
 		setTimeout( function() { $( "#header-status-text" ).html( "" ); } , 1500);
 	});
 	
@@ -310,12 +318,11 @@ function getScaledVal(value) {
 	return Math.round(value / aarMapParam.scale)
 };
 
-
 // Open file
 var openFile = function(event) {
 	$( "#result-form" ).css( "top", "-1000px" );
-	$( "#header-status" ).css( "background-color", eStyle.headerStatus.default.bgColor );
-	$( "#header-status-text" ).html( eStyle.headerStatus.default.text );
+	$( "#header-status" ).css( "background-color", appProperties.headerStatus.default.bgColor );
+	$( "#header-status-text" ).html( appProperties.headerStatus.default.text );
 
 	var reader = new FileReader();
 
@@ -326,13 +333,13 @@ var openFile = function(event) {
         	console.log("Parsed!");
 
         	$( "#header-status-text" ).html( "Opened!" );
-            $( "#header-status" ).css( "background-color", eStyle.headerStatus.success.bgColor );
-            $( "#header-status-text" ).html( eStyle.headerStatus.success.text );
+            $( "#header-status" ).css( "background-color", appProperties.headerStatus.success.bgColor );
+            $( "#header-status-text" ).html( appProperties.headerStatus.success.text );
             showAARDetails();
 		} catch (e) {
 			console.log("Error occured during parsing!");
-        	$( "#header-status" ).css( "background-color", eStyle.headerStatus.failed.bgColor );
-        	$( "#header-status-text" ).html( eStyle.headerStatus.failed.text );
+        	$( "#header-status" ).css( "background-color", appProperties.headerStatus.failed.bgColor );
+        	$( "#header-status-text" ).html( appProperties.headerStatus.failed.text );
 		}
 	};
 
