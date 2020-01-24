@@ -17,9 +17,9 @@ dzn_brv_getLogTime = {
 	_time max 0
 };
 
-dzn_brv_getMissionSummary = {	
+dzn_brv_getMissionSummary = {
 	if (!isNil "tSF_SummaryText" && { typename tSF_SummaryText == "STRING" }) then {
-		tSF_SummaryText;		
+		tSF_SummaryText;
 	} else {
 		""
 	}
@@ -45,52 +45,59 @@ dzn_brv_checkVehicleCategory = {
 	private _r = false;
 	{
 		if (_this isKindOf _x) exitWith { _r = true; };
-	} forEach dzn_brv_allowedVehiclesCategories;	
+	} forEach dzn_brv_allowedVehiclesCategories;
 	_r
 };
 
 dzn_brv_addAttackEH = {
+	if (isPlayer _this) exitWith {};
+
 	_this addEventHandler [
 		"Fired"
 		, {
+			if (dzn_brv_finished) exitWith {};
+			params ["_unit", "", "", "", "", "", "_proj"];
 			private _logTime = call dzn_brv_getLogTime;
 			
-			if (!isNil { (_this select 0) getVariable format ["dzn_brv_av%1", _logTime] }) exitWith {};
-			(_this select 0) setVariable [ format ["dzn_brv_av%1", _logTime], true ];
+			if (!isNil { _unit getVariable format ["dzn_brv_av%1", _logTime] }) exitWith {};
+			_unit setVariable [format ["dzn_brv_av%1", _logTime], true];
 			
-			[ _this select 0, _this select 6, _logTime ] spawn {
+			[_unit, _proj, _logTime] spawn {
 				params["_unit", "_proj", "_timelabel"];
-				private ["_from", "_to", "_dist"];
 				
-				_from = getPosASL _unit;
-				_to = getPosASL _proj;
-				_dist = 0;
+				private _from = getPosASL _unit;
+				private _to = getPosASL _proj;
+				
 				waitUntil {
-					if !(isNull _proj) then { 
-						_to = getPosASL _proj;
-						_dist = _from distance2d _to;
-					};
-					isNull _proj || { _dist > dzn_brv_attackVectorMaxDistance }
+					if (isNull _proj) exitWith { true };
+					_to = getPosASL _proj;
+					false
 				};
 				
-				diag_log format [
-					"<AAR-%6><%1><av>[%2,%3,%4,%5]</av></%1></AAR-%6>"
-					, _timelabel
-					, round(_from select 0)
-					, round(_from select 1)
-					, round(_to select 0)
-					, round(_to select 1)
-					, dzn_brv_guid
-				];
+				waitUntil { (call dzn_brv_getLogTime) > (_timelabel + 2) };
 				
-				waitUntil { sleep 0.5; (call dzn_brv_getLogTime) > (_timelabel + 2) };				
-				_unit setVariable [ format ["dzn_brv_av%1", _timelabel], nil ];
+				_unit setVariable [format ["dzn_brv_av%1", _timelabel], nil];
+				[_timelabel, round(_from # 0), round(_from # 1), round(_to # 0), round(_to # 1)] call dzn_brv_logAV;
 			};
 		}
 	];
 };
 
-dzn_brv_collectMetadata = {	
+dzn_brv_logAV = {
+	params ["_timelabel","_fromx","_fromy","_tox","_toy"];
+	
+	diag_log format [
+		"<AAR-%6><%1><av>[%2,%3,%4,%5]</av></%1></AAR-%6>"
+		, _timelabel
+		, _fromx
+		, _fromy
+		, _tox
+		, _toy
+		, dzn_brv_guid
+	];
+};
+
+dzn_brv_collectMetadata = {
 	// Process units and vehicles and add them to log list
 	// Excludes AI units accordin to Settigns
 	private["_logTime","_units","_vehs","_name"];
@@ -267,10 +274,12 @@ dzn_brv_getVehiceCargoAndOwnerId = {
 	_crew = crew _veh;
 	if ((crew _veh) isEqualTo []) exitWith { [-1, -1] };
 	
-	_ownerID = (_crew select 0) getVariable ["dzn_brv_id",-1];	
+	_ownerID = (_crew select 0) getVariable ["dzn_brv_id",-1];
 	_cargo = ({alive _x} count (_crew)) - 1;
 	if (_cargo == 0) then { _cargo = -1 };
 	
 	[_ownerID, _cargo]
 };
 
+// Publish functions for clients
+publicVariable "dzn_brv_getLogTime";
