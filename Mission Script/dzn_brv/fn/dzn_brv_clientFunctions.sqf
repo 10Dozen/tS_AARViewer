@@ -13,7 +13,7 @@ dzn_brv_fnc_sendAttackVectorData = {
 dzn_brv_fnc_trackProjectile = {
 	params ["_unit", "_proj", "_timelabel"];
 	private _from = getPosASL _unit;
-	private _to = [];
+	private _to = _from getPos [5, getDir _unit];
 	
 	waitUntil {
 		if (isNull _proj) exitWith { true };
