@@ -5,6 +5,7 @@ if (isMultiplayer && hasInterface) then {
 	// Not a Server for MP Game
 	call compile preprocessfilelinenumbers "dzn_brv\fn\dzn_brv_clientFunctions.sqf";
 	[player] call dzn_brv_fnc_addFiredEH;
+	player addEventHandler ["Respawn", { [player] call dzn_brv_fnc_addFiredEH; }];
 };
 if (!isServer) exitWith {};
 
