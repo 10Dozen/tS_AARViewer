@@ -281,5 +281,3 @@ dzn_brv_getVehiceCargoAndOwnerId = {
 	[_ownerID, _cargo]
 };
 
-// Publish functions for clients
-publicVariable "dzn_brv_getLogTime";

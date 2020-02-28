@@ -4,17 +4,15 @@ if ("dzn_brv_enabled" call BIS_fnc_getParamValue == 0) exitWith {};	// Not enabl
 if (isMultiplayer && hasInterface) then {
 	// Not a Server for MP Game
 	call compile preprocessfilelinenumbers "dzn_brv\fn\dzn_brv_clientFunctions.sqf";
-	[player] call dzn_brv_fnc_addFiredEH;
-	player addEventHandler ["Respawn", { [player] call dzn_brv_fnc_addFiredEH; }];
+	[player] spawn dzn_brv_fnc_addClientEH;
 };
 if (!isServer) exitWith {};
 
 // ************ SETTINGS ***************
 
 // Enable/Disable AI logging
-dzn_brv_allowLogAI			= ("dzn_brv_enabledAILog" call BIS_fnc_getParamValue == 1); // Use current mission settings
-//dzn_brv_allowLogAI			= false; // Hardcoded value
-dzn_brv_disableOnAllDead		= ("dzn_brv_disableOnAllDead" call BIS_fnc_getParamValue == 1);
+dzn_brv_allowLogAI			= true;
+dzn_brv_disableOnAllDead		= true;
 
 dzn_brv_playerLogInterval 		= 1; // seconds (min: 1 sec), accuracy of player's logging
 dzn_brv_nonPlayerLogInterval		= 3; // seconds (min: 1 sec), accurcay of vehicles and AI (if enabled) logging
@@ -53,10 +51,12 @@ dzn_brv_onEachFrameEH = addMissionEventHandler ["EachFrame", {
 		// Wait for mission start 
 		if (_state == "BRIEFING READ") then {
 			dzn_brv_started = true;
-			dzn_brv_timeLabelInit	= if (isMultiplayer) then { round(serverTime) } else { round(time) };
+			dzn_brv_timeLabelInit = if (isMultiplayer) then { round(serverTime) } else { round(time) };
 			[] execFSM "dzn_brv\FSMs\dzn_brv_loop.fsm";
 			
+			// Publish functions & vars for clients
 			publicVariable "dzn_brv_started";
+			publicVariable "dzn_brv_timeLabelInit";
 			diag_log "GAME STARTED - START AAR LOGGING";
 		};
 	} else {
