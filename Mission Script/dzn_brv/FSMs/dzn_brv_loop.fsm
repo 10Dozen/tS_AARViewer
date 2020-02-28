@@ -2,7 +2,7 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"Start",0,250,-50.000000,-1175.000000,50.000000,-1125.000000,0.000000,"Start"};
-item1[] = {"true",4,218,-50.000000,-1075.000000,50.000000,-1025.000000,0.000000,"true"};
+item1[] = {"Started",4,218,-50.000000,-1075.000000,50.000000,-1025.000000,0.000000,"Started"};
 item2[] = {"Collect_Metedata",2,250,-50.000000,-1000.000000,50.000000,-950.000000,0.000000,"Collect Metedata"};
 item3[] = {"Player_Timer",4,218,-50.000000,-925.000000,50.000000,-875.000000,0.000000,"Player Timer"};
 item4[] = {"All_Units_Timer",4,218,100.000000,-925.000000,200.000000,-875.000000,6.000000,"All Units Timer"};
@@ -12,6 +12,8 @@ item7[] = {"",7,210,146.000000,-754.000000,154.000000,-746.000000,0.000000,""};
 item8[] = {"",7,210,-129.000000,-754.000000,-121.000000,-746.000000,0.000000,""};
 item9[] = {"",7,210,-4.000000,-754.000000,4.000000,-746.000000,0.000000,""};
 item10[] = {"",7,210,-129.000000,-1054.000000,-121.000008,-1046.000000,0.000000,""};
+item11[] = {"Finished_",4,218,-300.000000,-1075.000000,-200.000000,-1025.000000,2.000000,"Finished?"};
+item12[] = {"End",1,250,-300.000000,-675.000000,-200.000000,-625.000000,0.000000,"End"};
 link0[] = {0,1};
 link1[] = {1,2};
 link2[] = {2,3};
@@ -24,8 +26,10 @@ link8[] = {7,9};
 link9[] = {8,10};
 link10[] = {9,8};
 link11[] = {10,1};
-globals[] = {0.000000,0,0,0,0,640,480,1,269,6316128,1,-215.815369,341.770203,-447.838074,-1256.756104,514,885,1};
-window[] = {2,-1,-1,-1,-1,1087,225,1638,225,3,532};
+link12[] = {10,11};
+link13[] = {11,12};
+globals[] = {0.000000,0,0,0,0,640,480,1,271,6316128,1,-550.838135,324.729004,-431.797852,-1364.026123,649,691,1};
+window[] = {0,-1,-1,-1,-1,998,281,1694,136,1,667};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -70,14 +74,14 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "true">*/
-                                class true
+                                /*%FSM<LINK "Started">*/
+                                class Started
                                 {
                                         itemno = 1;
                                         priority = 0.000000;
                                         to="Collect_Metedata";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"(true)"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(dzn_brv_started)"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -157,14 +161,25 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "true">*/
-                                class true
+                                /*%FSM<LINK "Finished_">*/
+                                class Finished_
+                                {
+                                        itemno = 11;
+                                        priority = 2.000000;
+                                        to="End";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(dzn_brv_finished)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Started">*/
+                                class Started
                                 {
                                         itemno = 1;
                                         priority = 0.000000;
                                         to="Collect_Metedata";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"(true)"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(dzn_brv_started)"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -201,17 +216,40 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "true">*/
-                                class true
+                                /*%FSM<LINK "Finished_">*/
+                                class Finished_
+                                {
+                                        itemno = 11;
+                                        priority = 2.000000;
+                                        to="End";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(dzn_brv_finished)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Started">*/
+                                class Started
                                 {
                                         itemno = 1;
                                         priority = 0.000000;
                                         to="Collect_Metedata";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"(true)"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(dzn_brv_started)"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "End">*/
+                class End
+                {
+                        name = "End";
+                        itemno = 12;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
                         };
                 };
                 /*%FSM</STATE>*/
@@ -219,6 +257,7 @@ class FSM
         initState="Start";
         finalStates[] =
         {
+                "End",
         };
 };
 /*%FSM</COMPILE>*/

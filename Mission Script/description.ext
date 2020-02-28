@@ -9,11 +9,16 @@ class Params
 		texts[] = {"Disabled","Enabled"};
 		default = 1;
 	};
-	
-	// Uncomment here and at dzn_brv\dzn_brv_init.sqf to control AI logging settings from mission settings screen
 	class dzn_brv_enabledAILog
 	{
 		title = "tS AAR Logging -- Enable AI logging";
+		values[] = {0,1};
+		texts[] = {"Disabled","Enabled"};
+		default = 1;
+	};
+	class dzn_brv_disableOnAllDead
+	{
+		title = "tS AAR Logging -- Stop logging on all players dead";
 		values[] = {0,1};
 		texts[] = {"Disabled","Enabled"};
 		default = 1;
