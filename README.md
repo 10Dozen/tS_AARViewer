@@ -52,6 +52,7 @@ Allow to play AAR files in Browser (tested with Google Chrome).
 - Helvantis
 - Vt5
 - Ruha
+- MCN_Aliabad
 
 Screenshots:
 <br />http://puu.sh/mdzFH/ef9dc68a5f.png
