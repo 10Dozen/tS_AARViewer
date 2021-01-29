@@ -1,5 +1,6 @@
 
-var appProperties = {
+const MS_IN_SECOND = 1000;
+const appProperties = {
 	"headerStatus": {
 		"default": {
 			"text": "Open AAR file to play...",
@@ -252,20 +253,20 @@ function switchToOffline() {
 function onSuccessAARLoad() {
 	$( "#uploader" ).remove();
 	$( "#header-choose-file-btn" ).remove();
-	
+
 	aarData = aarFileData;
-	
+
 	document.title = "AAR - " + aarData.metadata.name;
 	$( "#header-status-text" ).html( appProperties.headerStatus.onload.text );
 	$( "#header-status" ).css( "background-color", appProperties.headerStatus.onload.bgColor );
-	
+
 	showAARDetails();
-	
+
 	setTimeout( function() {
 		$( "#header-status-text" ).html( appProperties.headerStatus.ready.text );
 		setTimeout( function() { $( "#header-status-text" ).html( "" ); } , 1500);
 	});
-	
+
 	// If was opened from storage link - update URL with path
 	if (localStorage.getItem('aarLink') != null) {
 		let url = window.location.protocol + "//" + window.location.host + window.location.pathname + '?aar=' + encodeURI(localStorage.getItem('aarLink'));
@@ -294,7 +295,7 @@ function startViewer() {
 			onFailedAARLoad();
 		};
 	};
-	
+
 	loadAAR(aarPath);
 }
 
@@ -805,40 +806,61 @@ function playReportStep (step, forced) {
 // Play AAR in auto mode
 function playReportAuto () {
 	if (!aarPlaying) {
+		console.log("Playback: Started")
+
 		startReport();
-		let frameTime = 100; // 10 fps
-		var accumulator = aarCurrentTime;
-		aarAutoStepper = setInterval(
-			function () {
-				let speed = $( "#player-speed" ).val();
-				let delta = speed * frameTime / 2000;
-				accumulator = Math.min(accumulator + delta, aarData.metadata.time);
-				if (accumulator <= aarData.metadata.time) {
-					aarCurrentTime = Math.floor(accumulator);
-					reportCurrentStep();
-				} else {
-					clearInterval( aarAutoStepper );
-					stopReport();
-				}
-			}
-			, frameTime
-		);
+		let speed = $( "#player-speed" ).val();
+		setPlayInterval(speed);
 	} else {
 		stopReport();
 	}
-};
+}
+
+function setPlayInterval(speed) {
+	frameTime = MS_IN_SECOND / speed;
+	console.log(`Playback: ${speed} FPS, frameTime: ${frameTime} ms`)
+
+	aarAutoStepper = setInterval(
+		function () {
+			// If UI speed changed -> re-initiate setInterval with different Frame time
+			let playbackSpeed = $( "#player-speed" ).val();
+			if (speed != playbackSpeed) {
+				console.log(`Playback: FPS change old: ${speed}, new: ${playbackSpeed}`)
+
+				unsetPlayInterval(true);
+				setPlayInterval(playbackSpeed);
+				return;
+			}
+
+			aarCurrentTime = Math.min(aarCurrentTime + 1, aarData.metadata.time);
+			if (aarCurrentTime <= aarData.metadata.time) {
+				reportCurrentStep();
+			} else {
+				stopReport();
+			}
+		}
+		, frameTime
+	);
+}
+
+function unsetPlayInterval(forced) {
+	if (aarPlaying || forced) {
+		console.log(`Playback: Stopped`)
+		clearInterval( aarAutoStepper );
+	}
+}
 
 function startReport() {
+	unsetPlayInterval();
 	aarPlaying = true;
 	$( "#player-step-play" ).button( "option", { label: "pause", icons: {primary: "ui-icon-pause"} });
-	clearInterval( aarAutoStepper );
-};
+}
 
 function stopReport() {
+	unsetPlayInterval();
 	aarPlaying = false;
 	$( "#player-step-play" ).button( "option", {label: "play", icons: {primary: "ui-icon-play"} });
-	clearInterval( aarAutoStepper );
-};
+}
 
 function reportCurrentStep () {
 	$( "#slider" ).slider({ value: aarCurrentTime });
