@@ -544,7 +544,7 @@ function mapOnLoad() {
 }
 
 // Panzoom Init
-var panzoomInit = function() {
+function panzoomInit() {
 	var $panzoom = $('.panzoom').panzoom();
 	$('.panzoom').panzoom("option", {
 		minScale: 0.1,
@@ -557,12 +557,10 @@ var panzoomInit = function() {
 	});
 	SMM.change();
 	SMM.redraw(1);
-
-	$panzoom.parent().on('mousewheel.focal', function( e ) {
-		e.preventDefault();
-		var delta = e.delta || e.originalEvent.wheelDelta;
-		var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
-		$panzoom.panzoom('zoom', zoomOut, {
+		
+	const panzoomEl = document.getElementsByClassName("panzoom")[0];
+	panzoomEl.addEventListener("wheel", (e) => {
+		$panzoom.panzoom('zoom', e.deltaY > 0, {
 			increment: 0.1,
 			animate: true,
 			easing: "ease-in-out",
