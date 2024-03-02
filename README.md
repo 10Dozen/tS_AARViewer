@@ -6,7 +6,10 @@ This is a client-side browser-based Arma 3 After Action Report Viewer. It's uses
 
 ## Demo
 Demo page (thanks to aeroson): http://taw-arma.github.io/tS_AARViewer/
-<br />Tactical Shift MilSim Community: http://aar.tacticalshift.ru
+<br />Tactical Shift MilSim Community: http://tacticalshift.ru/aar
+
+## See also
+Tactical Shift MilSim Community repo: https://github.com/TacticalShift/aar (latest version with support of zipped aars).
 
 ## Components
 #### Mission Scripts Logger
